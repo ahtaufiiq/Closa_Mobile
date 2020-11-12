@@ -4,7 +4,7 @@ import '../../widgets/CardTodo.dart';
 import '../../helpers/color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class TaskScreen extends StatelessWidget {
+class TaskScreen1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

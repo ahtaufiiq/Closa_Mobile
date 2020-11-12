@@ -1,7 +1,10 @@
 import 'package:closa_flutter/core/base_action.dart';
 import 'package:closa_flutter/core/base_view.dart';
 import 'package:closa_flutter/features/home/HistoryTaskScreen.dart';
+import 'package:closa_flutter/features/home/HomeScreen.dart';
 import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/features/profile/ProfileScreen.dart';
+import 'package:closa_flutter/features/task/task_screen.dart';
 import 'package:closa_flutter/helpers/CustomScrolling.dart';
 import 'package:closa_flutter/main.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
@@ -9,23 +12,36 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 class DashboardState {
   PageController pageController = PageController();
   bool states = true;
+  int selectedIndex = 0;
+  DashboardState(this.pageController);
+
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  List<Widget> widgetOptions = <Widget>[
+    TaskScreen(),
+    HomeScreen(),
+    ProfileScreen(),
+  ];
 }
 
 class DashboardAction
     extends BaseAction<DashboardScreen, DashboardAction, DashboardState> {
   @override
-  Future<DashboardState> initState() {
-    state.pageController = PageController();
-    state.pageController.addListener(() {
+  Future<DashboardState> initState() async {
+    PageController pageController = PageController();
+    pageController.addListener(() {
       if (state.pageController.page > 0.6 || state.pageController.page < 0.4) {
         state.states = state.pageController.page < 0.4;
         render();
       }
     });
+    return DashboardState(pageController);
   }
 
   void settingModalBottomSheet(context) {
@@ -43,6 +59,11 @@ class DashboardAction
 
   void stateStates(bool states) {
     state.states = states;
+    render();
+  }
+
+  void changeSelectedIndex(index) {
+    state.selectedIndex = index;
     render();
   }
 }
@@ -66,72 +87,47 @@ class DashboardScreen
   @override
   Widget render(
       BuildContext context, DashboardAction action, DashboardState state) {
+    List<Widget> widgetOptions = state.widgetOptions;
     // TODO: implement render
     return Scaffold(
-        body: SafeArea(
-            child: Stack(
-      children: [
-        Container(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 24.0, bottom: 24.0, left: 24.0),
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Text("Task",
-                          style: state.states
-                              ? TextStyle(color: Colors.black, fontSize: 14.0)
-                              : TextStyle(color: Colors.grey, fontSize: 14.0)),
-                      onTap: () {
-                        state.pageController.animateToPage(0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.ease);
-                        action.stateStates(true);
-                      },
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0),
-                      child: GestureDetector(
-                        child: Text("History",
-                            style: state.states
-                                ? TextStyle(color: Colors.grey, fontSize: 14.0)
-                                : TextStyle(
-                                    color: Colors.black, fontSize: 14.0)),
-                        onTap: () {
-                          state.pageController.animateToPage(1,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease);
-                          action.stateStates(false);
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 40,
-                child: PageView(
-                  scrollDirection: Axis.horizontal,
-                  controller: state.pageController,
-                  children: [TaskScreen(), HistoryTaskScreen()],
-                ),
-              ),
-            ],
+      body: Center(
+        child: widgetOptions.elementAt(state.selectedIndex),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(blurRadius: 20, color: Colors.black.withOpacity(.1))
+        ]),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: GNav(
+                gap: 8,
+                activeColor: Colors.white,
+                iconSize: 24,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                duration: Duration(milliseconds: 800),
+                tabBackgroundColor: Colors.grey[800],
+                tabs: [
+                  GButton(
+                    icon: Icons.home,
+                    text: 'Task',
+                  ),
+                  GButton(
+                    icon: Icons.timeline,
+                    text: 'Timeline',
+                  ),
+                  GButton(
+                    icon: Icons.people,
+                    text: 'Profile',
+                  ),
+                ],
+                selectedIndex: state.selectedIndex,
+                onTabChange: (index) {
+                  action.changeSelectedIndex(index);
+                }),
           ),
         ),
-        Positioned(
-          child: GestureDetector(
-            child: Container(
-                child: Icon(Icons.linear_scale),
-                padding: EdgeInsets.only(top: 12.0, left: 12.0, right: 12.0)),
-            onTap: () => action.settingModalBottomSheet(context),
-          ),
-          bottom: 0,
-          left: 0,
-          right: 0,
-        )
-      ],
-    )));
+      ),
+    );
   }
 }

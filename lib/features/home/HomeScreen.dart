@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: PageView(
                   scrollDirection: Axis.horizontal,
                   controller: _pageController,
-                  children: [TaskScreen(), HistoryTaskScreen()],
+                  children: [TaskScreen1(), HistoryTaskScreen()],
                 ),
               ),
             ],
