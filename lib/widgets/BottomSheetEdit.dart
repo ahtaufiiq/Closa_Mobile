@@ -1,43 +1,57 @@
 import 'package:flutter/material.dart';
-import './InputText.dart';
+import 'CustomIcon.dart';
+import 'InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
-import 'dart:math';
 import 'package:closa_flutter/widgets/Text.dart';
 
-class BottomSheetAdd extends StatefulWidget {
-  final String type;
+import 'OptionsTodo.dart';
 
-  const BottomSheetAdd({Key key, this.type}) : super(key: key);
+class BottomSheetEdit extends StatefulWidget {
+  final String description;
+  final int time;
+  final String id;
+  const BottomSheetEdit({Key key, this.id, this.description, this.time})
+      : super(key: key);
   @override
-  _BottomSheetAddState createState() => _BottomSheetAddState();
+  _BottomSheetEditState createState() =>
+      _BottomSheetEditState(description, time);
 }
 
-class _BottomSheetAddState extends State<BottomSheetAdd> {
-  TextEditingController controller = TextEditingController();
-  DateTime selectedDate = DateTime.now();
+class _BottomSheetEditState extends State<BottomSheetEdit> {
+  String description = "";
+  int time;
+  _BottomSheetEditState(this.description, this.time);
 
-  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
-  DateTime dateNow = DateTime.now();
-  String time;
+  TextEditingController controller = TextEditingController();
   @override
   void initState() {
     super.initState();
-    if (dateNow.minute > 15) {
-      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
-      dateNow = dateNow.add(Duration(hours: 2));
-    } else {
-      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
-      dateNow = dateNow.add(Duration(hours: 1));
-    }
-    timestamp = dateNow.millisecondsSinceEpoch;
-    time = FormatTime.getTime(timestamp);
+    controller.text = description;
   }
 
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
-  int addTime = 0;
+  DateTime selectedDate = DateTime.now();
+
+  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+
   String date = "Today";
+  bool first = true;
+
   final firestoreInstance = FirebaseFirestore.instance;
+  void optionsBottomSheet(context, data) {
+    print(data);
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16.0),
+            topRight: const Radius.circular(16.0),
+          ),
+        ),
+        builder: (_) => OptionsTodo(
+            id: data.id, description: data.description, time: data.time));
+  }
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -49,7 +63,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     if (picked != null)
       setState(() {
         selectedDate = picked;
-        timestamp = picked.millisecondsSinceEpoch;
+        time = picked.millisecondsSinceEpoch;
         date = FormatTime.formatDate(selectedDate);
       });
   }
@@ -68,8 +82,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     if (picked != null)
       setState(() {
         selectedTime = picked;
-        addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
-        time = FormatTime.formatTime(selectedTime);
       });
   }
 
@@ -115,9 +127,42 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.all(Radius.circular(22.0))),
-                    child: TextDescription(text: time),
+                    child:
+                        TextDescription(text: FormatTime.getTime(widget.time)),
                     padding: EdgeInsets.only(
                         top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Padding(
+            padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 4.0),
+            child: Row(
+              children: [
+                CustomIcon(
+                  type: "bell",
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                TextDescription(text: "10 min"),
+                SizedBox(
+                  width: 24.0,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    var data = {
+                      "id": "tes",
+                      "description": controller.text,
+                      "time": time
+                    };
+                    optionsBottomSheet(context, data);
+                  },
+                  child: CustomIcon(
+                    type: "more",
                   ),
                 ),
                 Expanded(
@@ -125,15 +170,14 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    firestoreInstance.collection("todos").add({
+                    firestoreInstance
+                        .collection("todos")
+                        .doc(widget.id)
+                        .update({
                       "description": controller.text,
-                      "status": false,
-                      "timestamp": timestamp + addTime,
-                      "type":
-                          widget.type == "highlight" ? 'highlight' : 'others',
+                      "timestamp": time,
+                      "type": 'others',
                       "userId": "andi"
-                    }).then((value) {
-                      print(value.id);
                     });
                     Navigator.pop(context);
                   },
@@ -144,7 +188,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     child: Row(
                       children: [
                         TextDescription(
-                          text: "Add  ",
+                          text: "Edit  ",
                           color: Colors.white,
                         ),
                         Icon(

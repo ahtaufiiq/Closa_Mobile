@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class HistoryTaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Center(
+      child: Text("Center"),
     );
   }
 }

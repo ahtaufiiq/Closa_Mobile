@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../helpers/color.dart';
+
 class TextHeader extends StatelessWidget {
   const TextHeader({Key key, this.text, this.align})
       : super(
@@ -14,17 +14,13 @@ class TextHeader extends StatelessWidget {
     return new Text(
       text,
       textAlign: align ?? TextAlign.center,
-      style: TextStyle(
-        fontSize: 24.0,
-        fontFamily: "InterSemiBold"
-      ),
+      style: TextStyle(fontSize: 24.0, fontFamily: "InterSemiBold"),
     );
   }
 }
 
 class TextSectionTitle extends StatelessWidget {
-  
-  const TextSectionTitle({Key key, this.text, this.align,this.color})
+  const TextSectionTitle({Key key, this.text, this.align, this.color})
       : super(
           key: key,
         );
@@ -37,13 +33,16 @@ class TextSectionTitle extends StatelessWidget {
     return new Text(
       text,
       textAlign: align ?? TextAlign.center,
-      style: TextStyle(fontSize: 18.0, fontFamily: "InterSemiBold",color:color??Colors.black),
+      style: TextStyle(
+          fontSize: 18.0,
+          fontFamily: "InterSemiBold",
+          color: color ?? Colors.black),
     );
   }
 }
+
 class TextSectionDivider extends StatelessWidget {
-  
-  const TextSectionDivider({Key key, this.text, this.align,this.color})
+  const TextSectionDivider({Key key, this.text, this.align, this.color})
       : super(
           key: key,
         );
@@ -56,7 +55,10 @@ class TextSectionDivider extends StatelessWidget {
     return new Text(
       text,
       textAlign: align ?? TextAlign.center,
-      style: TextStyle(fontSize: 14.0, fontFamily: "InterSemiBold",color:color??Colors.black),
+      style: TextStyle(
+          fontSize: 14.0,
+          fontFamily: "InterSemiBold",
+          color: color ?? Colors.black),
     );
   }
 }
@@ -82,13 +84,16 @@ class TextContent extends StatelessWidget {
     );
   }
 }
+
 class TextDescription extends StatelessWidget {
-  const TextDescription({Key key, this.text, this.align,this.color})
+  const TextDescription(
+      {Key key, this.text, this.align, this.color, this.fontWeight})
       : super(
           key: key,
         );
 
   final String text;
+  final FontWeight fontWeight;
   final TextAlign align;
   final Color color;
 
@@ -98,13 +103,14 @@ class TextDescription extends StatelessWidget {
       text,
       textAlign: align ?? TextAlign.start,
       style: TextStyle(
-        fontFamily: "Inter",
-        fontSize: 14.0,
-        color: color?? Colors.black 
-      ),
+          fontFamily: "Inter",
+          fontSize: 14.0,
+          color: color ?? Colors.black,
+          fontWeight: fontWeight ?? FontWeight.normal),
     );
   }
 }
+
 class TextSmall extends StatelessWidget {
   const TextSmall({Key key, this.text, this.align})
       : super(
@@ -126,4 +132,3 @@ class TextSmall extends StatelessWidget {
     );
   }
 }
-
