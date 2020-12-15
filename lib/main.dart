@@ -1,4 +1,5 @@
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
+import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:flutter/material.dart';
 import './helpers/CustomScrolling.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,10 +29,8 @@ class MyApp extends StatelessWidget {
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
             home: ScrollConfiguration(
               behavior: MyBehavior(),
-              child: Scaffold(
-                body: SafeArea(child: TaskScreen()),
-                backgroundColor: Color(0xFFFAFAFB),
-              ),
+              // child: TaskScreen(),
+              child: SignUpScreen(),
             ),
           );
         }

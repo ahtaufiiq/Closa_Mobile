@@ -1,12 +1,72 @@
+import 'package:closa_flutter/core/base_action.dart';
+import 'package:closa_flutter/core/base_view.dart';
+import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({Key key}) : super(key: key);
+class SignUpState {}
+
+class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
+  @override
+  Future<SignUpState> initState() async {
+    return SignUpState();
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<String> signInWithGoogle() async {
+    await Firebase.initializeApp();
+
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('signInWithGoogle succeeded: $user');
+      print(user.uid);
+
+      return '$user';
+    }
+
+    return null;
+  }
+
+  Future<void> signOutGoogle() async {
+    await googleSignIn.signOut();
+
+    print("User Signed Out");
+  }
+}
+
+class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
+  @override
+  SignUpAction initAction() => SignUpAction();
 
   @override
-  Widget build(BuildContext context) {
+  Widget loadingViewBuilder(BuildContext context) => Container();
+
+  @override
+  Widget render(BuildContext context, SignUpAction action, SignUpState state) {
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFB),
       body: Container(
@@ -41,32 +101,47 @@ class SignUpScreen extends StatelessWidget {
                       "A creator community where you get things done, meet interesting people and do what matters.",
                 )),
             Expanded(child: Container()),
-            Container(
-              padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFF000000).withOpacity(0.12),
-                      blurRadius: 6,
-                      offset: Offset(0, 2), // changes position of shadow
+            GestureDetector(
+              onTap: () {
+                action.signInWithGoogle().then((result) {
+                  if (result != null) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return SignUpUsername();
+                        },
+                      ),
+                    );
+                  }
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF000000).withOpacity(0.12),
+                        blurRadius: 6,
+                        offset: Offset(0, 2), // changes position of shadow
+                      ),
+                    ]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomIcon(
+                      type: "google",
                     ),
-                  ]),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomIcon(
-                    type: "google",
-                  ),
-                  SizedBox(
-                    width: 16.0,
-                  ),
-                  TextDescription(
-                    text: "SIGN UP WITH GOOGLE",
-                    fontWeight: FontWeight.w600,
-                  )
-                ],
+                    SizedBox(
+                      width: 16.0,
+                    ),
+                    TextDescription(
+                      text: "SIGN UP WITH GOOGLE",
+                      fontWeight: FontWeight.w600,
+                    )
+                  ],
+                ),
               ),
             ),
             SizedBox(
