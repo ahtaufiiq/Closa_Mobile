@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpProfile extends StatefulWidget {
   @override
@@ -153,7 +155,7 @@ class _SignUpProfileState extends State<SignUpProfile> {
                         String imageUrl = "kosong";
                         try {
                           imageUrl = await reference.getDownloadURL();
-
+                          sharedPrefs.photo = imageUrl;
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) {

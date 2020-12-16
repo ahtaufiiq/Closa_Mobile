@@ -115,6 +115,15 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
             ));
   }
 
+  getIdUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("idUser ${prefs.getString("idUser")}");
+    print("email ${prefs.getString("email")}");
+    print("username ${prefs.getString("username")}");
+    print("name ${prefs.getString("name")}");
+    print("photo ${prefs.getString("urlPhoto")}");
+  }
+
   void openScreenProfile(context) {
     Navigator.push(
       context,
@@ -148,6 +157,7 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
 
   @override
   Widget render(BuildContext context, action, state) {
+    action.getIdUser();
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFB),
       body: SafeArea(

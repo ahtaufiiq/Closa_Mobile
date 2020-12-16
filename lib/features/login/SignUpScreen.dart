@@ -1,12 +1,16 @@
+import 'dart:developer';
+
 import 'package:closa_flutter/core/base_action.dart';
 import 'package:closa_flutter/core/base_view.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpState {}
 
@@ -19,7 +23,7 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  Future<String> signInWithGoogle() async {
+  Future<User> signInWithGoogle() async {
     await Firebase.initializeApp();
 
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -45,7 +49,7 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
       print('signInWithGoogle succeeded: $user');
       print(user.uid);
 
-      return '$user';
+      return user;
     }
 
     return null;
@@ -105,6 +109,8 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
               onTap: () {
                 action.signInWithGoogle().then((result) {
                   if (result != null) {
+                    sharedPrefs.idUser = result.uid;
+                    sharedPrefs.email = result.email;
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) {

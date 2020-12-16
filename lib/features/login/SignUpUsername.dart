@@ -1,6 +1,8 @@
 import 'package:closa_flutter/features/login/SignUpProfile.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpUsername extends StatefulWidget {
   @override
@@ -147,6 +149,8 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                 GestureDetector(
                   onTap: () {
                     if (validation()) {
+                      sharedPrefs.name = nameController.text;
+                      sharedPrefs.username = usernameController.text;
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {

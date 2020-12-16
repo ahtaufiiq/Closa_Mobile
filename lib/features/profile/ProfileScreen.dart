@@ -1,8 +1,25 @@
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatelessWidget {
+  Future<String> getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("username");
+  }
+
+  Future<String> getName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("name");
+  }
+
+  Future<String> getPhoto() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("urlPhoto");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                             Border.all(width: 1.0, color: Color(0xFFDDDDDD)),
                         borderRadius: BorderRadius.circular(14.0)),
                     child: Icon(Icons.close),
-                  ) 
+                  )
                 ],
               ),
             ),
@@ -62,12 +79,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             Center(
               child: TextDescription(
-                  text: "Aprianil Sesti Rangga", fontWeight: FontWeight.w600),
+                  text: "${sharedPrefs.name}", fontWeight: FontWeight.w600),
             ),
             SizedBox(
               height: 6.0,
             ),
-            Center(child: TextDescription(text: "@apri")),
+            Center(child: TextDescription(text: "${sharedPrefs.username}")),
             SizedBox(
               height: 16.0,
             ),
