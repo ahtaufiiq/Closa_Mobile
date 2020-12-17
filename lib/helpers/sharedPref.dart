@@ -38,6 +38,10 @@ class SharedPrefs {
   set photo(String value) {
     _sharedPrefs.setString(keyPhoto, value);
   }
+
+  clear() {
+    _sharedPrefs.clear();
+  }
 }
 
 final sharedPrefs = SharedPrefs();

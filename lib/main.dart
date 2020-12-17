@@ -1,6 +1,7 @@
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import './helpers/CustomScrolling.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -32,12 +33,21 @@ class MyApp extends StatelessWidget {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
+          return GetMaterialApp(
+            getPages: [
+              GetPage(
+                name: '/task',
+                page: () => TaskScreen(),
+              ),
+              GetPage(
+                name: '/signup',
+                page: () => SignUpScreen(),
+              ),
+            ],
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
             home: ScrollConfiguration(
               behavior: MyBehavior(),
-              // child: TaskScreen(),
-              child: SignUpScreen(),
+              child: sharedPrefs.name == "" ? SignUpScreen() : TaskScreen(),
             ),
           );
         }

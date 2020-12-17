@@ -6,9 +6,11 @@ import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -111,13 +113,30 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                   if (result != null) {
                     sharedPrefs.idUser = result.uid;
                     sharedPrefs.email = result.email;
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return SignUpUsername();
-                        },
-                      ),
-                    );
+                    final firestoreInstance = FirebaseFirestore.instance;
+                    firestoreInstance
+                        .collection("users")
+                        .doc(sharedPrefs.idUser)
+                        .snapshots()
+                        .first
+                        .then((value) {
+                      if (value.data() != null) {
+                        sharedPrefs.name = value.data()["name"];
+                        sharedPrefs.username = value.data()["username"];
+                        sharedPrefs.email = value.data()["email"];
+                        sharedPrefs.photo = value.data()["photo"];
+                        print(value.data());
+                        Get.offAllNamed("/task");
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return SignUpUsername();
+                            },
+                          ),
+                        );
+                      }
+                    });
                   }
                 });
               },

@@ -1,4 +1,5 @@
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
   Stream<QuerySnapshot> getHighlight() {
     return FirebaseFirestore.instance
         .collection('todos')
-        .where('userId', isEqualTo: "andi")
+        .where('userId', isEqualTo: sharedPrefs.idUser)
         .where('type', isEqualTo: 'highlight')
         .where("timestamp",
             isGreaterThanOrEqualTo: FormatTime.getTimestampToday())
@@ -93,6 +94,7 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
   Stream<QuerySnapshot> getTodo() {
     return FirebaseFirestore.instance
         .collection('todos')
+        .where('userId', isEqualTo: sharedPrefs.idUser)
         .where('status', isEqualTo: false)
         .where("timestamp",
             isGreaterThanOrEqualTo: FormatTime.getTimestampToday())
@@ -113,15 +115,6 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
         builder: (_) => BottomSheetAdd(
               type: type,
             ));
-  }
-
-  getIdUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("idUser ${prefs.getString("idUser")}");
-    print("email ${prefs.getString("email")}");
-    print("username ${prefs.getString("username")}");
-    print("name ${prefs.getString("name")}");
-    print("photo ${prefs.getString("urlPhoto")}");
   }
 
   void openScreenProfile(context) {
@@ -157,7 +150,6 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
 
   @override
   Widget render(BuildContext context, action, state) {
-    action.getIdUser();
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFB),
       body: SafeArea(

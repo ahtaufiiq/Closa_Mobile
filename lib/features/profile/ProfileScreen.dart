@@ -1,25 +1,12 @@
+import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatelessWidget {
-  Future<String> getUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("username");
-  }
-
-  Future<String> getName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("name");
-  }
-
-  Future<String> getPhoto() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("urlPhoto");
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,20 +31,32 @@ class ProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   Expanded(child: Container()),
-                  CustomIcon(
-                    type: "more",
+                  GestureDetector(
+                    onTap: () {
+                      sharedPrefs.clear();
+                      Get.offAllNamed("/signup");
+                    },
+                    // child: CustomIcon(
+                    //   type: "more",
+                    // ),
+                    child: Text("Logout"),
                   ),
                   SizedBox(
                     width: 16.0,
                   ),
-                  Container(
-                    padding: EdgeInsets.only(
-                        top: 6.0, bottom: 6.0, right: 12.0, left: 12.0),
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(width: 1.0, color: Color(0xFFDDDDDD)),
-                        borderRadius: BorderRadius.circular(14.0)),
-                    child: Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          top: 6.0, bottom: 6.0, right: 12.0, left: 12.0),
+                      decoration: BoxDecoration(
+                          border:
+                              Border.all(width: 1.0, color: Color(0xFFDDDDDD)),
+                          borderRadius: BorderRadius.circular(14.0)),
+                      child: Icon(Icons.close),
+                    ),
                   )
                 ],
               ),
@@ -71,6 +70,9 @@ class ProfileScreen extends StatelessWidget {
                 height: 64.0,
                 decoration: BoxDecoration(
                     border: Border.all(width: 5.0, color: Color(0xFFEFEFEF)),
+                    image: DecorationImage(
+                        image: NetworkImage(sharedPrefs.photo),
+                        fit: BoxFit.cover),
                     borderRadius: BorderRadius.circular(21.0)),
               ),
             ),

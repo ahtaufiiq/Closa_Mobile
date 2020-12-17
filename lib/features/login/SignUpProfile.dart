@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:closa_flutter/features/home/TaskScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -156,13 +158,18 @@ class _SignUpProfileState extends State<SignUpProfile> {
                         try {
                           imageUrl = await reference.getDownloadURL();
                           sharedPrefs.photo = imageUrl;
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return TaskScreen();
-                              },
-                            ),
-                          );
+                          final firestoreInstance = FirebaseFirestore.instance;
+                          firestoreInstance
+                              .collection("users")
+                              .doc(sharedPrefs.idUser)
+                              .set({
+                            "name": sharedPrefs.name,
+                            "email": sharedPrefs.email,
+                            "photo": sharedPrefs.photo,
+                            "username": sharedPrefs.username
+                          }).then((value) {
+                            Get.offAllNamed("/task");
+                          });
                         } catch (onError) {
                           print("Error");
                         }

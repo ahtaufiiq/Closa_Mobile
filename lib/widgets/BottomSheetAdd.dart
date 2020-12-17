@@ -1,3 +1,4 @@
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -131,7 +132,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                       "timestamp": timestamp + addTime,
                       "type":
                           widget.type == "highlight" ? 'highlight' : 'others',
-                      "userId": "andi"
+                      "userId": sharedPrefs.idUser
                     }).then((value) {
                       print(value.id);
                     });
