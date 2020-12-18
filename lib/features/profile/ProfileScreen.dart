@@ -1,12 +1,15 @@
-import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatelessWidget {
+  signout() async {
+    await FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +37,7 @@ class ProfileScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       sharedPrefs.clear();
+                      signout();
                       Get.offAllNamed("/signup");
                     },
                     // child: CustomIcon(

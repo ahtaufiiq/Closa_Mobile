@@ -27,7 +27,7 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
 
   Future<User> signInWithGoogle() async {
     await Firebase.initializeApp();
-
+    googleSignIn.disconnect();
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
@@ -47,9 +47,6 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
 
       final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
-
-      print('signInWithGoogle succeeded: $user');
-      print(user.uid);
 
       return user;
     }
@@ -113,6 +110,8 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                   if (result != null) {
                     sharedPrefs.idUser = result.uid;
                     sharedPrefs.email = result.email;
+                    sharedPrefs.name = result.displayName;
+                    sharedPrefs.photo = result.photoURL;
                     final firestoreInstance = FirebaseFirestore.instance;
                     firestoreInstance
                         .collection("users")
@@ -181,9 +180,114 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                 SizedBox(
                   width: 6.0,
                 ),
-                TextDescription(
-                  text: "Sign In",
-                  fontWeight: FontWeight.w800,
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16.0),
+                            topRight: const Radius.circular(16.0),
+                          ),
+                        ),
+                        builder: (_) => SingleChildScrollView(
+                              child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: 24, right: 24, bottom: 40, top: 36),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextDescription(
+                                        text: "Sign In with..",
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      SizedBox(
+                                        height: 16,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          action
+                                              .signInWithGoogle()
+                                              .then((result) {
+                                            if (result != null) {
+                                              sharedPrefs.idUser = result.uid;
+                                              sharedPrefs.email = result.email;
+                                              final firestoreInstance =
+                                                  FirebaseFirestore.instance;
+                                              firestoreInstance
+                                                  .collection("users")
+                                                  .doc(sharedPrefs.idUser)
+                                                  .snapshots()
+                                                  .first
+                                                  .then((value) {
+                                                if (value.data() != null) {
+                                                  sharedPrefs.name =
+                                                      value.data()["name"];
+                                                  sharedPrefs.username =
+                                                      value.data()["username"];
+                                                  sharedPrefs.email =
+                                                      value.data()["email"];
+                                                  sharedPrefs.photo =
+                                                      value.data()["photo"];
+                                                  print(value.data());
+                                                  Get.offAllNamed("/task");
+                                                } else {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return SignUpUsername();
+                                                      },
+                                                    ),
+                                                  );
+                                                }
+                                              });
+                                            }
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              top: 15.0, bottom: 15.0),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(4.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Color(0xFF000000)
+                                                      .withOpacity(0.12),
+                                                  blurRadius: 6,
+                                                  offset: Offset(0,
+                                                      2), // changes position of shadow
+                                                ),
+                                              ]),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CustomIcon(
+                                                type: "google",
+                                              ),
+                                              SizedBox(
+                                                width: 16.0,
+                                              ),
+                                              TextDescription(
+                                                text: "SIGN IN WITH GOOGLE",
+                                                fontWeight: FontWeight.w600,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ));
+                  },
+                  child: TextDescription(
+                    text: "Sign In",
+                    fontWeight: FontWeight.w800,
+                  ),
                 )
               ],
             )

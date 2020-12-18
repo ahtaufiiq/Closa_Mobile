@@ -1,7 +1,9 @@
 import 'package:closa_flutter/features/login/SignUpProfile.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpUsername extends StatefulWidget {
@@ -31,9 +33,7 @@ class _SignUpUsernameState extends State<SignUpUsername> {
   }
 
   bool validation() {
-    return nameLength >= 3 &&
-        nameLength <= 50 &&
-        usernameLength >= 3 &&
+    return usernameLength >= 3 &&
         usernameLength <= 16;
   }
 
@@ -115,49 +115,53 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                 Divider(
                   color: Color(0xFF000000).withOpacity(0.08),
                 ),
-                SizedBox(height: 48.0),
-                Container(
-                  margin: EdgeInsets.only(left: 24.0),
-                  child: TextSmall(
-                    text: "NAME",
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                Container(
-                  margin: EdgeInsets.only(left: 24.0, right: 24.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                          child: TextField(
-                        controller: nameController,
-                      )),
-                      TextSmall(
-                        text: '${50 - nameLength}',
-                        color: nameLength <= 50 ? null : Color(0xFFFF2D55),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.0),
-                Divider(
-                  color: Color(0xFF000000).withOpacity(0.08),
-                ),
+                // SizedBox(height: 48.0),
+                // Container(
+                //   margin: EdgeInsets.only(left: 24.0),
+                //   child: TextSmall(
+                //     text: "NAME",
+                //   ),
+                // ),
+                // SizedBox(height: 8.0),
+                // Container(
+                //   margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Expanded(
+                //           child: TextField(
+                //         controller: nameController,
+                //       )),
+                //       TextSmall(
+                //         text: '${50 - nameLength}',
+                //         color: nameLength <= 50 ? null : Color(0xFFFF2D55),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // SizedBox(height: 24.0),
+                // Divider(
+                //   color: Color(0xFF000000).withOpacity(0.08),
+                // ),
                 Expanded(
                   child: Container(),
                 ),
                 GestureDetector(
                   onTap: () {
                     if (validation()) {
-                      sharedPrefs.name = nameController.text;
                       sharedPrefs.username = usernameController.text;
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return SignUpProfile();
-                          },
-                        ),
-                      );
+                      final firestoreInstance = FirebaseFirestore.instance;
+                          firestoreInstance
+                              .collection("users")
+                              .doc(sharedPrefs.idUser)
+                              .set({
+                            "name": sharedPrefs.name,
+                            "email": sharedPrefs.email,
+                            "photo": sharedPrefs.photo,
+                            "username": sharedPrefs.username
+                          }).then((value) {
+                            Get.offAllNamed("/task");
+                          });
                     }
                   },
                   child: Container(
