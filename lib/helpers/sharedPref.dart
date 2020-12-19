@@ -39,6 +39,12 @@ class SharedPrefs {
     _sharedPrefs.setString(keyPhoto, value);
   }
 
+  String get about => _sharedPrefs.getString(keyAbout) ?? "";
+
+  set about(String value) {
+    _sharedPrefs.setString(keyAbout, value);
+  }
+
   clear() {
     _sharedPrefs.clear();
   }
@@ -51,3 +57,4 @@ const String keyName = "name";
 const String keyIdUser = "idUser";
 const String keyEmail = "email";
 const String keyPhoto = "urlPhoto";
+const String keyAbout = "about";

@@ -76,9 +76,11 @@ flutter:
     - assets/icons/close.svg
     - assets/icons/streak.svg
     - assets/icons/done.svg
-    - assets/icons/setting.svg
+    - assets/icons/settings.svg
     - assets/icons/logo.svg
     - assets/icons/google.svg
+    - assets/icons/defaultAvatar.svg
+    - assets/icons/logout.svg
   fonts:
     - family: Inter
       fonts:

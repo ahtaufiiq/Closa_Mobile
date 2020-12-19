@@ -13,7 +13,6 @@ class SignUpUsername extends StatefulWidget {
 
 class _SignUpUsernameState extends State<SignUpUsername> {
   final usernameController = TextEditingController();
-  final nameController = TextEditingController();
   int usernameLength = 0;
   int nameLength = 0;
   @override
@@ -29,23 +28,15 @@ class _SignUpUsernameState extends State<SignUpUsername> {
     super.initState();
 
     usernameController.addListener(_getUsernameValue);
-    nameController.addListener(_getNameValue);
   }
 
   bool validation() {
-    return usernameLength >= 3 &&
-        usernameLength <= 16;
+    return usernameLength >= 3 && usernameLength <= 16;
   }
 
   _getUsernameValue() {
     setState(() {
       usernameLength = usernameController.text.length;
-    });
-  }
-
-  _getNameValue() {
-    setState(() {
-      nameLength = nameController.text.length;
     });
   }
 
@@ -115,34 +106,6 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                 Divider(
                   color: Color(0xFF000000).withOpacity(0.08),
                 ),
-                // SizedBox(height: 48.0),
-                // Container(
-                //   margin: EdgeInsets.only(left: 24.0),
-                //   child: TextSmall(
-                //     text: "NAME",
-                //   ),
-                // ),
-                // SizedBox(height: 8.0),
-                // Container(
-                //   margin: EdgeInsets.only(left: 24.0, right: 24.0),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Expanded(
-                //           child: TextField(
-                //         controller: nameController,
-                //       )),
-                //       TextSmall(
-                //         text: '${50 - nameLength}',
-                //         color: nameLength <= 50 ? null : Color(0xFFFF2D55),
-                //       )
-                //     ],
-                //   ),
-                // ),
-                // SizedBox(height: 24.0),
-                // Divider(
-                //   color: Color(0xFF000000).withOpacity(0.08),
-                // ),
                 Expanded(
                   child: Container(),
                 ),
@@ -151,17 +114,17 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                     if (validation()) {
                       sharedPrefs.username = usernameController.text;
                       final firestoreInstance = FirebaseFirestore.instance;
-                          firestoreInstance
-                              .collection("users")
-                              .doc(sharedPrefs.idUser)
-                              .set({
-                            "name": sharedPrefs.name,
-                            "email": sharedPrefs.email,
-                            "photo": sharedPrefs.photo,
-                            "username": sharedPrefs.username
-                          }).then((value) {
-                            Get.offAllNamed("/task");
-                          });
+                      firestoreInstance
+                          .collection("users")
+                          .doc(sharedPrefs.idUser)
+                          .set({
+                        "name": sharedPrefs.name,
+                        "email": sharedPrefs.email,
+                        "photo": sharedPrefs.photo,
+                        "username": sharedPrefs.username
+                      }).then((value) {
+                        Get.offAllNamed("/task");
+                      });
                     }
                   },
                   child: Container(

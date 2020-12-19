@@ -1,5 +1,7 @@
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
+import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
+import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import './helpers/CustomScrolling.dart';
@@ -43,11 +45,20 @@ class MyApp extends StatelessWidget {
                 name: '/signup',
                 page: () => SignUpScreen(),
               ),
+              GetPage(
+                name: '/profile/edit',
+                page: () => EditProfile(),
+              ),
+              GetPage(
+                name: '/profile',
+                page: () => ProfileScreen(),
+              ),
             ],
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
             home: ScrollConfiguration(
               behavior: MyBehavior(),
               child: sharedPrefs.name == "" ? SignUpScreen() : TaskScreen(),
+              // child: EditProfile(),
             ),
           );
         }

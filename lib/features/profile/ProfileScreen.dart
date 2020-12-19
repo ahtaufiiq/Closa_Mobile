@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
@@ -5,9 +8,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   signout() async {
     await FirebaseAuth.instance.signOut();
+    sharedPrefs.clear();
+    Get.offAllNamed("/signup");
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    setState(() {});
+  }
+
+  void navigateSecondPage() {
+    Route route = MaterialPageRoute(builder: (context) => EditProfile());
+    Navigator.push(context, route).then(onGoBack);
   }
 
   @override
@@ -34,34 +53,113 @@ class ProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                   Expanded(child: Container()),
-                  GestureDetector(
-                    onTap: () {
-                      sharedPrefs.clear();
-                      signout();
-                      Get.offAllNamed("/signup");
-                    },
-                    // child: CustomIcon(
-                    //   type: "more",
-                    // ),
-                    child: Text("Logout"),
-                  ),
-                  SizedBox(
-                    width: 16.0,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          top: 6.0, bottom: 6.0, right: 12.0, left: 12.0),
-                      decoration: BoxDecoration(
-                          border:
-                              Border.all(width: 1.0, color: Color(0xFFDDDDDD)),
-                          borderRadius: BorderRadius.circular(14.0)),
-                      child: Icon(Icons.close),
+                  Container(
+                    padding:
+                        EdgeInsets.only(left: 14, right: 14, top: 2, bottom: 2),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1.5, color: Color(0xFFDDDDDD)),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                  )
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  context: context,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: const Radius.circular(16.0),
+                                      topRight: const Radius.circular(16.0),
+                                    ),
+                                  ),
+                                  builder: (_) => SingleChildScrollView(
+                                        child: Container(
+                                            padding: EdgeInsets.only(top: 43),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    navigateSecondPage();
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 24.0,
+                                                            bottom: 28.0),
+                                                    child: Row(
+                                                      children: [
+                                                        CustomIcon(
+                                                          type: "edit",
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20.0,
+                                                        ),
+                                                        TextDescription(
+                                                          text: "Edit Profile",
+                                                          color:
+                                                              Color(0xFF222222),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 24.0,
+                                                          bottom: 28.0),
+                                                  child: Row(
+                                                    children: [
+                                                      CustomIcon(
+                                                        type: "settings",
+                                                      ),
+                                                      SizedBox(
+                                                        width: 20.0,
+                                                      ),
+                                                      TextDescription(
+                                                        text: "Settings",
+                                                        color:
+                                                            Color(0xFF222222),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            )),
+                                      ));
+                            },
+                            child: CustomIcon(
+                              type: "more",
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          VerticalDivider(
+                            color: Color(0xFFDDDDDD),
+                            thickness: 1,
+                            width: 1,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: CustomIcon(
+                              type: "close",
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -98,8 +196,7 @@ class ProfileScreen extends StatelessWidget {
               child: Container(
                 margin: EdgeInsets.only(left: 24.0, right: 24.0),
                 child: TextDescription(
-                  text:
-                      "A Product & Community Enthusiast. Interested in philosophy, consumer tech, Interpersonal Relationship, & 1 on 1 talk.",
+                  text: "${sharedPrefs.about}",
                   align: TextAlign.justify,
                 ),
               ),
