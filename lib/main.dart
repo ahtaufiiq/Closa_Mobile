@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
             home: ScrollConfiguration(
               behavior: MyBehavior(),
               child: sharedPrefs.name == "" ? SignUpScreen() : TaskScreen(),
-              // child: EditProfile(),
+              // child: ProfileScreen(),
             ),
           );
         }

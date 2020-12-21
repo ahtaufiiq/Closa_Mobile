@@ -124,6 +124,7 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                         sharedPrefs.username = value.data()["username"];
                         sharedPrefs.email = value.data()["email"];
                         sharedPrefs.photo = value.data()["photo"];
+                        sharedPrefs.about = value.data()["about"];
                         print(value.data());
                         Get.offAllNamed("/task");
                       } else {
@@ -231,6 +232,8 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                                                       value.data()["email"];
                                                   sharedPrefs.photo =
                                                       value.data()["photo"];
+                                                  sharedPrefs.about =
+                                                      value.data()["about"];
                                                   print(value.data());
                                                   Get.offAllNamed("/task");
                                                 } else {

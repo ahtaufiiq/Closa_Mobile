@@ -111,4 +111,45 @@ class FormatTime {
       }
     }
   }
+
+  static String getDate(timestamp, {type = 'short'}) {
+    var selectedDate = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String date = selectedDate.day.toString();
+    int month = selectedDate.month;
+    var listMonthShort = [
+      '',
+      'Jan',
+      "Feb",
+      'Mar',
+      'Apr',
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      'Sep',
+      'Oct',
+      "Nov",
+      "Dec"
+    ];
+    var listMonthLong = [
+      '',
+      'January',
+      "February",
+      'March',
+      'April',
+      "May",
+      "June",
+      "July",
+      "August",
+      'September',
+      'October',
+      "November",
+      "December"
+    ];
+    if (type == 'short') {
+      return '${listMonthShort[month]}\n$date';
+    } else {
+      return '${listMonthLong[month]}\n$date';
+    }
+  }
 }

@@ -74,6 +74,7 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
         ),
         builder: (_) => BottomSheetEdit(
               id: data.id,
+              type: data["type"],
               description: data['description'],
               time: data['timestamp'],
             ));
@@ -262,7 +263,7 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
                                         }
                                         return GestureDetector(
                                           onTap: () {
-                                            action.optionsBottomSheet(context,
+                                            action.showBottomEdit(context,
                                                 snapshot.data.docs.last);
                                           },
                                           child: CardTodo(

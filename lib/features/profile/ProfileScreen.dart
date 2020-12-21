@@ -1,9 +1,12 @@
 import 'dart:async';
-
 import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
+import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/widgets/CardHistoryTodo.dart';
+import 'package:closa_flutter/widgets/CardTodo.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,6 +25,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   FutureOr onGoBack(dynamic value) {
     setState(() {});
+  }
+
+  Stream<QuerySnapshot> getTodo() {
+    return FirebaseFirestore.instance
+        .collection('todos')
+        .orderBy("timestamp", descending: true)
+        .where("timestamp", isLessThan: FormatTime.getTimestampTomorrow())
+        .where('userId', isEqualTo: sharedPrefs.idUser)
+        .where('status', isEqualTo: true)
+        .snapshots();
   }
 
   void navigateSecondPage() {
@@ -52,6 +65,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: "37",
                     fontWeight: FontWeight.w600,
                   ),
+                  GestureDetector(
+                      onTap: () {
+                        signout();
+                      },
+                      child: Text(
+                        "Logout",
+                        style: TextStyle(fontSize: 16),
+                      )),
                   Expanded(child: Container()),
                   Container(
                     padding:
@@ -223,69 +244,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Color(0xFFEFEFEF),
             ),
             Container(
-              margin: EdgeInsets.only(left: 24.0, right: 24.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextDescription(text: "Nov\n23"),
-                  SizedBox(
-                    width: 24.0,
-                  ),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            TextDescription(text: "@apri"),
-                            SizedBox(
-                              width: 8.0,
-                            ),
-                            CustomIcon(
-                              type: "streak",
-                              color: Color(0xFF888888),
-                            ),
-                            SizedBox(
-                              width: 3.0,
-                            ),
-                            TextDescription(
-                              text: "37",
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF888888),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CustomIcon(
-                              type: 'check',
-                              color: Color(0xFF40B063),
-                            ),
-                            TextDescription(
-                              text:
-                                  "Continue Design & Prototype Personal To-do App",
-                            )
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CustomIcon(
-                              type: 'check',
-                              color: Color(0xFF40B063),
-                            ),
-                            TextDescription(
-                              text:
-                                  "Continue Design & Prototype Personal To-do App",
-                            )
-                          ],
-                        )
-                      ]),
-                ],
-              ),
-            )
+              child: StreamBuilder(
+                  stream: getTodo(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: Text("loading"),
+                      );
+                    }
+                    if (snapshot.data.docs.length == 0) {
+                      return Center(
+                        child: Text("Kosong"),
+                      );
+                    }
+                    var date = "";
+                    var index = 0;
+                    // snapshot.data.docs.sort(
+                    //     (a, b) => a['timestamp'].compareTo(b["timestamp"]));
+
+                    return Column(
+                      children: snapshot.data.docs.map((data) {
+                        index++;
+                        if (date == FormatTime.getDate(data['timestamp'])) {
+                          return CardHistoryTodo(
+                            id: data.id,
+                            isFirst: false,
+                            description: data['description'],
+                            time: data['timestamp'],
+                          );
+                        } else {
+                          date = FormatTime.getDate(data['timestamp']);
+                          return Column(
+                            children: [
+                              index != 1
+                                  ? Container(
+                                      margin: EdgeInsets.only(top: 12),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Color(0xFFE5E5E5),
+                                      ),
+                                    )
+                                  : Container(),
+                              CardHistoryTodo(
+                                id: data.id,
+                                isFirst: true,
+                                description: data['description'],
+                                time: data['timestamp'],
+                              ),
+                            ],
+                          );
+                        }
+                      }).toList(),
+                    );
+                  }),
+            ),
           ],
         ),
       ),

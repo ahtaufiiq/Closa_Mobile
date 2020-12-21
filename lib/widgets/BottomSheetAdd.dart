@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
-import 'dart:math';
 import 'package:closa_flutter/widgets/Text.dart';
 
 class BottomSheetAdd extends StatefulWidget {
@@ -18,7 +17,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   TextEditingController controller = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+  TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
   DateTime dateNow = DateTime.now();
   String time;
   @override
@@ -31,11 +30,13 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
       dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
       dateNow = dateNow.add(Duration(hours: 1));
     }
-    timestamp = dateNow.millisecondsSinceEpoch;
-    time = FormatTime.getTime(timestamp);
+    selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
+    time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
   }
 
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
+  int timestamp =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+          .millisecondsSinceEpoch;
   int addTime = 0;
   String date = "Today";
   final firestoreInstance = FirebaseFirestore.instance;

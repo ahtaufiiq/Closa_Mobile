@@ -37,7 +37,12 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   bool validation() {
-    return usernameLength != 0 && nameLength != 0 && aboutLength != 0;
+    return usernameLength != 0 &&
+        nameLength != 0 &&
+        aboutLength != 0 &&
+        usernameLength <= 16 &&
+        nameLength <= 20 &&
+        aboutLength <= 180;
   }
 
   Future _imgFromCamera() async {
@@ -128,11 +133,16 @@ class _EditProfileState extends State<EditProfile> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24.0),
-                    child: TextDescription(
-                      text: "Cancel",
-                      fontWeight: FontWeight.w600,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 24.0),
+                      child: TextDescription(
+                        text: "Cancel",
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -191,7 +201,10 @@ class _EditProfileState extends State<EditProfile> {
                         child: TextField(
                       controller: usernameController,
                     )),
-                    Text("20")
+                    TextSmall(
+                      text: '${16 - usernameLength}',
+                      color: usernameLength <= 16 ? null : Color(0xFFFF2D55),
+                    )
                   ],
                 ),
               ),
@@ -325,7 +338,10 @@ class _EditProfileState extends State<EditProfile> {
                         child: TextField(
                       controller: nameController,
                     )),
-                    Text("20")
+                    TextSmall(
+                      text: '${20 - nameLength}',
+                      color: nameLength <= 20 ? null : Color(0xFFFF2D55),
+                    )
                   ],
                 ),
               ),
@@ -356,7 +372,10 @@ class _EditProfileState extends State<EditProfile> {
                         child: TextField(
                       controller: aboutController,
                     )),
-                    Text("180")
+                    TextSmall(
+                      text: '${180 - aboutLength}',
+                      color: aboutLength <= 180 ? null : Color(0xFFFF2D55),
+                    )
                   ],
                 ),
               ),
