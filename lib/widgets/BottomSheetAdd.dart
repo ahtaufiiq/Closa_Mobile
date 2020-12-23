@@ -32,6 +32,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     }
     selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
     time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
+    addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
   }
 
   int timestamp =

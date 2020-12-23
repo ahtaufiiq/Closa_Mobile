@@ -1,3 +1,4 @@
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
 import '../helpers/color.dart';
@@ -10,7 +11,17 @@ class CardTodo extends StatefulWidget {
   final String description;
   final int time;
   final String id;
-  const CardTodo({Key key, this.id, this.description, this.time})
+  final String type;
+  final bool status;
+  final void check;
+  const CardTodo(
+      {Key key,
+      this.id,
+      this.description,
+      this.time,
+      this.status = false,
+      this.type = "default",
+      this.check})
       : super(key: key);
 
   @override
@@ -19,7 +30,8 @@ class CardTodo extends StatefulWidget {
 
 class _CardTodoState extends State<CardTodo> {
   final firestoreInstance = FirebaseFirestore.instance;
-
+  bool status = false;
+  _CardTodoState();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,26 +52,42 @@ class _CardTodoState extends State<CardTodo> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  Timer(Duration(seconds: 1), () {
-                    firestoreInstance
-                        .collection("todos")
-                        .doc(widget.id)
-                        .update({"status": true});
-                  });
-                });
-              },
-              child: Container(
-                width: 24.0,
-                height: 24.0,
-                margin: EdgeInsets.only(right: 4.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(9.0),
-                    border: Border.all(color: Color(0xFFDDDDDD), width: 2.0)),
-              ),
-            ),
+            status
+                ? Container(
+                    padding: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFC9FFD7),
+                        borderRadius: BorderRadius.circular(9.0),
+                        border:
+                            Border.all(color: Color(0xFF40B063), width: 2.0)),
+                    child: CustomIcon(
+                      type: 'check',
+                      color: Color(0xFF40B063),
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        status = true;
+                      });
+                      Timer(Duration(seconds: 1), () {
+                        firestoreInstance
+                            .collection("todos")
+                            .doc(widget.id)
+                            .update({"status": true});
+                        status = false;
+                      });
+                    },
+                    child: Container(
+                      width: 24.0,
+                      height: 24.0,
+                      margin: EdgeInsets.only(right: 4.0),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(9.0),
+                          border:
+                              Border.all(color: Color(0xFFDDDDDD), width: 2.0)),
+                    ),
+                  ),
             SizedBox(
               width: 12.0,
             ),

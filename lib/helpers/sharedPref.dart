@@ -45,6 +45,24 @@ class SharedPrefs {
     _sharedPrefs.setString(keyAbout, value);
   }
 
+  String get dateNow => _sharedPrefs.getString(keyDateNow) ?? "";
+
+  set dateNow(String value) {
+    _sharedPrefs.setString(keyDateNow, value);
+  }
+
+  bool get doneHighlight => _sharedPrefs.getBool(keyDoneHighlight) ?? false;
+
+  set doneHighlight(bool value) {
+    _sharedPrefs.setBool(keyDoneHighlight, value);
+  }
+
+  bool get doneOthers => _sharedPrefs.getBool(keyDoneOthers) ?? false;
+
+  set doneOthers(bool value) {
+    _sharedPrefs.setBool(keyDoneOthers, value);
+  }
+
   clear() {
     _sharedPrefs.clear();
   }
@@ -58,3 +76,6 @@ const String keyIdUser = "idUser";
 const String keyEmail = "email";
 const String keyPhoto = "urlPhoto";
 const String keyAbout = "about";
+const String keyDateNow = "dateNow";
+const String keyDoneHighlight = "doneHighlight";
+const String keyDoneOthers = "doneOthers";

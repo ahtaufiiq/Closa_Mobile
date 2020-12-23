@@ -28,7 +28,7 @@ dependencies:
   firebase_auth: ^0.18.4
   firebase_storage: ^5.2.0
   google_sign_in: ^4.5.6
-  cloud_firestore: ^0.14.2
+  cloud_firestore: ^0.14.4
   get: ^3.16.1 # most important
   google_fonts: ^1.1.0
   google_nav_bar: ^3.1.0
@@ -81,6 +81,7 @@ flutter:
     - assets/icons/google.svg
     - assets/icons/defaultAvatar.svg
     - assets/icons/logout.svg
+    - assets/background/lake.png
   fonts:
     - family: Inter
       fonts:

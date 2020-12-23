@@ -108,6 +108,11 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
               onTap: () {
                 action.signInWithGoogle().then((result) {
                   if (result != null) {
+                    print("Masuk");
+                    print(result.uid);
+                    print(result.email);
+                    print(result.displayName);
+                    print(result.photoURL);
                     sharedPrefs.idUser = result.uid;
                     sharedPrefs.email = result.email;
                     sharedPrefs.name = result.displayName;

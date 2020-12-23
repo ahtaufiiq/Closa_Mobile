@@ -1,3 +1,4 @@
+import 'package:closa_flutter/features/home/TaskScreen2.dart';
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import './helpers/CustomScrolling.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import './helpers/FormatTime.dart';
 import 'features/home/TaskScreen.dart';
 import 'helpers/sharedPref.dart';
 
@@ -53,11 +54,21 @@ class MyApp extends StatelessWidget {
                 name: '/profile',
                 page: () => ProfileScreen(),
               ),
+              GetPage(
+                name: '/task2',
+                page: () => TaskScreenCopy(),
+              ),
             ],
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
             home: ScrollConfiguration(
               behavior: MyBehavior(),
-              child: sharedPrefs.name == "" ? SignUpScreen() : TaskScreen(),
+              child: sharedPrefs.username == ""
+                  ? SignUpScreen()
+                  : sharedPrefs.doneHighlight &&
+                          sharedPrefs.doneOthers &&
+                          sharedPrefs.dateNow == FormatTime.getToday()
+                      ? TaskScreenCopy()
+                      : TaskScreen(),
               // child: ProfileScreen(),
             ),
           );

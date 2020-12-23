@@ -1,10 +1,10 @@
+import 'dart:async';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
-import 'package:closa_flutter/core/base_action.dart';
-import 'package:closa_flutter/core/base_view.dart';
+import 'package:get/get.dart';
 import '../../widgets/Text.dart';
 import '../../widgets/CardTodo.dart';
 import '../../helpers/color.dart';
@@ -14,22 +14,24 @@ import '../../widgets/OptionsTodo.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TaskState {
-  int totalTodo = 0;
-  bool emptyTodo = false;
-  bool emptyHighlight = false;
-  bool doneHighlight = false;
+class TaskScreen extends StatefulWidget {
+  @override
+  _TaskScreenState createState() => _TaskScreenState();
 }
 
-class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
+class _TaskScreenState extends State<TaskScreen> {
+  bool doneHighlight = false;
+  bool doneOthers = true;
+  bool emptyTodo = false;
+  bool emptyHighlight = true;
   @override
-  Future<TaskState> initState() async {
-    return TaskState();
-  }
-
-  void saveValue(key, value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
+  void initState() {
+    if (sharedPrefs.dateNow != FormatTime.getToday()) {
+      sharedPrefs.dateNow = FormatTime.getToday();
+      sharedPrefs.doneHighlight = false;
+      sharedPrefs.doneOthers = true;
+    }
+    super.initState();
   }
 
   Future<String> getValue(key) async {
@@ -37,16 +39,6 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
     //Return String
     String stringValue = prefs.getString(key);
     return stringValue;
-  }
-
-  void incrementTotalTodo() {
-    state.totalTodo++;
-    print(state.totalTodo);
-  }
-
-  void decrementTotalTodo() {
-    state.totalTodo--;
-    print(state.totalTodo);
   }
 
   void showBottomAdd(context) {
@@ -140,17 +132,9 @@ class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
             description: data['description'],
             time: data['timestamp']));
   }
-}
-
-class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
-  @override
-  TaskAction initAction() => TaskAction();
 
   @override
-  Widget loadingViewBuilder(BuildContext context) => Container();
-
-  @override
-  Widget render(BuildContext context, action, state) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFB),
       body: SafeArea(
@@ -182,167 +166,216 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
                             bottom: 16.0, left: 24.0, right: 24.0),
                         child: TextHeader(text: FormatTime.getToday()),
                       ),
-                      state.doneHighlight
-                          ? Container()
-                          : Column(
-                              children: [
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 24.0, right: 24.0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.wb_sunny_outlined,
-                                        color: Colors.grey,
-                                        size: 16.0,
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 4.0),
-                                      ),
-                                      TextDescription(
-                                        text: "Highlight",
-                                        color: CustomColor.Grey,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 24.0, right: 24.0),
-                                  child: StreamBuilder(
-                                      stream: action.getHighlight(),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<QuerySnapshot>
-                                              snapshot) {
-                                        if (!snapshot.hasData) {
-                                          return Center(
-                                            child: Text("loading"),
-                                          );
-                                        }
-                                        if (snapshot.data.docs.length == 0) {
-                                          return Center(
-                                              child: GestureDetector(
-                                            onTap: () {
-                                              action.addTodoBottomSheet(context,
-                                                  type: "highlight");
-                                            },
-                                            child: Card(
-                                              margin: EdgeInsets.only(
-                                                  top: 16.0,
-                                                  left: 2.0,
-                                                  right: 2.0),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                              ),
-                                              elevation: 4.0,
-                                              child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 24.0,
-                                                      bottom: 24.0,
-                                                      left: 16.0,
-                                                      right: 24.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.wb_sunny_outlined,
-                                                        color:
-                                                            Color(0xFFFF9500),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 12.0,
-                                                      ),
-                                                      Expanded(
-                                                          child: TextDescription(
-                                                              text:
-                                                                  "Set Highlight Today")),
-                                                    ],
-                                                  )),
-                                            ),
-                                          ));
-                                        }
-                                        return GestureDetector(
-                                          onTap: () {
-                                            action.showBottomEdit(context,
-                                                snapshot.data.docs.last);
-                                          },
-                                          child: CardTodo(
-                                            id: snapshot.data.docs.last.id,
-                                            description: snapshot
-                                                .data.docs.last['description'],
-                                            time: snapshot
-                                                .data.docs.last['timestamp'],
+                      Container(
+                        child: StreamBuilder(
+                            stream: getHighlight(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: Text("loading"),
+                                );
+                              }
+                              if (snapshot.data.docs.length == 0) {
+                                return Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          left: 24.0, right: 24.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.wb_sunny_outlined,
+                                            color: Colors.grey,
+                                            size: 16.0,
                                           ),
-                                        );
-                                      }),
-                                ),
-                                Divider(
-                                  color: CustomColor.Divider,
-                                  thickness: 1,
-                                  height: 56.0,
-                                ),
-                              ],
-                            ),
-                      state.emptyTodo
-                          ? Container()
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 24.0, right: 24.0),
-                                  child: TextDescription(
-                                    text: "Others",
-                                    color: CustomColor.Grey,
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 4.0),
+                                          ),
+                                          TextDescription(
+                                            text: "Highlight",
+                                            color: CustomColor.Grey,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(
+                                            left: 24.0, right: 24.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            addTodoBottomSheet(context,
+                                                type: "highlight");
+                                          },
+                                          child: Card(
+                                            margin: EdgeInsets.only(
+                                                top: 16.0,
+                                                left: 2.0,
+                                                right: 2.0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            elevation: 4.0,
+                                            child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 24.0,
+                                                    bottom: 24.0,
+                                                    left: 16.0,
+                                                    right: 24.0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.wb_sunny_outlined,
+                                                      color: Color(0xFFFF9500),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 12.0,
+                                                    ),
+                                                    Expanded(
+                                                        child: TextDescription(
+                                                            text:
+                                                                "Set Highlight Today")),
+                                                  ],
+                                                )),
+                                          ),
+                                        )),
+                                    Divider(
+                                      color: CustomColor.Divider,
+                                      thickness: 1,
+                                      height: 56.0,
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              if (snapshot.data.docs.first["status"]) {
+                                sharedPrefs.doneHighlight = true;
+                                if (sharedPrefs.doneHighlight &&
+                                    sharedPrefs.doneOthers) {
+                                  Timer(Duration(milliseconds: 400), () {
+                                    Get.offAllNamed("/task2");
+                                  });
+                                }
+                                return Container();
+                              }
+                              sharedPrefs.doneHighlight = false;
+                              return Column(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(
+                                        left: 24.0, right: 24.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.wb_sunny_outlined,
+                                          color: Colors.grey,
+                                          size: 16.0,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 4.0),
+                                        ),
+                                        TextDescription(
+                                          text: "Highlight",
+                                          color: CustomColor.Grey,
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 24.0, right: 24.0),
-                                  child: StreamBuilder(
-                                      stream: action.getTodo(),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<QuerySnapshot>
-                                              snapshot) {
-                                        if (!snapshot.hasData) {
-                                          return Center(
-                                            child: Text("loading"),
-                                          );
-                                        }
-                                        if (snapshot.data.docs.length == 0) {
-                                          return Center(
-                                            child: Text("Kosong"),
-                                          );
-                                        }
-                                        return Column(
-                                          children:
-                                              snapshot.data.docs.map((data) {
-                                            if (data['type'] != 'highlight') {
-                                              return GestureDetector(
-                                                onTap: () {
-                                                  action.showBottomEdit(
-                                                      context, data);
-                                                },
-                                                child: CardTodo(
-                                                  id: data.id,
-                                                  description:
-                                                      data['description'],
-                                                  time: data['timestamp'],
-                                                ),
-                                              );
-                                            } else {
-                                              return Container();
-                                            }
-                                          }).toList(),
-                                        );
-                                      }),
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                )
-                              ],
-                            )
+                                  GestureDetector(
+                                    onTap: () {
+                                      showBottomEdit(
+                                          context, snapshot.data.docs.last);
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: 24.0, right: 24.0),
+                                      child: CardTodo(
+                                        id: snapshot.data.docs.last.id,
+                                        type: "highlight",
+                                        description: snapshot
+                                            .data.docs.last['description'],
+                                        status:
+                                            snapshot.data.docs.last['status'],
+                                        time: snapshot
+                                            .data.docs.last['timestamp'],
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: CustomColor.Divider,
+                                    thickness: 1,
+                                    height: 56.0,
+                                  ),
+                                ],
+                              );
+                            }),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                        child: StreamBuilder(
+                            stream: getTodo(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: Text("loading"),
+                                );
+                              }
+                              if (snapshot.data.docs.length == 0) {
+                                sharedPrefs.doneOthers = true;
+                                if (sharedPrefs.doneHighlight &&
+                                    sharedPrefs.doneOthers) {
+                                  Timer(Duration(milliseconds: 400), () {
+                                    Get.offAllNamed("/task2");
+                                  });
+                                }
+                                return Container();
+                              }
+                              sharedPrefs.doneOthers = false;
+                              return Column(
+                                children: snapshot.data.docs.map((data) {
+                                  if (data['type'] != 'highlight') {
+                                    if (snapshot.data.docs.first.id ==
+                                        data.id) {
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TextDescription(
+                                            text: "Others",
+                                            color: CustomColor.Grey,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              showBottomEdit(context, data);
+                                            },
+                                            child: CardTodo(
+                                              id: data.id,
+                                              description: data['description'],
+                                              time: data['timestamp'],
+                                            ),
+                                          )
+                                        ],
+                                      );
+                                    }
+                                    return GestureDetector(
+                                      onTap: () {
+                                        showBottomEdit(context, data);
+                                      },
+                                      child: CardTodo(
+                                        id: data.id,
+                                        description: data['description'],
+                                        time: data['timestamp'],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                }).toList(),
+                              );
+                            }),
+                      )
                     ],
                   ),
                 ),
@@ -350,7 +383,7 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
             ),
             Positioned(
                 child: GestureDetector(
-                  onTap: () => action.saveValue("tes", "testing pertama"),
+                  onTap: () => {},
                   child: CustomIcon(
                     type: "menu",
                   ),
@@ -359,9 +392,9 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
                 bottom: 24.0),
             Positioned(
                 child: GestureDetector(
-                  // onTap: () => action.openScreenProfile(context),
+                  // onTap: () => openScreenProfile(context),
                   onTap: () {
-                    action.openScreenProfile(context);
+                    openScreenProfile(context);
                   },
                   child: CustomIcon(
                     type: "profile",
@@ -371,7 +404,7 @@ class TaskScreen extends BaseView<TaskScreen, TaskAction, TaskState> {
                 bottom: 24.0),
             Positioned(
               child: GestureDetector(
-                onTap: () => action.showBottomAdd(context),
+                onTap: () => showBottomAdd(context),
                 child: Container(
                   padding: EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
