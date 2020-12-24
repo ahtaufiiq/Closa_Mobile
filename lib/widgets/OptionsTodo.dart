@@ -9,8 +9,9 @@ import 'Text.dart';
 class OptionsTodo extends StatefulWidget {
   final String description;
   final int time;
+  final String type;
   final String id;
-  const OptionsTodo({Key key, this.id, this.description, this.time})
+  const OptionsTodo({Key key, this.id, this.description, this.time, this.type})
       : super(key: key);
   @override
   _OptionsTodoState createState() => _OptionsTodoState(description, time);
@@ -70,6 +71,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
                   builder: (_) => BottomSheetEdit(
                         id: widget.id,
                         description: widget.description,
+                        type: widget.type,
                         time: widget.time,
                       ));
             },

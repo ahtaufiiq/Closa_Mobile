@@ -64,13 +64,14 @@ class TextSectionDivider extends StatelessWidget {
 }
 
 class TextContent extends StatelessWidget {
-  const TextContent({Key key, this.text, this.align})
+  const TextContent({Key key, this.text, this.align, this.fontWeight})
       : super(
           key: key,
         );
 
   final String text;
   final TextAlign align;
+  final FontWeight fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +79,7 @@ class TextContent extends StatelessWidget {
       text,
       textAlign: align ?? TextAlign.start,
       style: TextStyle(
-        fontFamily: "Inter",
-        fontSize: 16.0,
-      ),
+          fontFamily: "Inter", fontSize: 16.0, fontWeight: fontWeight ?? null),
     );
   }
 }
@@ -112,23 +111,22 @@ class TextDescription extends StatelessWidget {
 }
 
 class TextSmall extends StatelessWidget {
-  const TextSmall({Key key, this.text, this.align})
+  const TextSmall({Key key, this.text, this.align, this.color})
       : super(
           key: key,
         );
 
   final String text;
   final TextAlign align;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return new Text(
       text,
       textAlign: align ?? TextAlign.start,
-      style: TextStyle(
-        fontFamily: "Inter",
-        fontSize: 12.0,
-      ),
+      style:
+          TextStyle(fontFamily: "Inter", fontSize: 12.0, color: color ?? null),
     );
   }
 }

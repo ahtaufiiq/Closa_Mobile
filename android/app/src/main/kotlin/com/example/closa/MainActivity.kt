@@ -1,4 +1,4 @@
-package com.example.closa_flutter
+package com.example.closa
 
 import io.flutter.embedding.android.FlutterActivity
 
