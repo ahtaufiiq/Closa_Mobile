@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:closa_flutter/core/storage/device_token.dart';
+import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
@@ -32,6 +34,11 @@ class _TaskScreenState extends State<TaskScreen> {
       sharedPrefs.doneOthers = true;
     }
     super.initState();
+  }
+
+  void saveValue(key, value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
   }
 
   Future<String> getValue(key) async {

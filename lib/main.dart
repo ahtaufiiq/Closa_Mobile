@@ -1,4 +1,6 @@
 import 'package:closa_flutter/features/home/TaskScreen2.dart';
+import 'package:closa_flutter/core/utils/fcm_util.dart';
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
@@ -11,15 +13,20 @@ import './helpers/FormatTime.dart';
 import 'features/home/TaskScreen.dart';
 import 'helpers/sharedPref.dart';
 
-Future<void> main() async {
+void main(
+    {FCMConfigure fcmConfigure = const FCMConfigure(),
+    LocalNotification localNotification = const LocalNotification(),
+    Widget root = const MyApp()}) async {
   WidgetsFlutterBinding.ensureInitialized();
   await sharedPrefs.init();
-  runApp(
-    MyApp(),
-  );
+  // DI setup
+  runApp(root);
+  await fcmConfigure.setupFCM();
+  await localNotification.localNotifInit();
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
