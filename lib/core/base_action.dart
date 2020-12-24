@@ -123,7 +123,7 @@ typedef RepoSelector<T> = T Function(dynamic param1);
 extension GetRepository on GetInterface {
   T getRepository<T>(ResDataSource source) {
     var selectedSource = source;
-    if (AppConfig.isDummyOn.val) selectedSource = ResDataSource.Dummy;
+    // if (AppConfig.isDummyOn.val) selectedSource = ResDataSource.Dummy;
     return this.find<T>(tag: selectedSource.toString());
   }
 }

@@ -13,12 +13,12 @@ class LocalNotification {
     // final String currentTimeZone =
     //     await FlutterNativeTimezone.getLocalTimezone();
 
-    var time = Time(6, 0, 0);
+    var time = Time(5, 42, 0);
 
     final currenTime = await DateTime.now().timeZoneName;
 
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('America/Detroit'));
+    tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
 
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();

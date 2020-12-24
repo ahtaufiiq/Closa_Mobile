@@ -15,7 +15,7 @@ const AppConfigKey = 'AsetKuLocalStorage';
 /// Can store String, int, double, Map and List
 class AppConfig {
   // TODO: set to false
-  static final isDummyOn = true.value('isDummyOn');
+  // static final isDummyOn = true.value('isDummyOn');
 
   // static final token = FieldValue<NetworkToken>(
   //   'token',
@@ -29,31 +29,31 @@ class AppConfig {
   static Future clear() => configBox.retrieve(AppConfigKey).erase();
 }
 
-/// can only use primitive type (int, String, bool, char, double)
-class PrimitiveValue<T> extends ReadWriteValue<T> {
-  PrimitiveValue(
-    String key,
-    T defaultValue,
-  ) : super(key, defaultValue, () => configBox.retrieve(AppConfigKey));
-}
+// /// can only use primitive type (int, String, bool, char, double)
+// class PrimitiveValue<T> extends ReadWriteValue<T> {
+//   PrimitiveValue(
+//     String key,
+//     T defaultValue,
+//   ) : super(key, defaultValue, () => configBox.retrieve(AppConfigKey));
+// }
 
-extension PrimitiveData<T> on T {
-  ReadWriteValue<T> value(String valueKey, {T defVal}) {
-    return PrimitiveValue(valueKey, defVal ?? this);
-  }
-}
+// extension PrimitiveData<T> on T {
+//   ReadWriteValue<T> value(String valueKey, {T defVal}) {
+//     return PrimitiveValue(valueKey, defVal ?? this);
+//   }
+// }
 
-class FieldValue<T> extends GetSet<T> {
-  final PrimitiveValue<String> _rwVal;
+// class FieldValue<T> extends GetSet<T> {
+//   final PrimitiveValue<String> _rwVal;
 
-  final DataParser<T> parser;
-  final DataEncoder<T> encoder;
-  FieldValue(String key, T defaultValue, this.parser, this.encoder)
-      : this._rwVal = PrimitiveValue(key, jsonEncode(encoder(defaultValue)));
+//   final DataParser<T> parser;
+//   final DataEncoder<T> encoder;
+//   FieldValue(String key, T defaultValue, this.parser, this.encoder)
+//       : this._rwVal = PrimitiveValue(key, jsonEncode(encoder(defaultValue)));
 
-  @override
-  T get val => parser(jsonDecode(_rwVal.val));
+//   @override
+//   T get val => parser(jsonDecode(_rwVal.val));
 
-  @override
-  set val(T newVal) => _rwVal.val = jsonEncode(encoder(newVal));
-}
+//   @override
+//   set val(T newVal) => _rwVal.val = jsonEncode(encoder(newVal));
+// }
