@@ -333,11 +333,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                 return Container();
                               }
                               sharedPrefs.doneOthers = false;
+                              var counter = 0;
                               return Column(
                                 children: snapshot.data.docs.map((data) {
                                   if (data['type'] != 'highlight') {
-                                    if (snapshot.data.docs.first.id ==
-                                        data.id) {
+                                    counter++;
+                                    if (counter == 1) {
                                       return Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,

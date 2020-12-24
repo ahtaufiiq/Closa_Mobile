@@ -9,10 +9,11 @@ import 'Text.dart';
 class CardHistoryTodo extends StatelessWidget {
   final String description;
   final int time;
+  final String type;
   final String id;
   final bool isFirst;
   const CardHistoryTodo(
-      {Key key, this.id, this.description, this.time, this.isFirst})
+      {Key key, this.id, this.description, this.time, this.isFirst, this.type})
       : super(key: key);
 
   @override
@@ -34,35 +35,67 @@ class CardHistoryTodo extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
+                isFirst
+                    ? Column(
+                        children: [
+                          TextDescription(
+                            text: "@${sharedPrefs.username}",
+                          ),
+                          SizedBox(
+                            height: 13,
+                          )
+                        ],
+                      )
+                    : Container(),
                 Row(
-                  children: [
-                    TextDescription(text: "@${sharedPrefs.username}"),
-                    SizedBox(
-                      width: 8.0,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          type == "highlight"
+                              ? Icon(
+                                  Icons.wb_sunny_outlined,
+                                  size: 18,
+                                  color: Color(0xFFFF9500),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      color: Color(0xFFC9FFD7),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                          color: Color(0xFF40B063),
+                                          width: 1.3)),
+                                  padding: EdgeInsets.all(2),
+                                  child: CustomIcon(
+                                    type: "check",
+                                  ),
+                                ),
+                        ],
+                      ),
                     ),
-                    TextDescription(
-                      text: FormatTime.getTime(time) ?? "",
-                      color: CustomColor.Grey,
-                    )
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextDescription(
+                            text: description,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          TextSmall(
+                            text: FormatTime.getTime(time),
+                            color: Color(0xFF888888),
+                          )
+                        ],
+                      ),
+                    ),
                   ],
-                ),
-                SizedBox(
-                  height: 9,
-                ),
-                // Container(
-                //                     decoration: BoxDecoration(
-                //                         color: Color(0xFFC9FFD7),
-                //                         borderRadius: BorderRadius.circular(6),
-                //                         border:
-                //                             Border.all(color: Color(0xFF40B063), width: 1.3)),
-                //                     padding: EdgeInsets.all(2),
-                //                     child: CustomIcon(
-                //                       type: "check",
-                //                     ),
-                //                   ),
-                TextDescription(
-                  text: description,
                 ),
               ],
             ),

@@ -263,39 +263,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // snapshot.data.docs.sort(
                     //     (a, b) => a['timestamp'].compareTo(b["timestamp"]));
 
-                    return Column(
-                      children: snapshot.data.docs.map((data) {
-                        index++;
-                        if (date == FormatTime.getDate(data['timestamp'])) {
-                          return CardHistoryTodo(
-                            id: data.id,
-                            isFirst: false,
-                            description: data['description'],
-                            time: data['timestamp'],
-                          );
-                        } else {
-                          date = FormatTime.getDate(data['timestamp']);
-                          return Column(
-                            children: [
-                              index != 1
-                                  ? Container(
-                                      margin: EdgeInsets.only(top: 12),
-                                      child: Divider(
-                                        thickness: 1,
-                                        color: Color(0xFFE5E5E5),
-                                      ),
-                                    )
-                                  : Container(),
-                              CardHistoryTodo(
-                                id: data.id,
-                                isFirst: true,
-                                description: data['description'],
-                                time: data['timestamp'],
-                              ),
-                            ],
-                          );
-                        }
-                      }).toList(),
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 24),
+                      child: Column(
+                        children: snapshot.data.docs.map((data) {
+                          index++;
+                          if (date == FormatTime.getDate(data['timestamp'])) {
+                            return CardHistoryTodo(
+                              id: data.id,
+                              isFirst: false,
+                              type: data['type'],
+                              description: data['description'],
+                              time: data['timestamp'],
+                            );
+                          } else {
+                            date = FormatTime.getDate(data['timestamp']);
+                            return Column(
+                              children: [
+                                index != 1
+                                    ? Container(
+                                        margin: EdgeInsets.only(top: 12),
+                                        child: Divider(
+                                          thickness: 1,
+                                          color: Color(0xFFE5E5E5),
+                                        ),
+                                      )
+                                    : Container(),
+                                CardHistoryTodo(
+                                  id: data.id,
+                                  isFirst: true,
+                                  type: data['type'],
+                                  description: data['description'],
+                                  time: data['timestamp'],
+                                ),
+                              ],
+                            );
+                          }
+                        }).toList(),
+                      ),
                     );
                   }),
             ),

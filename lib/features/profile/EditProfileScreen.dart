@@ -196,20 +196,27 @@ class _EditProfileState extends State<EditProfile> {
                 margin: const EdgeInsets.only(left: 24.0, right: 24.0),
                 child: Row(
                   children: [
-                    Text("@"),
                     Expanded(
-                        child: TextField(
-                      controller: usernameController,
-                    )),
+                      child: TextField(
+                          controller: usernameController,
+                          style: TextStyle(
+                              fontFamily: "Inter",
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600),
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixText: "@ ",
+                              prefixStyle: TextStyle(
+                                  color: Color(0xFF888888),
+                                  fontFamily: "Inter",
+                                  fontSize: 17))),
+                    ),
                     TextSmall(
                       text: '${16 - usernameLength}',
                       color: usernameLength <= 16 ? null : Color(0xFFFF2D55),
                     )
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 16,
               ),
               Divider(
                 thickness: 1,
@@ -337,6 +344,13 @@ class _EditProfileState extends State<EditProfile> {
                     Expanded(
                         child: TextField(
                       controller: nameController,
+                      style: TextStyle(
+                          fontFamily: "Inter",
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                      ),
                     )),
                     TextSmall(
                       text: '${20 - nameLength}',
@@ -344,9 +358,6 @@ class _EditProfileState extends State<EditProfile> {
                     )
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 28,
               ),
               Divider(
                 thickness: 1,
@@ -371,6 +382,11 @@ class _EditProfileState extends State<EditProfile> {
                     Expanded(
                         child: TextField(
                       controller: aboutController,
+                      maxLines: 4,
+                      style: TextStyle(fontFamily: "Inter", fontSize: 14.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                      ),
                     )),
                     TextSmall(
                       text: '${180 - aboutLength}',
