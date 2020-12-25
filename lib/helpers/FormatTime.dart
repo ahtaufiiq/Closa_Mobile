@@ -52,7 +52,6 @@ class FormatTime {
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
 
-    // print(minute);
     if (hour < 12) {
       if (minute == 0) {
         return '$hour AM';
@@ -97,18 +96,59 @@ class FormatTime {
       if (minute == 0) {
         return '$hour AM';
       } else if (minute < 10) {
-        return '$hour.0$minute AM';
+        return '$hour:0$minute AM';
       } else {
-        return '$hour.$minute AM';
+        return '$hour:$minute AM';
       }
     } else {
       if (minute == 0) {
         return '${hour - 12} PM';
       } else if (minute < 10) {
-        return '${hour - 12}.0$minute PM';
+        return '${hour - 12}:0$minute PM';
       } else {
-        return '${hour - 12}.$minute PM';
+        return '${hour - 12}:$minute PM';
       }
+    }
+  }
+
+  static String getDate(timestamp, {type = 'short'}) {
+    var selectedDate = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String date = selectedDate.day.toString();
+    int month = selectedDate.month;
+    var listMonthShort = [
+      '',
+      'Jan',
+      "Feb",
+      'Mar',
+      'Apr',
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      'Sep',
+      'Oct',
+      "Nov",
+      "Dec"
+    ];
+    var listMonthLong = [
+      '',
+      'January',
+      "February",
+      'March',
+      'April',
+      "May",
+      "June",
+      "July",
+      "August",
+      'September',
+      'October',
+      "November",
+      "December"
+    ];
+    if (type == 'short') {
+      return '${listMonthShort[month]}\n$date';
+    } else {
+      return '${listMonthLong[month]}\n$date';
     }
   }
 }

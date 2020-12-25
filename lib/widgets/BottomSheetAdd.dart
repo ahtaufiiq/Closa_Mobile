@@ -1,8 +1,9 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
-import 'dart:math';
 import 'package:closa_flutter/widgets/Text.dart';
 
 class BottomSheetAdd extends StatefulWidget {
@@ -17,7 +18,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   TextEditingController controller = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+  TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
   DateTime dateNow = DateTime.now();
   String time;
   @override
@@ -30,11 +31,14 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
       dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
       dateNow = dateNow.add(Duration(hours: 1));
     }
-    timestamp = dateNow.millisecondsSinceEpoch;
-    time = FormatTime.getTime(timestamp);
+    selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
+    time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
+    addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
   }
 
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
+  int timestamp =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)
+          .millisecondsSinceEpoch;
   int addTime = 0;
   String date = "Today";
   final firestoreInstance = FirebaseFirestore.instance;
@@ -86,7 +90,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
           ),
           InputText(
             controller: controller,
-            hint: 'e.g. Read 10 page of Atomic Habits',
+            hint: 'e.g. Read 10 page of Atomic Habitss',
             focus: true,
           ),
           Padding(
@@ -124,18 +128,20 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   child: Container(),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    firestoreInstance.collection("todos").add({
+                  onTap: () async {
+                    await firestoreInstance.collection("todos").add({
                       "description": controller.text,
                       "status": false,
                       "timestamp": timestamp + addTime,
                       "type":
                           widget.type == "highlight" ? 'highlight' : 'others',
-                      "userId": "andi"
+                      "userId": sharedPrefs.idUser
                     }).then((value) {
                       print(value.id);
                     });
                     Navigator.pop(context);
+                    await LocalNotification().setNotification(
+                        selectedTime.hour, selectedTime.minute);
                   },
                   child: Container(
                     decoration: BoxDecoration(

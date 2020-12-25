@@ -1,3 +1,4 @@
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'CustomIcon.dart';
 import 'InputText.dart';
@@ -11,35 +12,42 @@ class BottomSheetEdit extends StatefulWidget {
   final String description;
   final int time;
   final String id;
-  const BottomSheetEdit({Key key, this.id, this.description, this.time})
+  final String type;
+  const BottomSheetEdit(
+      {Key key, this.id, this.description, this.time, this.type})
       : super(key: key);
   @override
-  _BottomSheetEditState createState() =>
-      _BottomSheetEditState(description, time);
+  _BottomSheetEditState createState() => _BottomSheetEditState(
+      description, DateTime.fromMillisecondsSinceEpoch(time));
 }
 
 class _BottomSheetEditState extends State<BottomSheetEdit> {
   String description = "";
-  int time;
-  _BottomSheetEditState(this.description, this.time);
-
+  int timestamp;
+  String textTime = "";
+  DateTime dateTime;
+  _BottomSheetEditState(this.description, this.dateTime);
   TextEditingController controller = TextEditingController();
+  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+  int addTime = 0;
+
   @override
   void initState() {
     super.initState();
     controller.text = description;
+    selectedTime = TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+    textTime = FormatTime.formatTime(selectedTime);
+    timestamp = DateTime(dateTime.year, dateTime.month, dateTime.day)
+        .millisecondsSinceEpoch;
+    addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
   }
 
   DateTime selectedDate = DateTime.now();
 
-  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
-
   String date = "Today";
-  bool first = true;
 
   final firestoreInstance = FirebaseFirestore.instance;
   void optionsBottomSheet(context, data) {
-    print(data);
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -50,7 +58,10 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
           ),
         ),
         builder: (_) => OptionsTodo(
-            id: data.id, description: data.description, time: data.time));
+            id: data["id"],
+            description: data["description"],
+            type: data["type"],
+            time: data["time"]));
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -60,12 +71,12 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
-    if (picked != null)
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
-        time = picked.millisecondsSinceEpoch;
         date = FormatTime.formatDate(selectedDate);
       });
+    }
   }
 
   Future<Null> _selectTime(BuildContext context) async {
@@ -82,6 +93,8 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
     if (picked != null)
       setState(() {
         selectedTime = picked;
+        addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
+        textTime = FormatTime.formatTime(selectedTime);
       });
   }
 
@@ -127,8 +140,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.all(Radius.circular(22.0))),
-                    child:
-                        TextDescription(text: FormatTime.getTime(widget.time)),
+                    child: TextDescription(text: textTime),
                     padding: EdgeInsets.only(
                         top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
                   ),
@@ -155,9 +167,10 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                   onTap: () {
                     Navigator.pop(context);
                     var data = {
-                      "id": "tes",
+                      "id": widget.id,
                       "description": controller.text,
-                      "time": time
+                      "type": widget.type,
+                      "time": timestamp + addTime
                     };
                     optionsBottomSheet(context, data);
                   },
@@ -175,9 +188,9 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                         .doc(widget.id)
                         .update({
                       "description": controller.text,
-                      "timestamp": time,
-                      "type": 'others',
-                      "userId": "andi"
+                      "timestamp": timestamp + addTime,
+                      "type": widget.type,
+                      "userId": sharedPrefs.idUser
                     });
                     Navigator.pop(context);
                   },

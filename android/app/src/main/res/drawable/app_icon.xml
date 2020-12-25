@@ -1,0 +1,20 @@
+<!-- drawable/logo_closa.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:aapt="http://schemas.android.com/aapt"
+android:width="175.54dp"
+android:height="175.54dp"
+android:viewportWidth="175.54"
+android:viewportHeight="175.54"
+ >
+
+<group>
+
+<clip-path
+android:pathData="M0 0H175.543V175.543H0V0Z"
+/>
+
+</group>
+
+</vector>

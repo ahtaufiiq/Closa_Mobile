@@ -1,4 +1,3 @@
-import 'package:closa_flutter/core/storage/app_config.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
