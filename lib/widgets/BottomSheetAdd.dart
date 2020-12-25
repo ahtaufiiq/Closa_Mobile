@@ -1,3 +1,4 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import './InputText.dart';
@@ -89,7 +90,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
           ),
           InputText(
             controller: controller,
-            hint: 'e.g. Read 10 page of Atomic Habits',
+            hint: 'e.g. Read 10 page of Atomic Habitss',
             focus: true,
           ),
           Padding(
@@ -127,8 +128,8 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   child: Container(),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    firestoreInstance.collection("todos").add({
+                  onTap: () async {
+                    await firestoreInstance.collection("todos").add({
                       "description": controller.text,
                       "status": false,
                       "timestamp": timestamp + addTime,
@@ -139,6 +140,8 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                       print(value.id);
                     });
                     Navigator.pop(context);
+                    await LocalNotification().setNotification(
+                        selectedTime.hour, selectedTime.minute);
                   },
                   child: Container(
                     decoration: BoxDecoration(

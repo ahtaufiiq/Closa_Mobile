@@ -23,6 +23,7 @@ void main(
   runApp(root);
   await fcmConfigure.setupFCM();
   await localNotification.localNotifInit();
+  await localNotification.setDailyNotification();
 }
 
 class MyApp extends StatelessWidget {
