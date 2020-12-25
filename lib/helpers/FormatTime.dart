@@ -52,7 +52,6 @@ class FormatTime {
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
 
-    // print(minute);
     if (hour < 12) {
       if (minute == 0) {
         return '$hour AM';
