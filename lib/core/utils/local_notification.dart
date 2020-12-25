@@ -41,7 +41,7 @@ class LocalNotification {
     await flutterLocalNotificationsPlugin.showDailyAtTime(
       0,
       'Closa',
-      'Time to set your highlight',
+      '☀ Set your highlight today, do what matters.',
       // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
       time,
       const NotificationDetails(
