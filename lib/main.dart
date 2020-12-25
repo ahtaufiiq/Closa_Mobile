@@ -1,3 +1,5 @@
+import 'package:closa_flutter/core/utils/fcm_util.dart';
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:flutter/material.dart';
 import './helpers/CustomScrolling.dart';
@@ -5,9 +7,18 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'features/home/TaskScreen.dart';
 
-void main() => runApp(MyApp());
+void main(
+    {FCMConfigure fcmConfigure = const FCMConfigure(),
+    LocalNotification localNotification = const LocalNotification(),
+    Widget root = const MyApp()}) async {
+  // DI setup
+  runApp(root);
+  await fcmConfigure.setupFCM();
+  await localNotification.localNotifInit();
+}
 
 class MyApp extends StatelessWidget {
+  const MyApp();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

@@ -1,3 +1,5 @@
+import 'package:closa_flutter/core/storage/device_token.dart';
+import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
@@ -23,6 +25,7 @@ class TaskState {
 class TaskAction extends BaseAction<TaskScreen, TaskAction, TaskState> {
   @override
   Future<TaskState> initState() async {
+    print("token: " + DeviceToken().deviceToken);
     return TaskState();
   }
 
