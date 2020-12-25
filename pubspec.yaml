@@ -30,7 +30,6 @@ dependencies:
   google_sign_in: ^4.5.6
   cloud_firestore: ^0.14.4
   firebase_messaging: ^7.0.3
-
   get: ^3.16.1 # most important
   google_fonts: ^1.1.0
   google_nav_bar: ^3.1.0
@@ -40,6 +39,7 @@ dependencies:
   flutter_svg: ^0.19.1
   shared_preferences: ^0.5.12+4
   image_picker: ^0.6.7+15
+  flutter_twitter_login: ^1.1.0
 
   flutter_local_notifications: ^3.0.2
   flutter_native_timezone: ^1.0.4
