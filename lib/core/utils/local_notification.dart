@@ -42,30 +42,27 @@ class LocalNotification {
     return flutterLocalNotificationsPlugin;
   }
 
-  Future setNotification(int hour, int minutes) async {
+  Future setNotification(String message, DateTime time) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
-    // var time = Time(hour, minutes, 0);
-    DateTime time = DateTime.parse("2018-08-16T11:00:00.000Z");
-    time = time.toLocal();
+
+    // DateTime time = DateTime.now();
     // time = new DateTime(time.year, time.month, time.day, hour, minutes);
+    // DateTime time = DateTime.utc(2021, 1, 1, 17, 41, 00);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
       'Closa',
-      '☀ Set your highlight today, do what matters.',
-      tz.TZDateTime.local(time.year, time.month, time.day, hour, minutes)
+      '⏰ $message',
+      tz.TZDateTime.from(time, tz.getLocation('Asia/Jakarta'))
           .add(const Duration(seconds: 5)),
-      // scheduledDate,
-      // tz.TZDateTime.local(time.year, time.month, time.day, hour, minutes),
       const NotificationDetails(
           android: AndroidNotificationDetails('your channel id',
-              'your channel name', 'your channel description')),
+              'your channel name', 'your channel description',
+              enableVibration: true)),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: null,
     );
-
-    print(" $hour : $minutes");
   }
 
   Future selectNotification(String payload) async {
@@ -108,7 +105,8 @@ class LocalNotification {
       time,
       const NotificationDetails(
           android: AndroidNotificationDetails('your channel id',
-              'your channel name', 'your channel description')),
+              'your channel name', 'your channel description',
+              enableVibration: true)),
     );
   }
 }
