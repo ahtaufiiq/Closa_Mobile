@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
@@ -80,6 +81,260 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
       });
   }
 
+  int _groupTimes = 1;
+  int _groupCustomTimes = 0;
+  String _numberCustom;
+
+  void setNotificationTime() async {
+    int minute, hour, days, weeks;
+    DateTime time = DateTime.now();
+
+    if (_groupTimes == 0) {
+      minute = 30;
+      time = new DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, selectedTime.hour, selectedTime.minute - minute);
+    } else if (_groupTimes == 1) {
+      minute = 10;
+      time = new DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, selectedTime.hour, selectedTime.minute - minute);
+    } else if (_groupTimes == 2) {
+      hour = 1;
+      time = new DateTime(selectedDate.year, selectedDate.month,
+          selectedDate.day, selectedTime.hour - hour, selectedTime.minute);
+    } else if (_groupTimes == 3)
+      minute = 0;
+    else if (_groupTimes == 4) {
+      if (_groupCustomTimes == 0) {
+        hour = int.parse(_numberCustom);
+        time = new DateTime(selectedDate.year, selectedDate.month,
+            selectedDate.day, selectedTime.hour - hour, selectedTime.minute);
+      } else if (_groupCustomTimes == 1) {
+        days = int.parse(_numberCustom);
+        time = new DateTime(selectedDate.year, selectedDate.month,
+            selectedDate.day - days, selectedTime.hour, selectedTime.minute);
+      } else if (_groupCustomTimes == 2) {
+        weeks = int.parse(_numberCustom);
+        time = new DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day - (weeks * 7),
+            selectedTime.hour,
+            selectedTime.minute);
+      }
+    }
+    String message =
+        '${controller.text} at ${selectedTime.hour}:${selectedTime.minute}';
+    await LocalNotification().setNotification(message, time);
+  }
+
+  Future<void> _showTimeDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Notification'),
+          contentPadding: EdgeInsets.all(4),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    ListTile(
+                      contentPadding: EdgeInsets.all(5),
+                      title: const Text('30 minutes before'),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 0,
+                        groupValue: _groupTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupTimes = value;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('10 minutes before'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 1,
+                        groupValue: _groupTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupTimes = value;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('1 hour before'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 2,
+                        groupValue: _groupTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupTimes = value;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('At the time of event'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 3,
+                        groupValue: _groupTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupTimes = value;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('Custom'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 4,
+                        groupValue: _groupTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupTimes = value;
+                          });
+                          Navigator.of(context).pop();
+                          _showCustomTimeDialog();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          // actions: <Widget>[
+          //   TextButton(
+          //     child: Text('Done'),
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //   ),
+          // ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showCustomTimeDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Custom Notification'),
+          contentPadding: EdgeInsets.all(4),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: TextField(
+                        onChanged: (val) {
+                          _numberCustom = val;
+                          print(val);
+                          print(_numberCustom);
+                          setState(() {
+                            _numberCustom = val;
+                          });
+                        },
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                            border: new UnderlineInputBorder(
+                                borderSide: new BorderSide(color: Colors.red)),
+                            hintText: 'Enter a number'),
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(5),
+                      title: const Text('Hours'),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 0,
+                        groupValue: _groupCustomTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupCustomTimes = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('Days'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 1,
+                        groupValue: _groupCustomTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupCustomTimes = value;
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('Week'),
+                      contentPadding: EdgeInsets.all(5),
+                      leading: Radio(
+                        activeColor: Colors.black,
+                        value: 2,
+                        groupValue: _groupCustomTimes,
+                        onChanged: (int value) {
+                          setState(() {
+                            _groupCustomTimes = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Done',
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_numberCustom.isBlank) {
+                    print(_numberCustom);
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                  print(_numberCustom);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -130,6 +385,54 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 Expanded(
                   child: Container(),
                 ),
+              ],
+            ),
+          ),
+          SizedBox(height: 24.0),
+          Padding(
+            padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 4.0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    _showTimeDialog();
+                  },
+                  child: Wrap(
+                    children: [
+                      Icon(
+                        Icons.notifications,
+                        color: Colors.black87,
+                        size: 24.0,
+                      ),
+                      SizedBox(width: 8),
+                      Text((() {
+                        switch (_groupTimes) {
+                          case 0:
+                            return "30 min";
+                          case 1:
+                            return "10 min";
+                          case 2:
+                            return "1 hour";
+                          case 3:
+                            return "at time event";
+                          case 4:
+                            String a;
+                            if (_groupCustomTimes == 0) {
+                              a = "hour";
+                            } else if (_groupCustomTimes == 1) {
+                              a = "days";
+                            } else if (_groupCustomTimes == 2) {
+                              a = "weeks";
+                            }
+                            return "$_numberCustom $a";
+                        }
+                      }())),
+                    ],
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.center,
+                  ),
+                ),
+                Expanded(child: Container()),
                 GestureDetector(
                   onTap: () async {
                     await firestoreInstance.collection("todos").add({
@@ -159,9 +462,8 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                         );
                       }
                     });
+                    setNotificationTime();
                     Navigator.pop(context);
-                    await LocalNotification().setNotification(
-                        selectedTime.hour, selectedTime.minute);
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -174,7 +476,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                           color: Colors.white,
                         ),
                         Icon(
-                          Icons.arrow_forward,
+                          Icons.arrow_upward,
                           color: Colors.white,
                           size: 14.0,
                         )
