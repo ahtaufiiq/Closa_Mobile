@@ -1,4 +1,5 @@
 import 'package:closa_flutter/features/dashboard/dashboard.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -96,7 +97,8 @@ class LocalNotification {
   Future setDailyNotification() async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
-    var time = Time(6, 0, 0);
+    var time = Time(sharedPrefs.highlightHour, sharedPrefs.highlightMinute, 0);
+
     await flutterLocalNotificationsPlugin.showDailyAtTime(
       0,
       'Closa',
@@ -108,5 +110,11 @@ class LocalNotification {
               'your channel name', 'your channel description',
               enableVibration: true)),
     );
+  }
+
+  Future cancelNotification(int value) async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        notifConfig;
+    await flutterLocalNotificationsPlugin.cancel(value);
   }
 }

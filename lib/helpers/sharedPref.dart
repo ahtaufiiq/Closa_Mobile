@@ -21,6 +21,31 @@ class SharedPrefs {
     _sharedPrefs.setString(keyName, value);
   }
 
+  int get highlightHour => _sharedPrefs.getInt(keyHighlightHour) ?? 6;
+
+  set highlightHour(int value) {
+    _sharedPrefs.setInt(keyHighlightHour, value);
+  }
+
+  int get highlightMinute => _sharedPrefs.getInt(keyHighlightMinute) ?? 0;
+
+  set highlightMinute(int value) {
+    _sharedPrefs.setInt(keyHighlightMinute, value);
+  }
+
+  String get highlightTime => _sharedPrefs.getString(keyHighlightTime) ?? "";
+
+  set highlightTime(String value) {
+    _sharedPrefs.setString(keyHighlightTime, value);
+  }
+
+  bool get notificationStatus =>
+      _sharedPrefs.getBool(keyNotificationStatus) ?? true;
+
+  set notificationStatus(bool value) {
+    _sharedPrefs.setBool(keyNotificationStatus, value);
+  }
+
   String get idUser => _sharedPrefs.getString(keyIdUser) ?? "";
 
   set idUser(String value) {
@@ -79,3 +104,7 @@ const String keyAbout = "about";
 const String keyDateNow = "dateNow";
 const String keyDoneHighlight = "doneHighlight";
 const String keyDoneOthers = "doneOthers";
+const String keyNotificationStatus = "enable";
+const String keyHighlightTime = null;
+const String keyHighlightHour = "hour";
+const String keyHighlightMinute = "minute";
