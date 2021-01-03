@@ -5,6 +5,7 @@ import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
 import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
+import 'package:closa_flutter/features/setting/SettingScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import './helpers/CustomScrolling.dart';
@@ -23,7 +24,9 @@ void main(
   runApp(root);
   await fcmConfigure.setupFCM();
   await localNotification.localNotifInit();
-  await localNotification.setDailyNotification();
+  if (sharedPrefs.notificationStatus == true) {
+    await localNotification.setDailyNotification();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -63,6 +66,10 @@ class MyApp extends StatelessWidget {
                 page: () => ProfileScreen(),
               ),
               GetPage(
+                name: '/setting',
+                page: () => SettingsScreen(),
+              ),
+              GetPage(
                 name: '/task2',
                 page: () => TaskScreenCopy(),
               ),
@@ -77,7 +84,7 @@ class MyApp extends StatelessWidget {
                           sharedPrefs.dateNow == FormatTime.getToday()
                       ? TaskScreenCopy()
                       : TaskScreen(),
-              // child: SignUpScreen(),
+              // child: SettingsScreen(),
             ),
           );
         }

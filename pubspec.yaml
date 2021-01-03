@@ -86,6 +86,7 @@ flutter:
     - assets/icons/google.svg
     - assets/icons/defaultAvatar.svg
     - assets/icons/logout.svg
+    - assets/icons/alarm-grey.svg
     - assets/background/lake.png
   fonts:
     - family: Inter

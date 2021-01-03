@@ -1,3 +1,5 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 class FormatTime {
   static String formatDate(selectedDate, {type = 'short'}) {
     String date = selectedDate.day.toString();
@@ -69,6 +71,13 @@ class FormatTime {
         return '${hour - 12}.$minute PM';
       }
     }
+  }
+
+  static Time formatForTime(selectedTime) {
+    int hour = selectedTime.hour;
+    int minute = selectedTime.minute;
+
+    return Time(hour, minute);
   }
 
   static int getTimestampToday() {

@@ -1,5 +1,6 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import './InputText.dart';
@@ -455,11 +456,9 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                           text: "Add  ",
                           color: Colors.white,
                         ),
-                        Icon(
-                          Icons.arrow_upward,
-                          color: Colors.white,
-                          size: 14.0,
-                        )
+                        CustomIcon(
+                          type: "alarm-grey",
+                        ),
                       ],
                     ),
                     padding: EdgeInsets.only(
