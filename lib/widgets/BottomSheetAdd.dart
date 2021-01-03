@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:http/http.dart' as http;
 
 class BottomSheetAdd extends StatefulWidget {
   final String type;
@@ -138,6 +141,23 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                       "userId": sharedPrefs.idUser
                     }).then((value) {
                       print(value.id);
+                      if (widget.type == "highlight") {
+                        http.post(
+                          "https://api.closa.me/integrations/highlight",
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'accessToken':
+                                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                          },
+                          body: jsonEncode(<String, String>{
+                            'username': "${sharedPrefs.username}",
+                            'name': "${sharedPrefs.name}",
+                            'text': "${controller.text}",
+                            'photo': "${sharedPrefs.photo}",
+                            'type':"setHighlight"
+                          }),
+                        );
+                      }
                     });
                     Navigator.pop(context);
                     await LocalNotification().setNotification(

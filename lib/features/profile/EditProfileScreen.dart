@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:closa_flutter/helpers/sharedPref.dart';
@@ -18,13 +19,45 @@ class _EditProfileState extends State<EditProfile> {
   final usernameController = TextEditingController();
   final nameController = TextEditingController();
   final aboutController = TextEditingController();
-
+  bool isUsernameTaken = false;
   int usernameLength = sharedPrefs.username.length;
   int nameLength = sharedPrefs.name.length;
   int aboutLength = sharedPrefs.about.length;
   var urlPhoto = sharedPrefs.photo;
   File _image;
   final picker = ImagePicker();
+  Timer searchOnStoppedTyping;
+  bool isLoading = false;
+
+  _onChangeHandler(value) {
+    const duration = Duration(
+        milliseconds:
+            800); // set the duration that you want call search() after that.
+    if (searchOnStoppedTyping != null) {
+      setState(() => searchOnStoppedTyping.cancel()); // clear timer
+    }
+    setState(() => searchOnStoppedTyping =
+        new Timer(duration, () => checkUsername(value)));
+  }
+
+  checkUsername(value) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .where("username", isEqualTo: value)
+        .get()
+        .then((data) {
+      if (data.docs.isBlank || value == sharedPrefs.username) {
+        setState(() {
+          isUsernameTaken = false;
+        });
+      } else {
+        setState(() {
+          isUsernameTaken = true;
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +75,8 @@ class _EditProfileState extends State<EditProfile> {
         aboutLength != 0 &&
         usernameLength <= 16 &&
         nameLength <= 20 &&
-        aboutLength <= 180;
+        aboutLength <= 180 &&
+        !isLoading;
   }
 
   Future _imgFromCamera() async {
@@ -186,10 +220,20 @@ class _EditProfileState extends State<EditProfile> {
                 height: 35,
               ),
               Container(
-                margin: const EdgeInsets.only(left: 24.0),
-                child: TextSmall(
-                  text: "USERNAME",
-                  color: Color(0xFF222222),
+                margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextSmall(
+                      text: "USERNAME",
+                    ),
+                    isUsernameTaken
+                        ? TextSmall(
+                            text: "Username already taken",
+                            color: Color(0xFFFF3B30),
+                          )
+                        : Container(),
+                  ],
                 ),
               ),
               Container(
@@ -199,6 +243,7 @@ class _EditProfileState extends State<EditProfile> {
                     Expanded(
                       child: TextField(
                           controller: usernameController,
+                          onChanged: _onChangeHandler,
                           style: TextStyle(
                               fontFamily: "Inter",
                               fontSize: 16.0,
@@ -285,6 +330,9 @@ class _EditProfileState extends State<EditProfile> {
                         GestureDetector(
                           onTap: () {
                             if (_image != null) {
+                              setState(() {
+                                isLoading = true;
+                              });
                               FirebaseStorage storage =
                                   FirebaseStorage.instance;
                               String imgName = DateTime.now()
@@ -302,19 +350,28 @@ class _EditProfileState extends State<EditProfile> {
                                 } catch (onError) {
                                   print("Error");
                                 }
+                                setState(() {
+                                  isLoading = false;
+                                });
                               });
                             }
                           },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF888888),
-                                  borderRadius: BorderRadius.circular(20)),
-                              padding: EdgeInsets.only(
-                                  left: 16, right: 16, top: 8, bottom: 8),
-                              child: TextSmall(
-                                text: "Upload",
-                                color: Colors.white,
-                              )),
+                          child: isLoading
+                              ? Container(
+                                  child: CircularProgressIndicator(),
+                                  width: 16,
+                                  height: 16,
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      color: Color(0xFF888888),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  padding: EdgeInsets.only(
+                                      left: 16, right: 16, top: 8, bottom: 8),
+                                  child: TextSmall(
+                                    text: "Upload",
+                                    color: Colors.white,
+                                  )),
                         )
                       ],
                     )

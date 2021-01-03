@@ -70,14 +70,14 @@ class MyApp extends StatelessWidget {
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
             home: ScrollConfiguration(
               behavior: MyBehavior(),
-              // child: sharedPrefs.username == ""
-              //     ? SignUpScreen()
-              //     : sharedPrefs.doneHighlight &&
-              //             sharedPrefs.doneOthers &&
-              //             sharedPrefs.dateNow == FormatTime.getToday()
-              //         ? TaskScreenCopy()
-              //         : TaskScreen(),
-              child: SignUpScreen(),
+              child: sharedPrefs.username == ""
+                  ? SignUpScreen()
+                  : sharedPrefs.doneHighlight &&
+                          sharedPrefs.doneOthers &&
+                          sharedPrefs.dateNow == FormatTime.getToday()
+                      ? TaskScreenCopy()
+                      : TaskScreen(),
+              // child: SignUpUsername(),
             ),
           );
         }

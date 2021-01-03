@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:closa_flutter/features/login/SignUpProfile.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
@@ -15,6 +17,37 @@ class _SignUpUsernameState extends State<SignUpUsername> {
   final usernameController = TextEditingController();
   int usernameLength = 0;
   int nameLength = 0;
+  bool isUsernameTaken = false;
+  Timer searchOnStoppedTyping;
+  _onChangeHandler(value) {
+    const duration = Duration(
+        milliseconds:
+            800); // set the duration that you want call search() after that.
+    if (searchOnStoppedTyping != null) {
+      setState(() => searchOnStoppedTyping.cancel()); // clear timer
+    }
+    setState(() => searchOnStoppedTyping =
+        new Timer(duration, () => checkUsername(value)));
+  }
+
+  checkUsername(value) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .where("username", isEqualTo: value)
+        .get()
+        .then((data) {
+      if (data.docs.isBlank || value == sharedPrefs.username) {
+        setState(() {
+          isUsernameTaken = false;
+        });
+      } else {
+        setState(() {
+          isUsernameTaken = true;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -31,7 +64,7 @@ class _SignUpUsernameState extends State<SignUpUsername> {
   }
 
   bool validation() {
-    return usernameLength >= 3 && usernameLength <= 16;
+    return usernameLength >= 3 && usernameLength <= 16 && !isUsernameTaken;
   }
 
   _getUsernameValue() {
@@ -79,10 +112,12 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                       TextSmall(
                         text: "USERNAME",
                       ),
-                      TextSmall(
-                        text: "Username already taken",
-                        color: Color(0xFFFF3B30),
-                      ),
+                      isUsernameTaken
+                          ? TextSmall(
+                              text: "Username already taken",
+                              color: Color(0xFFFF3B30),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),
@@ -94,6 +129,7 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                       Expanded(
                           child: TextField(
                         controller: usernameController,
+                        onChanged: _onChangeHandler,
                       )),
                       TextSmall(
                         text: '${16 - usernameLength}',

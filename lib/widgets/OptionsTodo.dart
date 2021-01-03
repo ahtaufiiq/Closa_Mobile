@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import './BottomSheetEdit.dart';
 import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
@@ -122,7 +123,8 @@ class _OptionsTodoState extends State<OptionsTodo> {
                             bool isDelete = true;
                             Flushbar flushbar;
                             flushbar = Flushbar(
-                                duration: Duration(seconds: 3),
+                                margin: EdgeInsets.only(bottom: 107),
+                                duration: Duration(seconds: 2),
                                 mainButton: FlatButton(
                                   onPressed: () {
                                     isDelete = false;
@@ -148,19 +150,18 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                     }
                                   case FlushbarStatus.IS_HIDING:
                                     {
-                                      print("Hiding");
                                       if (isDelete) {
                                         firestoreInstance
                                             .collection("todos")
                                             .doc(widget.id)
                                             .delete();
+                                        FlutterLocalNotificationsPlugin()
+                                            .cancel(widget.time);
                                       }
                                       break;
                                     }
                                   case FlushbarStatus.DISMISSED:
                                     {
-                                      print("Dismiss");
-
                                       break;
                                     }
                                 }

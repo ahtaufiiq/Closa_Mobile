@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
@@ -6,6 +8,7 @@ import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 
 class CardTodo extends StatefulWidget {
   final String description;
@@ -70,12 +73,28 @@ class _CardTodoState extends State<CardTodo> {
                       setState(() {
                         status = true;
                       });
+
                       Timer(Duration(seconds: 1), () {
                         firestoreInstance
                             .collection("todos")
                             .doc(widget.id)
                             .update({"status": true});
                         status = false;
+                        http.post(
+                          "https://api.closa.me/integrations/done",
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'accessToken':
+                                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                          },
+                          body: jsonEncode(<String, String>{
+                            'username': "${sharedPrefs.username}",
+                            'name': "${sharedPrefs.name}",
+                            'text': "${widget.description}",
+                            'photo': "${sharedPrefs.photo}",
+                            'type': "${widget.type == "highlight" ? 'doneHighlight':'done'}"
+                          }),
+                        );
                       });
                     },
                     child: Container(
