@@ -51,6 +51,13 @@ class SharedPrefs {
     _sharedPrefs.setString(keyDateNow, value);
   }
 
+  String get surprisingImage =>
+      _sharedPrefs.getString(keySurprisingImage) ?? "1.jpg";
+
+  set surprisingImage(String value) {
+    _sharedPrefs.setString(keySurprisingImage, value);
+  }
+
   bool get doneHighlight => _sharedPrefs.getBool(keyDoneHighlight) ?? false;
 
   set doneHighlight(bool value) {
@@ -77,5 +84,6 @@ const String keyEmail = "email";
 const String keyPhoto = "urlPhoto";
 const String keyAbout = "about";
 const String keyDateNow = "dateNow";
+const String keySurprisingImage = "surprisingImage";
 const String keyDoneHighlight = "doneHighlight";
 const String keyDoneOthers = "doneOthers";

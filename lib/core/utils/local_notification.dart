@@ -1,7 +1,5 @@
-import 'package:closa_flutter/features/dashboard/dashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -69,7 +67,7 @@ class LocalNotification {
     if (payload != null) {
       print('notification payload: $payload');
     }
-    await Get.to(DashboardScreen());
+    await Get.offAllNamed("/task");
   }
 
   Future onDidReceiveLocalNotification(
@@ -84,8 +82,7 @@ class LocalNotification {
             isDefaultAction: true,
             child: Text('Ok'),
             onPressed: () async {
-              Get.back();
-              await Get.to(DashboardScreen());
+              await Get.offAllNamed("/task");
             },
           )
         ],

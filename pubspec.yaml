@@ -85,13 +85,12 @@ flutter:
     - assets/icons/google.svg
     - assets/icons/defaultAvatar.svg
     - assets/icons/logout.svg
-    - assets/background/lake.png
-    - assets/background/cat.jpg
-    - assets/background/island.jpg
-    - assets/background/lion.jpg
-    - assets/background/mountain.jpg
-    - assets/background/mountain2.jpg
-    - assets/background/orange.jpg
+    - assets/background/1.jpg
+    - assets/background/2.jpg
+    - assets/background/3.jpg
+    - assets/background/4.jpg
+    - assets/background/5.jpg
+    - assets/background/6.jpg
 
   fonts:
     - family: Inter
