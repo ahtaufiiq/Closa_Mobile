@@ -91,7 +91,8 @@ flutter:
     - assets/background/4.jpg
     - assets/background/5.jpg
     - assets/background/6.jpg
-
+    - assets/icons/alarm-grey.svg
+    
   fonts:
     - family: Inter
       fonts:

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:closa_flutter/features/profile/EditProfileScreen.dart';
+import 'package:closa_flutter/features/setting/SettingScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CardHistoryTodo.dart';
@@ -39,6 +40,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void navigateSecondPage() {
     Route route = MaterialPageRoute(builder: (context) => EditProfile());
+    Navigator.push(context, route).then(onGoBack);
+  }
+
+  void navigateToSetting() {
+    Route route = MaterialPageRoute(builder: (context) => SettingsScreen());
     Navigator.push(context, route).then(onGoBack);
   }
 
@@ -129,25 +135,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     ),
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 24.0,
-                                                          bottom: 28.0),
-                                                  child: Row(
-                                                    children: [
-                                                      CustomIcon(
-                                                        type: "settings",
-                                                      ),
-                                                      SizedBox(
-                                                        width: 20.0,
-                                                      ),
-                                                      TextDescription(
-                                                        text: "Settings",
-                                                        color:
-                                                            Color(0xFF222222),
-                                                      ),
-                                                    ],
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    navigateToSetting();
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 24.0,
+                                                            bottom: 28.0),
+                                                    child: Row(
+                                                      children: [
+                                                        CustomIcon(
+                                                          type: "settings",
+                                                        ),
+                                                        SizedBox(
+                                                          width: 20.0,
+                                                        ),
+                                                        TextDescription(
+                                                          text: "Settings",
+                                                          color:
+                                                              Color(0xFF222222),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ],
