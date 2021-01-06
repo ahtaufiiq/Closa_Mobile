@@ -123,8 +123,10 @@ class _OptionsTodoState extends State<OptionsTodo> {
                             bool isDelete = true;
                             Flushbar flushbar;
                             flushbar = Flushbar(
-                                margin: EdgeInsets.only(bottom: 107),
-                                duration: Duration(seconds: 2),
+                                margin: EdgeInsets.only(
+                                    bottom: 107, left: 24, right: 24),
+                                duration: Duration(seconds: 3),
+                                borderRadius: 4.0,
                                 mainButton: FlatButton(
                                   onPressed: () {
                                     isDelete = false;

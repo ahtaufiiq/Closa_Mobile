@@ -189,6 +189,12 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
                   right: 24.0,
                   bottom: 24.0),
               Positioned(
+                child: TextSmall(
+                    text: "You have done what matters today.",
+                    color: Colors.white),
+                bottom: 100,
+              ),
+              Positioned(
                 child: GestureDetector(
                   onTap: () {
                     showBottomAdd(context);

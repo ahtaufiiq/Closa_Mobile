@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
 import '../helpers/color.dart';
@@ -17,6 +18,7 @@ class CardTodo extends StatefulWidget {
   final String type;
   final bool status;
   final void check;
+
   const CardTodo(
       {Key key,
       this.id,
@@ -34,6 +36,7 @@ class CardTodo extends StatefulWidget {
 class _CardTodoState extends State<CardTodo> {
   final firestoreInstance = FirebaseFirestore.instance;
   bool status = false;
+  bool isDelete = true;
   _CardTodoState();
   @override
   Widget build(BuildContext context) {
@@ -73,29 +76,77 @@ class _CardTodoState extends State<CardTodo> {
                       setState(() {
                         status = true;
                       });
+                      Flushbar flushbar;
+                      flushbar = Flushbar(
+                          margin:
+                              EdgeInsets.only(bottom: 107, left: 24, right: 24),
+                          duration: Duration(seconds: 3),
+                          borderRadius: 4.0,
+                          mainButton: FlatButton(
+                            onPressed: () {
+                              isDelete = false;
+                              flushbar.dismiss(true);
+                            },
+                            child: Text(
+                              "Undo",
+                              style: TextStyle(color: Colors.amber),
+                            ),
+                          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                          message: "Delete Todo");
 
-                      Timer(Duration(seconds: 1), () {
-                        firestoreInstance
-                            .collection("todos")
-                            .doc(widget.id)
-                            .update({"status": true});
-                        status = false;
-                        http.post(
-                          "https://api.closa.me/integrations/done",
-                          headers: <String, String>{
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'accessToken':
-                                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                          },
-                          body: jsonEncode(<String, String>{
-                            'username': "${sharedPrefs.username}",
-                            'name': "${sharedPrefs.name}",
-                            'text': "${widget.description}",
-                            'photo': "${sharedPrefs.photo}",
-                            'type': "${widget.type == "highlight" ? 'doneHighlight':'done'}"
-                          }),
-                        );
-                      });
+                      flushbar
+                        ..onStatusChanged = (FlushbarStatus flushbarStatus) {
+                          switch (flushbarStatus) {
+                            case FlushbarStatus.SHOWING:
+                              {
+                                break;
+                              }
+                            case FlushbarStatus.IS_APPEARING:
+                              {
+                                break;
+                              }
+                            case FlushbarStatus.IS_HIDING:
+                              {
+                                if (isDelete) {
+                                  Timer(Duration(seconds: 1), () {
+                                    firestoreInstance
+                                        .collection("todos")
+                                        .doc(widget.id)
+                                        .update({"status": true});
+                                    status = false;
+                                    http.post(
+                                      "https://api.closa.me/integrations/done",
+                                      headers: <String, String>{
+                                        'Content-Type':
+                                            'application/json; charset=UTF-8',
+                                        'accessToken':
+                                            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                                      },
+                                      body: jsonEncode(<String, String>{
+                                        'username': "${sharedPrefs.username}",
+                                        'name': "${sharedPrefs.name}",
+                                        'text': "${widget.description}",
+                                        'photo': "${sharedPrefs.photo}",
+                                        'type':
+                                            "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                                      }),
+                                    );
+                                  });
+                                } else {
+                                  setState(() {
+                                    status = false;
+                                  });
+                                  isDelete = true;
+                                }
+                                break;
+                              }
+                            case FlushbarStatus.DISMISSED:
+                              {
+                                break;
+                              }
+                          }
+                        }
+                        ..show(context);
                     },
                     child: Container(
                       width: 24.0,

@@ -47,7 +47,7 @@ class FormatTime {
 
   static String getToday() {
     DateTime date = DateTime.now();
-    return "${FormatTime.formatDate(date, type: 'long')} ${date.year}";
+    return "${FormatTime.formatDate(date, type: 'long')}";
   }
 
   static String formatTime(selectedTime) {
