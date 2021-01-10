@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
@@ -10,6 +11,7 @@ import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../helpers/FormatTime.dart';
 import 'package:closa_flutter/widgets/Text.dart';
+import 'package:http/http.dart' as http;
 
 class BottomSheetAdd extends StatefulWidget {
   final String type;
@@ -22,7 +24,7 @@ class BottomSheetAdd extends StatefulWidget {
 class _BottomSheetAddState extends State<BottomSheetAdd> {
   TextEditingController controller = TextEditingController();
   DateTime selectedDate = DateTime.now();
-
+  int todoLength = 0;
   TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
   DateTime dateNow = DateTime.now();
   String time;
@@ -39,6 +41,13 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
     time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
     addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
+    controller.addListener(_getTodoValue);
+  }
+
+  _getTodoValue() {
+    setState(() {
+      todoLength = controller.text.length;
+    });
   }
 
   int timestamp =
@@ -356,7 +365,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
           ),
           InputText(
             controller: controller,
-            hint: 'e.g. Read 10 page of Atomic Habitss',
+            hint: 'Eg: Read 10 page of Atomic Habitss',
             focus: true,
           ),
           Padding(
@@ -369,7 +378,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
+                        border: Border.all(color: Color(0xFFCCCCCC), width: 2),
                         borderRadius: BorderRadius.all(Radius.circular(22.0))),
                     child: TextDescription(text: date),
                     padding: EdgeInsets.only(
@@ -383,7 +392,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
+                        border: Border.all(color: Color(0xFFCCCCCC), width: 2),
                         borderRadius: BorderRadius.all(Radius.circular(22.0))),
                     child: TextDescription(text: time),
                     padding: EdgeInsets.only(
@@ -407,11 +416,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   },
                   child: Wrap(
                     children: [
-                      Icon(
-                        Icons.notifications,
-                        color: Colors.black87,
-                        size: 24.0,
-                      ),
+                      CustomIcon(type: 'bell'),
                       SizedBox(width: 8),
                       Text((() {
                         switch (_groupTimes) {
@@ -445,34 +450,45 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   onTap: () async {
                     int id = Random().nextInt(10000);
 
-                    await firestoreInstance.collection("todos").add({
-                      "description": controller.text,
-                      "status": false,
-                      "timestamp": timestamp + addTime,
-                      "notificationId": id,
-                      "type":
-                          widget.type == "highlight" ? 'highlight' : 'others',
-                      "userId": sharedPrefs.idUser
-                    }).then((value) {
-                      print(value.id);
-                    });
-                    setNotificationTime(id);
-                    Navigator.pop(context);
+                    if (todoLength != 0) {
+                      await firestoreInstance.collection("todos").add({
+                        "description": controller.text,
+                        "status": false,
+                        "timestamp": timestamp + addTime,
+                        "type":
+                            widget.type == "highlight" ? 'highlight' : 'others',
+                        "userId": sharedPrefs.idUser
+                      }).then((value) {
+                        print(value.id);
+                        if (widget.type == "highlight") {
+                          http.post(
+                            "https://api.closa.me/integrations/highlight",
+                            headers: <String, String>{
+                              'Content-Type': 'application/json; charset=UTF-8',
+                              'accessToken':
+                                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                            },
+                            body: jsonEncode(<String, String>{
+                              'username': "${sharedPrefs.username}",
+                              'name': "${sharedPrefs.name}",
+                              'text': "${controller.text}",
+                              'photo': "${sharedPrefs.photo}",
+                              'type': "setHighlight"
+                            }),
+                          );
+                        }
+                      });
+                      setNotificationTime(id);
+                      Navigator.pop(context);
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: todoLength != 0 ? Colors.black : Colors.grey,
                         borderRadius: BorderRadius.all(Radius.circular(22.0))),
-                    child: Row(
-                      children: [
-                        TextDescription(
-                          text: "Add  ",
-                          color: Colors.white,
-                        ),
-                        CustomIcon(
-                          type: "alarm-grey",
-                        ),
-                      ],
+                    child: TextDescription(
+                      text: "Add ↑",
+                      color: Colors.white,
                     ),
                     padding: EdgeInsets.only(
                         top: 10.0, bottom: 10.0, left: 16.0, right: 16.0),

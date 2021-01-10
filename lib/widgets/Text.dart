@@ -36,7 +36,7 @@ class TextSectionTitle extends StatelessWidget {
       style: TextStyle(
           fontSize: 18.0,
           fontFamily: "InterSemiBold",
-          color: color ?? Colors.black),
+          color: color ?? Color(0xFF222222)),
     );
   }
 }
@@ -58,7 +58,7 @@ class TextSectionDivider extends StatelessWidget {
       style: TextStyle(
           fontSize: 14.0,
           fontFamily: "InterSemiBold",
-          color: color ?? Colors.black),
+          color: color ?? Color(0xFF222222)),
     );
   }
 }
@@ -104,7 +104,7 @@ class TextDescription extends StatelessWidget {
       style: TextStyle(
           fontFamily: "Inter",
           fontSize: 14.0,
-          color: color ?? Colors.black,
+          color: color ?? Color(0xFF222222),
           fontWeight: fontWeight ?? FontWeight.normal),
     );
   }

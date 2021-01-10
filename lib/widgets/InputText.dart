@@ -14,11 +14,14 @@ class InputText extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: 24.0, right: 24.0),
       child: TextField(
-        controller: controller,
-        autofocus: true,
-        style: TextStyle(fontSize: 16.0),
-        decoration: InputDecoration(border: InputBorder.none, hintText: hint),
-      ),
+          controller: controller,
+          autofocus: true,
+          style: TextStyle(
+              fontSize: 16.0, fontWeight: FontWeight.w600, fontFamily: "Inter"),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: hint,
+              hintStyle: TextStyle(color: Color(0xFFCCCCCC)))),
     );
   }
 }

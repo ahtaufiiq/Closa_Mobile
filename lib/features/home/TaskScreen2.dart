@@ -128,7 +128,8 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/background/lake.png"),
+                image: AssetImage(
+                    "assets/background/${sharedPrefs.surprisingImage}"),
                 fit: BoxFit.cover)),
         child: SafeArea(
           child: Stack(
@@ -159,7 +160,7 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
                                   return Container();
                                 }
                                 sharedPrefs.doneOthers = false;
-                                Timer(Duration(milliseconds: 400), () {
+                                Timer(Duration(seconds: 1), () {
                                   Get.offAllNamed("/task");
                                 });
                                 return Container();
@@ -187,6 +188,12 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
                   ),
                   right: 24.0,
                   bottom: 24.0),
+              Positioned(
+                child: TextSmall(
+                    text: "You have done what matters today.",
+                    color: Colors.white),
+                bottom: 100,
+              ),
               Positioned(
                 child: GestureDetector(
                   onTap: () {

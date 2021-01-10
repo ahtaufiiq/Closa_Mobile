@@ -39,11 +39,10 @@ dependencies:
   flutter_svg: ^0.19.1
   shared_preferences: ^0.5.12+4
   image_picker: ^0.6.7+15
-  flutter_twitter_login: ^1.1.0
-
   flutter_local_notifications: ^3.0.2
   flutter_native_timezone: ^1.0.4
-
+  http: ^0.12.2
+  
   #widgets
   flutter_spinkit: ^4.1.2+1
 dev_dependencies:
@@ -86,8 +85,14 @@ flutter:
     - assets/icons/google.svg
     - assets/icons/defaultAvatar.svg
     - assets/icons/logout.svg
+    - assets/background/1.jpg
+    - assets/background/2.jpg
+    - assets/background/3.jpg
+    - assets/background/4.jpg
+    - assets/background/5.jpg
+    - assets/background/6.jpg
     - assets/icons/alarm-grey.svg
-    - assets/background/lake.png
+    
   fonts:
     - family: Inter
       fonts:

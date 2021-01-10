@@ -10,7 +10,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,30 +24,6 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
-  final TwitterLogin twitterLogin = new TwitterLogin(
-    consumerKey: 'Fi4zNB9AOMtieVbQiy4NZm0pP',
-    consumerSecret: 'oFpEpjFCRXXQUOQrL4nNJVNH8gDb4O7XhktMQANeB8EpyInZ2l',
-  );
-  void _login() async {
-    final TwitterLoginResult result = await twitterLogin.authorize();
-    String newMessage;
-
-    switch (result.status) {
-      case TwitterLoginStatus.loggedIn:
-        newMessage = 'Logged in! username: ${result.session.username}';
-        print(result.session.token);
-        print(result.session.secret);
-        break;
-      case TwitterLoginStatus.cancelledByUser:
-        newMessage = 'Login cancelled by user.';
-        break;
-      case TwitterLoginStatus.error:
-        newMessage = 'Login error: ${result.errorMessage}';
-        break;
-    }
-
-    print(newMessage);
-  }
 
   Future<User> signInWithGoogle() async {
     await Firebase.initializeApp();

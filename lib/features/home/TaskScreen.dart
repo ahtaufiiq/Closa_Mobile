@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:closa_flutter/core/storage/device_token.dart';
 import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/Text.dart';
@@ -15,6 +17,8 @@ import '../../helpers/FormatTime.dart';
 import '../../widgets/OptionsTodo.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class TaskScreen extends StatefulWidget {
   @override
@@ -32,6 +36,16 @@ class _TaskScreenState extends State<TaskScreen> {
       sharedPrefs.dateNow = FormatTime.getToday();
       sharedPrefs.doneHighlight = false;
       sharedPrefs.doneOthers = true;
+      var max = 6;
+      var random = new Random().nextInt(max) + 1;
+      if ("$random.jpg" == sharedPrefs.surprisingImage) {
+        if (random == max) {
+          random -= 1;
+        } else {
+          random += 1;
+        }
+      }
+      sharedPrefs.surprisingImage = "$random.jpg";
     }
     super.initState();
   }
@@ -261,7 +275,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneHighlight = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(milliseconds: 400), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -334,7 +348,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneOthers = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(milliseconds: 400), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -393,7 +407,7 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
             Positioned(
                 child: GestureDetector(
-                  onTap: () => {},
+                  onTap: () {},
                   child: CustomIcon(
                     type: "menu",
                   ),

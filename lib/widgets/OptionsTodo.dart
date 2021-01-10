@@ -1,6 +1,7 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import './BottomSheetEdit.dart';
 import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
@@ -130,7 +131,10 @@ class _OptionsTodoState extends State<OptionsTodo> {
                             bool isDelete = true;
                             Flushbar flushbar;
                             flushbar = Flushbar(
+                                margin: EdgeInsets.only(
+                                    bottom: 107, left: 24, right: 24),
                                 duration: Duration(seconds: 3),
+                                borderRadius: 4.0,
                                 mainButton: FlatButton(
                                   onPressed: () {
                                     isDelete = false;
@@ -157,12 +161,13 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                     }
                                   case FlushbarStatus.IS_HIDING:
                                     {
-                                      print("Hiding");
                                       if (isDelete) {
                                         firestoreInstance
                                             .collection("todos")
                                             .doc(widget.id)
                                             .delete();
+                                        FlutterLocalNotificationsPlugin()
+                                            .cancel(widget.time);
                                       }
                                       await LocalNotification()
                                           .cancelNotification(widget.notifId);
@@ -170,8 +175,6 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                     }
                                   case FlushbarStatus.DISMISSED:
                                     {
-                                      print("Dismiss");
-
                                       break;
                                     }
                                 }
