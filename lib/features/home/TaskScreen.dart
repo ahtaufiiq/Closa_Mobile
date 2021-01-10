@@ -90,6 +90,7 @@ class _TaskScreenState extends State<TaskScreen> {
               type: data["type"],
               description: data['description'],
               time: data['timestamp'],
+              notifId: data['notificationId'],
             ));
   }
 
@@ -376,6 +377,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                               id: data.id,
                                               description: data['description'],
                                               time: data['timestamp'],
+                                              notifId: data['notificationId'],
                                             ),
                                           )
                                         ],

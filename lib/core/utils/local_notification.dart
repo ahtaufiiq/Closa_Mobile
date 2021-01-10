@@ -41,7 +41,7 @@ class LocalNotification {
     return flutterLocalNotificationsPlugin;
   }
 
-  Future setNotification(String message, DateTime time) async {
+  Future setNotification(String message, DateTime time, int id) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
 
@@ -50,7 +50,7 @@ class LocalNotification {
     // DateTime time = DateTime.utc(2021, 1, 1, 17, 41, 00);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
+      id,
       'Closa',
       '⏰ $message',
       tz.TZDateTime.from(time, tz.getLocation('Asia/Jakarta'))
@@ -62,6 +62,16 @@ class LocalNotification {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation: null,
     );
+  }
+
+  Future getAllNotification() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        notifConfig;
+
+    final List<PendingNotificationRequest> pendingNotificationRequests =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+
+    return pendingNotificationRequests;
   }
 
   Future selectNotification(String payload) async {
@@ -109,9 +119,9 @@ class LocalNotification {
     );
   }
 
-  Future cancelNotification(int value) async {
+  Future cancelNotification(int id) async {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
-    await flutterLocalNotificationsPlugin.cancel(value);
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }
