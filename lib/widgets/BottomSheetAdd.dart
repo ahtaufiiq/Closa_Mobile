@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import './InputText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -83,7 +86,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   int _groupCustomTimes = 0;
   String _numberCustom;
 
-  void setNotificationTime() async {
+  void setNotificationTime(int id) async {
     int minute, hour, days, weeks;
     DateTime time = DateTime.now();
 
@@ -120,9 +123,16 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
             selectedTime.minute);
       }
     }
+
     String message =
         '${controller.text} at ${selectedTime.hour}:${selectedTime.minute}';
-    await LocalNotification().setNotification(message, time);
+    await LocalNotification().setNotification(message, time, id);
+
+    List<PendingNotificationRequest> lists =
+        await LocalNotification().getAllNotification();
+    for (var item in lists) {
+      print(item.id);
+    }
   }
 
   Future<void> _showTimeDialog() async {
@@ -433,17 +443,20 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 Expanded(child: Container()),
                 GestureDetector(
                   onTap: () async {
+                    int id = Random().nextInt(10000);
+
                     await firestoreInstance.collection("todos").add({
                       "description": controller.text,
                       "status": false,
                       "timestamp": timestamp + addTime,
+                      "notificationId": id,
                       "type":
                           widget.type == "highlight" ? 'highlight' : 'others',
                       "userId": sharedPrefs.idUser
                     }).then((value) {
                       print(value.id);
                     });
-                    setNotificationTime();
+                    setNotificationTime(id);
                     Navigator.pop(context);
                   },
                   child: Container(

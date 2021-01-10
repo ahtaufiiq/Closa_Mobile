@@ -1,3 +1,4 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import './BottomSheetEdit.dart';
@@ -11,8 +12,15 @@ class OptionsTodo extends StatefulWidget {
   final int time;
   final String type;
   final String id;
-  const OptionsTodo({Key key, this.id, this.description, this.time, this.type})
-      : super(key: key);
+  final int notifId;
+  const OptionsTodo({
+    Key key,
+    this.notifId,
+    this.id,
+    this.description,
+    this.time,
+    this.type,
+  }) : super(key: key);
   @override
   _OptionsTodoState createState() => _OptionsTodoState(description, time);
 }
@@ -136,7 +144,8 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                 message: "Delete Todo");
 
                             flushbar
-                              ..onStatusChanged = (FlushbarStatus status) {
+                              ..onStatusChanged =
+                                  (FlushbarStatus status) async {
                                 switch (status) {
                                   case FlushbarStatus.SHOWING:
                                     {
@@ -155,6 +164,8 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                             .doc(widget.id)
                                             .delete();
                                       }
+                                      await LocalNotification()
+                                          .cancelNotification(widget.notifId);
                                       break;
                                     }
                                   case FlushbarStatus.DISMISSED:

@@ -1,3 +1,4 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
@@ -14,11 +15,13 @@ class CardTodo extends StatefulWidget {
   final String type;
   final bool status;
   final void check;
+  final int notifId;
   const CardTodo(
       {Key key,
       this.id,
       this.description,
       this.time,
+      this.notifId,
       this.status = false,
       this.type = "default",
       this.check})
@@ -76,6 +79,7 @@ class _CardTodoState extends State<CardTodo> {
                             .doc(widget.id)
                             .update({"status": true});
                         status = false;
+                        LocalNotification().cancelNotification(widget.notifId);
                       });
                     },
                     child: Container(
