@@ -20,7 +20,7 @@ class BottomSheetAdd extends StatefulWidget {
 }
 
 class _BottomSheetAddState extends State<BottomSheetAdd> {
-  TextEditingController controller = TextEditingController();
+  TextEditingController todoController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   int todoLength = 0;
   TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
@@ -39,12 +39,12 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
     time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
     addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
-    controller.addListener(_getTodoValue);
+    todoController.addListener(_getTodoValue);
   }
 
   _getTodoValue() {
     setState(() {
-      todoLength = controller.text.length;
+      todoLength = todoController.text.length;
     });
   }
 
@@ -131,14 +131,14 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
       }
     }
     String message =
-        '${controller.text} at ${selectedTime.hour}:${selectedTime.minute}';
+        '${todoController.text} at ${selectedTime.hour}:${selectedTime.minute}';
     await LocalNotification().setNotification(message, time);
   }
 
   Future<void> _showTimeDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      // barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Notification'),
@@ -149,7 +149,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 child: ListBody(
                   children: <Widget>[
                     ListTile(
-                      contentPadding: EdgeInsets.all(5),
                       title: const Text('30 minutes before'),
                       leading: Radio(
                         activeColor: Colors.black,
@@ -165,7 +164,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     ),
                     ListTile(
                       title: const Text('10 minutes before'),
-                      contentPadding: EdgeInsets.all(5),
                       leading: Radio(
                         activeColor: Colors.black,
                         value: 1,
@@ -180,7 +178,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     ),
                     ListTile(
                       title: const Text('1 hour before'),
-                      contentPadding: EdgeInsets.all(5),
                       leading: Radio(
                         activeColor: Colors.black,
                         value: 2,
@@ -195,7 +192,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     ),
                     ListTile(
                       title: const Text('At the time of event'),
-                      contentPadding: EdgeInsets.all(5),
                       leading: Radio(
                         activeColor: Colors.black,
                         value: 3,
@@ -210,7 +206,6 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     ),
                     ListTile(
                       title: const Text('Custom'),
-                      contentPadding: EdgeInsets.all(5),
                       leading: Radio(
                         activeColor: Colors.black,
                         value: 4,
@@ -355,8 +350,8 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
             height: 12.0,
           ),
           InputText(
-            controller: controller,
-            hint: 'Eg: Read 10 page of Atomic Habitss',
+            controller: todoController,
+            hint: 'e.g. Read 10 page of Atomic Habits',
             focus: true,
           ),
           Padding(
@@ -441,7 +436,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                   onTap: () async {
                     if (todoLength != 0) {
                       await firestoreInstance.collection("todos").add({
-                        "description": controller.text,
+                        "description": todoController.text,
                         "status": false,
                         "timestamp": timestamp + addTime,
                         "type":
@@ -460,7 +455,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                             body: jsonEncode(<String, String>{
                               'username': "${sharedPrefs.username}",
                               'name': "${sharedPrefs.name}",
-                              'text': "${controller.text}",
+                              'text': "${todoController.text}",
                               'photo': "${sharedPrefs.photo}",
                               'type': "setHighlight"
                             }),

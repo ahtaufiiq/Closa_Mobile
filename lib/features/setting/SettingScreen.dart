@@ -19,10 +19,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           .millisecondsSinceEpoch;
 
   DateTime selectedDate = DateTime.now();
+
   signout() async {
     await FirebaseAuth.instance.signOut();
     sharedPrefs.clear();
-    Get.offAllNamed("/setting");
+    Get.offAllNamed("/signup");
   }
 
   popAndSaveSetting() {
@@ -203,7 +204,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () => signout(),
+                onTap: () {
+                  signout();
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Row(

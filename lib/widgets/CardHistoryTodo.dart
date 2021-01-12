@@ -51,30 +51,19 @@ class CardHistoryTodo extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    IntrinsicHeight(
-                      child: Column(
-                        children: [
-                          type == "highlight"
-                              ? Icon(
-                                  Icons.wb_sunny_outlined,
-                                  size: 18,
-                                  color: Color(0xFFFF9500),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                      color: Color(0xFFC9FFD7),
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: Color(0xFF40B063),
-                                          width: 1.3)),
-                                  padding: EdgeInsets.all(2),
-                                  child: CustomIcon(
-                                    type: "check",
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ),
+                    type == "highlight"
+                        ? Container(
+                            margin: EdgeInsets.only(top: 2),
+                            child: CustomIcon(
+                              type: 'highlight',
+                            ),
+                          )
+                        : Container(
+                            margin: EdgeInsets.only(top: 1),
+                            child: CustomIcon(
+                              type: "checklist",
+                            ),
+                          ),
                     SizedBox(
                       width: 8,
                     ),

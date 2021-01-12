@@ -116,6 +116,23 @@ class _TaskScreenState extends State<TaskScreen> {
         .snapshots();
   }
 
+  void optionsBottomSheet(context, data) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16.0),
+            topRight: const Radius.circular(16.0),
+          ),
+        ),
+        builder: (_) => OptionsTodo(
+            id: data["id"],
+            description: data["description"],
+            type: data["type"],
+            time: data["time"]));
+  }
+
   void addTodoBottomSheet(context, {type = "default"}) {
     showModalBottomSheet(
         isScrollControlled: true,
@@ -136,22 +153,6 @@ class _TaskScreenState extends State<TaskScreen> {
       context,
       MaterialPageRoute(builder: (context) => ProfileScreen()),
     );
-  }
-
-  void optionsBottomSheet(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsTodo(
-            id: data.id,
-            description: data['description'],
-            time: data['timestamp']));
   }
 
   @override
@@ -308,6 +309,17 @@ class _TaskScreenState extends State<TaskScreen> {
                                       showBottomEdit(
                                           context, snapshot.data.docs.last);
                                     },
+                                    onLongPress: () {
+                                      var dataTodo = {
+                                        "id": snapshot.data.docs.last.id,
+                                        "description": snapshot
+                                            .data.docs.last['description'],
+                                        "type": "others",
+                                        "time":
+                                            snapshot.data.docs.last['timestamp']
+                                      };
+                                      optionsBottomSheet(context, dataTodo);
+                                    },
                                     child: Container(
                                       margin: EdgeInsets.only(
                                           left: 24.0, right: 24.0),
@@ -372,6 +384,17 @@ class _TaskScreenState extends State<TaskScreen> {
                                             onTap: () {
                                               showBottomEdit(context, data);
                                             },
+                                            onLongPress: () {
+                                              var dataTodo = {
+                                                "id": data.id,
+                                                "description":
+                                                    data['description'],
+                                                "type": "others",
+                                                "time": data['timestamp']
+                                              };
+                                              optionsBottomSheet(
+                                                  context, dataTodo);
+                                            },
                                             child: CardTodo(
                                               id: data.id,
                                               description: data['description'],
@@ -384,6 +407,15 @@ class _TaskScreenState extends State<TaskScreen> {
                                     return GestureDetector(
                                       onTap: () {
                                         showBottomEdit(context, data);
+                                      },
+                                      onLongPress: () {
+                                        var dataTodo = {
+                                          "id": data.id,
+                                          "description": data['description'],
+                                          "type": "others",
+                                          "time": data['timestamp']
+                                        };
+                                        optionsBottomSheet(context, dataTodo);
                                       },
                                       child: CardTodo(
                                         id: data.id,
@@ -406,24 +438,32 @@ class _TaskScreenState extends State<TaskScreen> {
             Positioned(
                 child: GestureDetector(
                   onTap: () {},
-                  child: CustomIcon(
-                    type: "menu",
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: EdgeInsets.all(24),
+                    child: CustomIcon(
+                      type: "menu",
+                    ),
                   ),
                 ),
-                left: 24.0,
-                bottom: 24.0),
+                left: 0,
+                bottom: 0),
             Positioned(
                 child: GestureDetector(
                   // onTap: () => openScreenProfile(context),
                   onTap: () {
                     openScreenProfile(context);
                   },
-                  child: CustomIcon(
-                    type: "profile",
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: EdgeInsets.all(24),
+                    child: CustomIcon(
+                      type: "profile",
+                    ),
                   ),
                 ),
-                right: 24.0,
-                bottom: 24.0),
+                right: 0,
+                bottom: 0),
             Positioned(
               child: GestureDetector(
                 onTap: () => showBottomAdd(context),

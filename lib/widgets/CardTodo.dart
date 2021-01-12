@@ -77,6 +77,15 @@ class _CardTodoState extends State<CardTodo> {
                         status = true;
                       });
                       Flushbar flushbar;
+                      Timer(Duration(milliseconds: 700), () {
+                        firestoreInstance
+                            .collection("todos")
+                            .doc(widget.id)
+                            .update({"status": true});
+                        setState(() {
+                          status = false;
+                        });
+                      });
                       flushbar = Flushbar(
                           margin:
                               EdgeInsets.only(bottom: 107, left: 24, right: 24),
@@ -108,40 +117,38 @@ class _CardTodoState extends State<CardTodo> {
                             case FlushbarStatus.IS_HIDING:
                               {
                                 if (isDelete) {
-                                  Timer(Duration(seconds: 1), () {
-                                    firestoreInstance
-                                        .collection("todos")
-                                        .doc(widget.id)
-                                        .update({"status": true});
-                                    status = false;
-                                    http.post(
-                                      "https://api.closa.me/integrations/done",
-                                      headers: <String, String>{
-                                        'Content-Type':
-                                            'application/json; charset=UTF-8',
-                                        'accessToken':
-                                            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                                      },
-                                      body: jsonEncode(<String, String>{
-                                        'username': "${sharedPrefs.username}",
-                                        'name': "${sharedPrefs.name}",
-                                        'text': "${widget.description}",
-                                        'photo': "${sharedPrefs.photo}",
-                                        'type':
-                                            "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                                      }),
-                                    );
-                                  });
-                                } else {
-                                  setState(() {
-                                    status = false;
-                                  });
-                                  isDelete = true;
+                                  print("---------");
+                                  print("Done");
+                                  http.post(
+                                    "https://api.closa.me/integrations/done",
+                                    headers: <String, String>{
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                      'accessToken':
+                                          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                                    },
+                                    body: jsonEncode(<String, String>{
+                                      'username': "${sharedPrefs.username}",
+                                      'name': "${sharedPrefs.name}",
+                                      'text': "${widget.description}",
+                                      'photo': "${sharedPrefs.photo}",
+                                      'type':
+                                          "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                                    }),
+                                  );
                                 }
                                 break;
                               }
                             case FlushbarStatus.DISMISSED:
                               {
+                                if (!isDelete) {
+                                  print("---------");
+                                  print("Undo");
+                                  firestoreInstance
+                                      .collection("todos")
+                                      .doc(widget.id)
+                                      .update({"status": false});
+                                }
                                 break;
                               }
                           }

@@ -54,21 +54,24 @@ class FormatTime {
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
 
+    print(hour);
     if (hour < 12) {
+      var hourAM = hour == 0 ? 12 : hour;
       if (minute == 0) {
-        return '$hour AM';
+        return '$hourAM AM';
       } else if (minute < 10) {
-        return '$hour.0$minute AM';
+        return '$hourAM.0$minute AM';
       } else {
-        return '$hour.$minute AM';
+        return '$hourAM.$minute AM';
       }
     } else {
+      var hourPM = hour == 12 ? hour : hour - 12;
       if (minute == 0) {
-        return '${hour - 12} PM';
+        return '$hourPM PM';
       } else if (minute < 10) {
-        return '${hour - 12}.0$minute PM';
+        return '$hourPM.0$minute PM';
       } else {
-        return '${hour - 12}.$minute PM';
+        return '$hourPM.$minute PM';
       }
     }
   }

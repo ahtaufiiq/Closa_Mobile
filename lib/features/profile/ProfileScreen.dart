@@ -71,14 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     text: "37",
                     fontWeight: FontWeight.w600,
                   ),
-                  GestureDetector(
-                      onTap: () {
-                        signout();
-                      },
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(fontSize: 16),
-                      )),
                   Expanded(child: Container()),
                   Container(
                     padding:

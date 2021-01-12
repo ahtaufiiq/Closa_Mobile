@@ -74,6 +74,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
     if (picked != null) {
       setState(() {
         selectedDate = picked;
+        timestamp = picked.millisecondsSinceEpoch;
         date = FormatTime.formatDate(selectedDate);
       });
     }
@@ -111,7 +112,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
           ),
           InputText(
             controller: controller,
-            hint: 'e.g. Read 10 page of Atomic Habits',
+            hint: 'Eg: Read 10 page of Atomic Habits',
             focus: true,
           ),
           Padding(
