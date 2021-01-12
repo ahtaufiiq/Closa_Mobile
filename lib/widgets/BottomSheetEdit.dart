@@ -1,3 +1,4 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'CustomIcon.dart';
@@ -13,8 +14,9 @@ class BottomSheetEdit extends StatefulWidget {
   final int time;
   final String id;
   final String type;
+  final int notifId;
   const BottomSheetEdit(
-      {Key key, this.id, this.description, this.time, this.type})
+      {Key key, this.id, this.description, this.time, this.type, this.notifId})
       : super(key: key);
   @override
   _BottomSheetEditState createState() => _BottomSheetEditState(
@@ -42,6 +44,18 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
     addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
   }
 
+  void setNotificationTime() async {
+    DateTime time = DateTime.now();
+
+    time = new DateTime(selectedDate.year, selectedDate.month, selectedDate.day,
+        selectedTime.hour, selectedTime.minute - 10);
+
+    LocalNotification().setNotification(
+        '${controller.text} at ${selectedTime.hour}:${selectedTime.minute}',
+        time,
+        widget.notifId);
+  }
+
   DateTime selectedDate = DateTime.now();
 
   String date = "Today";
@@ -61,6 +75,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
             id: data["id"],
             description: data["description"],
             type: data["type"],
+            notifId: data["notificationId"],
             time: data["time"]));
   }
 

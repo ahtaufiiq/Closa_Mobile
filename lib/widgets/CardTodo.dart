@@ -1,5 +1,5 @@
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'dart:convert';
-
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +18,14 @@ class CardTodo extends StatefulWidget {
   final String type;
   final bool status;
   final void check;
+  final int notifId;
 
   const CardTodo(
       {Key key,
       this.id,
       this.description,
       this.time,
+      this.notifId,
       this.status = false,
       this.type = "default",
       this.check})
@@ -117,8 +119,6 @@ class _CardTodoState extends State<CardTodo> {
                             case FlushbarStatus.IS_HIDING:
                               {
                                 if (isDelete) {
-                                  print("---------");
-                                  print("Done");
                                   http.post(
                                     "https://api.closa.me/integrations/done",
                                     headers: <String, String>{
@@ -136,7 +136,8 @@ class _CardTodoState extends State<CardTodo> {
                                           "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
                                     }),
                                   );
-                                }
+                                  LocalNotification().cancelNotification(widget.notifId);
+                                } 
                                 break;
                               }
                             case FlushbarStatus.DISMISSED:
@@ -148,6 +149,7 @@ class _CardTodoState extends State<CardTodo> {
                                       .collection("todos")
                                       .doc(widget.id)
                                       .update({"status": false});
+                                      
                                 }
                                 break;
                               }
