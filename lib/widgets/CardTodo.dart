@@ -93,6 +93,7 @@ class _CardTodoState extends State<CardTodo> {
                               EdgeInsets.only(bottom: 107, left: 24, right: 24),
                           duration: Duration(seconds: 3),
                           borderRadius: 4.0,
+                          icon: CustomIcon(type: "checkDone"),
                           mainButton: FlatButton(
                             onPressed: () {
                               isDelete = false;
@@ -103,7 +104,7 @@ class _CardTodoState extends State<CardTodo> {
                               style: TextStyle(color: Colors.amber),
                             ),
                           ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                          message: "Delete Todo");
+                          message: "Done");
 
                       flushbar
                         ..onStatusChanged = (FlushbarStatus flushbarStatus) {
@@ -136,8 +137,9 @@ class _CardTodoState extends State<CardTodo> {
                                           "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
                                     }),
                                   );
-                                  LocalNotification().cancelNotification(widget.notifId);
-                                } 
+                                  LocalNotification()
+                                      .cancelNotification(widget.notifId);
+                                }
                                 break;
                               }
                             case FlushbarStatus.DISMISSED:
@@ -149,7 +151,6 @@ class _CardTodoState extends State<CardTodo> {
                                       .collection("todos")
                                       .doc(widget.id)
                                       .update({"status": false});
-                                      
                                 }
                                 break;
                               }

@@ -15,8 +15,16 @@ class BottomSheetEdit extends StatefulWidget {
   final String id;
   final String type;
   final int notifId;
+  final String timeReminder;
+
   const BottomSheetEdit(
-      {Key key, this.id, this.description, this.time, this.type, this.notifId})
+      {Key key,
+      this.id,
+      this.description,
+      this.time,
+      this.type,
+      this.notifId,
+      this.timeReminder})
       : super(key: key);
   @override
   _BottomSheetEditState createState() => _BottomSheetEditState(
@@ -51,7 +59,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
         selectedTime.hour, selectedTime.minute - 10);
 
     LocalNotification().setNotification(
-        '${controller.text} at ${selectedTime.hour}:${selectedTime.minute}',
+        '${controller.text} at ${FormatTime.getInfoTime(selectedTime.hour, selectedTime.minute)}',
         time,
         widget.notifId);
   }
@@ -76,6 +84,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
             description: data["description"],
             type: data["type"],
             notifId: data["notificationId"],
+            timeReminder: data["timeReminder"],
             time: data["time"]));
   }
 
@@ -175,7 +184,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                 SizedBox(
                   width: 10.0,
                 ),
-                TextDescription(text: "10 min"),
+                TextDescription(text: widget.timeReminder),
                 SizedBox(
                   width: 24.0,
                 ),
@@ -186,7 +195,9 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                       "id": widget.id,
                       "description": controller.text,
                       "type": widget.type,
-                      "time": timestamp + addTime
+                      "time": timestamp + addTime,
+                      "timeReminder": widget.timeReminder,
+                      "notifId": widget.notifId
                     };
                     optionsBottomSheet(context, data);
                   },

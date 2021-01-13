@@ -24,7 +24,7 @@ class LocalNotification {
         FlutterLocalNotificationsPlugin();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('launch_background');
+        AndroidInitializationSettings('logo');
     final IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
             onDidReceiveLocalNotification: onDidReceiveLocalNotification);

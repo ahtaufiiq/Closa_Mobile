@@ -6,7 +6,6 @@ import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/Text.dart';
@@ -17,7 +16,6 @@ import '../../helpers/FormatTime.dart';
 import '../../widgets/OptionsTodo.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'dart:math';
 
 class TaskScreen extends StatefulWidget {
@@ -90,6 +88,7 @@ class _TaskScreenState extends State<TaskScreen> {
               type: data["type"],
               description: data['description'],
               time: data['timestamp'],
+              timeReminder: data["timeReminder"],
               notifId: data['notificationId'],
             ));
   }
@@ -131,7 +130,9 @@ class _TaskScreenState extends State<TaskScreen> {
             id: data["id"],
             description: data["description"],
             type: data["type"],
-            time: data["time"]));
+            time: data["time"],
+            timeReminder: data["timeReminder"],
+            notifId: data['notificationId']));
   }
 
   void addTodoBottomSheet(context, {type = "default"}) {
@@ -263,11 +264,6 @@ class _TaskScreenState extends State<TaskScreen> {
                                                 )),
                                           ),
                                         )),
-                                    Divider(
-                                      color: CustomColor.Divider,
-                                      thickness: 1,
-                                      height: 56.0,
-                                    ),
                                   ],
                                 );
                               }
@@ -316,8 +312,10 @@ class _TaskScreenState extends State<TaskScreen> {
                                         "description": snapshot
                                             .data.docs.last['description'],
                                         "type": "others",
-                                        "time":
-                                            snapshot.data.docs.last['timestamp']
+                                        "time": snapshot
+                                            .data.docs.last['timestamp'],
+                                        "timeReminder": snapshot
+                                            .data.docs.last["timeReminder"],
                                       };
                                       optionsBottomSheet(context, dataTodo);
                                     },
@@ -335,18 +333,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                             .data.docs.last['timestamp'],
                                       ),
                                     ),
-                                  ),
-                                  Divider(
-                                    color: CustomColor.Divider,
-                                    thickness: 1,
-                                    height: 56.0,
-                                  ),
+                                  )
                                 ],
                               );
                             }),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 24.0, right: 24.0),
                         child: StreamBuilder(
                             stream: getTodo(),
                             builder: (BuildContext context,
@@ -377,52 +369,73 @@ class _TaskScreenState extends State<TaskScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          TextDescription(
-                                            text: "Others",
-                                            color: CustomColor.Grey,
+                                          Divider(
+                                            color: CustomColor.Divider,
+                                            thickness: 1,
+                                            height: 56.0,
                                           ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              showBottomEdit(context, data);
-                                            },
-                                            onLongPress: () {
-                                              var dataTodo = {
-                                                "id": data.id,
-                                                "description":
-                                                    data['description'],
-                                                "type": "others",
-                                                "time": data['timestamp']
-                                              };
-                                              optionsBottomSheet(
-                                                  context, dataTodo);
-                                            },
-                                            child: CardTodo(
-                                              id: data.id,
-                                              description: data['description'],
-                                              time: data['timestamp'],
-                                              notifId: data['notificationId'],
+                                          Container(
+                                            margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                                            child: TextDescription(
+                                              text: "Others",
+                                              color: CustomColor.Grey,
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                showBottomEdit(context, data);
+                                              },
+                                              onLongPress: () {
+                                                var dataTodo = {
+                                                  "id": data.id,
+                                                  "description":
+                                                      data['description'],
+                                                  "type": "others",
+                                                  "time": data['timestamp'],
+                                                  "notifId":
+                                                      data['notificationId'],
+                                                  "timeReminder":
+                                                      data["timeReminder"],
+                                                };
+                                                optionsBottomSheet(
+                                                    context, dataTodo);
+                                              },
+                                              child: CardTodo(
+                                                id: data.id,
+                                                description: data['description'],
+                                                time: data['timestamp'],
+                                                notifId: data['notificationId'],
+                                              ),
                                             ),
                                           )
                                         ],
                                       );
                                     }
-                                    return GestureDetector(
-                                      onTap: () {
-                                        showBottomEdit(context, data);
-                                      },
-                                      onLongPress: () {
-                                        var dataTodo = {
-                                          "id": data.id,
-                                          "description": data['description'],
-                                          "type": "others",
-                                          "time": data['timestamp']
-                                        };
-                                        optionsBottomSheet(context, dataTodo);
-                                      },
-                                      child: CardTodo(
-                                        id: data.id,
-                                        description: data['description'],
-                                        time: data['timestamp'],
+                                    return Container(
+                                      margin: EdgeInsets.only(
+                                          left: 24.0, right: 24.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showBottomEdit(context, data);
+                                        },
+                                        onLongPress: () {
+                                          var dataTodo = {
+                                            "id": data.id,
+                                            "description": data['description'],
+                                            "type": "others",
+                                            "time": data['timestamp'],
+                                            "notifId": data['notificationId'],
+                                            "timeReminder": data["timeReminder"]
+                                          };
+                                          optionsBottomSheet(context, dataTodo);
+                                        },
+                                        child: CardTodo(
+                                            id: data.id,
+                                            description: data['description'],
+                                            time: data['timestamp'],
+                                            notifId: data['notificationId']),
                                       ),
                                     );
                                   } else {

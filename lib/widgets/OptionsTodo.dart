@@ -14,12 +14,14 @@ class OptionsTodo extends StatefulWidget {
   final String type;
   final String id;
   final int notifId;
+  final String timeReminder;
   const OptionsTodo({
     Key key,
     this.notifId,
     this.id,
     this.description,
     this.time,
+    this.timeReminder,
     this.type,
   }) : super(key: key);
   @override
@@ -82,6 +84,8 @@ class _OptionsTodoState extends State<OptionsTodo> {
                         description: widget.description,
                         type: widget.type,
                         time: widget.time,
+                        notifId: widget.notifId,
+                        timeReminder: widget.timeReminder,
                       ));
             },
           ),

@@ -46,9 +46,15 @@ dependencies:
   #widgets
   flutter_spinkit: ^4.1.2+1
 dev_dependencies:
+  flutter_launcher_icons: ^0.8.1
   flutter_test:
     sdk: flutter
   json_serializable: ^3.3.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -93,6 +99,7 @@ flutter:
     - assets/background/6.jpg
     - assets/icons/alarm-grey.svg
     - assets/icons/checklist.svg
+    - assets/icons/checkDone.svg
     - assets/icons/highlight.svg
     
   fonts:

@@ -28,6 +28,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
   DateTime dateNow = DateTime.now();
   String time;
+  String timeReminder="10 min";
   @override
   void initState() {
     super.initState();
@@ -134,7 +135,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     }
 
     String message =
-        '${todoController.text} at ${selectedTime.hour}:${selectedTime.minute}';
+        '${todoController.text} at ${FormatTime.getInfoTime(selectedTime.hour, selectedTime.minute)}';
     await LocalNotification().setNotification(message, time, id);
 
     List<PendingNotificationRequest> lists =
@@ -416,10 +417,13 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                       Text((() {
                         switch (_groupTimes) {
                           case 0:
+                            timeReminder = "30 min";
                             return "30 min";
                           case 1:
+                            timeReminder = "10 min";
                             return "10 min";
                           case 2:
+                            timeReminder = "1 hour";
                             return "1 hour";
                           case 3:
                             return "at time event";
@@ -432,6 +436,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                             } else if (_groupCustomTimes == 2) {
                               a = "weeks";
                             }
+                            timeReminder = "$_numberCustom $a";
                             return "$_numberCustom $a";
                         }
                       }())),
@@ -450,6 +455,8 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                         "description": todoController.text,
                         "status": false,
                         "timestamp": timestamp + addTime,
+                        "notificationId": DateTime.now().millisecondsSinceEpoch,
+                        "timeReminder":timeReminder,
                         "type":
                             widget.type == "highlight" ? 'highlight' : 'others',
                         "userId": sharedPrefs.idUser

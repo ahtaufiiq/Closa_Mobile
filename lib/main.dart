@@ -23,7 +23,7 @@ void main(
   // DI setup
   runApp(root);
   await fcmConfigure.setupFCM();
-  await localNotification.localNotifInit();
+  localNotification.localNotifInit();
   if (sharedPrefs.notificationStatus == true) {
     await localNotification.setDailyNotification();
   }

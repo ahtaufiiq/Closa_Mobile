@@ -102,7 +102,10 @@ class FormatTime {
     var selectedTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
+    return getInfoTime(hour, minute);
+  }
 
+  static String getInfoTime(hour, minute) {
     // print(minute);
     if (hour < 12) {
       if (minute == 0) {
