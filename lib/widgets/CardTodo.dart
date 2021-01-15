@@ -105,7 +105,7 @@ class _CardTodoState extends State<CardTodo> {
                             ),
                           ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
                           message: "Done");
-
+                      var description = widget.description;
                       flushbar
                         ..onStatusChanged = (FlushbarStatus flushbarStatus) {
                           switch (flushbarStatus) {
@@ -131,7 +131,7 @@ class _CardTodoState extends State<CardTodo> {
                                     body: jsonEncode(<String, String>{
                                       'username': "${sharedPrefs.username}",
                                       'name': "${sharedPrefs.name}",
-                                      'text': "${widget.description}",
+                                      'text': "$description",
                                       'photo': "${sharedPrefs.photo}",
                                       'type':
                                           "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"

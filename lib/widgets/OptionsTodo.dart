@@ -165,7 +165,12 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                     }
                                   case FlushbarStatus.IS_HIDING:
                                     {
-                                      if (isDelete) {
+                                      
+                                      break;
+                                    }
+                                  case FlushbarStatus.DISMISSED:
+                                    {
+                                      if (!isDelete) {
                                         firestoreInstance
                                             .collection("todos")
                                             .doc(widget.id)
@@ -175,10 +180,6 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                       }
                                       await LocalNotification()
                                           .cancelNotification(widget.notifId);
-                                      break;
-                                    }
-                                  case FlushbarStatus.DISMISSED:
-                                    {
                                       break;
                                     }
                                 }

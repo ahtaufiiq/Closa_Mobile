@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:closa_flutter/core/storage/device_token.dart';
-import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
@@ -360,6 +357,7 @@ class _TaskScreenState extends State<TaskScreen> {
                               }
                               sharedPrefs.doneOthers = false;
                               var counter = 0;
+                              print(sharedPrefs.doneHighlight);
                               return Column(
                                 children: snapshot.data.docs.map((data) {
                                   if (data['type'] != 'highlight') {
@@ -369,20 +367,24 @@ class _TaskScreenState extends State<TaskScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Divider(
-                                            color: CustomColor.Divider,
-                                            thickness: 1,
-                                            height: 56.0,
-                                          ),
+                                          !sharedPrefs.doneHighlight
+                                              ? Divider(
+                                                  color: CustomColor.Divider,
+                                                  thickness: 1,
+                                                  height: 56.0,
+                                                )
+                                              : Container(),
                                           Container(
-                                            margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                                            margin: EdgeInsets.only(
+                                                left: 24.0, right: 24.0),
                                             child: TextDescription(
                                               text: "Others",
                                               color: CustomColor.Grey,
                                             ),
                                           ),
                                           Container(
-                                            margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                                            margin: EdgeInsets.only(
+                                                left: 24.0, right: 24.0),
                                             child: GestureDetector(
                                               onTap: () {
                                                 showBottomEdit(context, data);
@@ -404,7 +406,8 @@ class _TaskScreenState extends State<TaskScreen> {
                                               },
                                               child: CardTodo(
                                                 id: data.id,
-                                                description: data['description'],
+                                                description:
+                                                    data['description'],
                                                 time: data['timestamp'],
                                                 notifId: data['notificationId'],
                                               ),

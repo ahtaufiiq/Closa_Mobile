@@ -237,17 +237,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 24.0,
             ),
             Container(
-              child: TextDescription(text: "224 Completed Task"),
-              margin: EdgeInsets.only(left: 24.0),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            Divider(
-              thickness: 8.0,
-              color: Color(0xFFEFEFEF),
-            ),
-            Container(
               child: StreamBuilder(
                   stream: getTodo(),
                   builder: (BuildContext context,
@@ -264,8 +253,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                     var date = "";
                     var index = 0;
-                    // snapshot.data.docs.sort(
-                    //     (a, b) => a['timestamp'].compareTo(b["timestamp"]));
 
                     return Container(
                       margin: EdgeInsets.only(bottom: 24),
@@ -284,13 +271,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             date = FormatTime.getDate(data['timestamp']);
                             return Column(
                               children: [
-                                index != 1
-                                    ? Container(
-                                        margin: EdgeInsets.only(top: 12),
-                                        child: Divider(
-                                          thickness: 1,
-                                          color: Color(0xFFE5E5E5),
-                                        ),
+                                index == 1
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            child: Row(
+                                              children: [
+                                                TextDescription(
+                                                  text:
+                                                      "${snapshot.data.docs.length}",
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                TextDescription(
+                                                    text: " Completed Task"),
+                                              ],
+                                            ),
+                                            margin: EdgeInsets.only(left: 24.0),
+                                          ),
+                                          SizedBox(
+                                            height: 24.0,
+                                          ),
+                                          Divider(
+                                            thickness: 8.0,
+                                            color: Color(0xFFEFEFEF),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 12),
+                                            child: Divider(
+                                              thickness: 1,
+                                              color: Color(0xFFE5E5E5),
+                                            ),
+                                          ),
+                                        ],
                                       )
                                     : Container(),
                                 CardHistoryTodo(
