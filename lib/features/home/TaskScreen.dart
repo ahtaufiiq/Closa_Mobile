@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import '../../widgets/Text.dart';
 import '../../widgets/CardTodo.dart';
@@ -43,6 +45,13 @@ class _TaskScreenState extends State<TaskScreen> {
       sharedPrefs.surprisingImage = "$random.jpg";
     }
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (sharedPrefs.doneHighlight && sharedPrefs.doneOthers) {
+    //     Timer(Duration(seconds: 3), () {
+    //       Get.offAllNamed("/task2");
+    //     });
+    //   }
+    // });
   }
 
   void saveValue(key, value) async {
@@ -114,6 +123,7 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   void optionsBottomSheet(context, data) {
+    print(data);
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -129,7 +139,7 @@ class _TaskScreenState extends State<TaskScreen> {
             type: data["type"],
             time: data["time"],
             timeReminder: data["timeReminder"],
-            notifId: data['notificationId']));
+            notifId: data['notifId']));
   }
 
   void addTodoBottomSheet(context, {type = "default"}) {
@@ -193,33 +203,11 @@ class _TaskScreenState extends State<TaskScreen> {
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text("loading"),
-                                );
+                                return Container();
                               }
                               if (snapshot.data.docs.length == 0) {
                                 return Column(
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                          left: 24.0, right: 24.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.wb_sunny_outlined,
-                                            color: Colors.grey,
-                                            size: 16.0,
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 4.0),
-                                          ),
-                                          TextDescription(
-                                            text: "Highlight",
-                                            color: CustomColor.Grey,
-                                          )
-                                        ],
-                                      ),
-                                    ),
                                     Container(
                                         margin: EdgeInsets.only(
                                             left: 24.0, right: 24.0),
@@ -228,16 +216,25 @@ class _TaskScreenState extends State<TaskScreen> {
                                             addTodoBottomSheet(context,
                                                 type: "highlight");
                                           },
-                                          child: Card(
+                                          child: Container(
                                             margin: EdgeInsets.only(
                                                 top: 16.0,
                                                 left: 2.0,
                                                 right: 2.0),
-                                            shape: RoundedRectangleBorder(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
                                               borderRadius:
                                                   BorderRadius.circular(8.0),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Color(0xFF000000)
+                                                      .withOpacity(0.12),
+                                                  blurRadius: 6,
+                                                  offset: Offset(0,
+                                                      2), // changes position of shadow
+                                                ),
+                                              ],
                                             ),
-                                            elevation: 4.0,
                                             child: Padding(
                                                 padding: EdgeInsets.only(
                                                     top: 24.0,
@@ -246,9 +243,8 @@ class _TaskScreenState extends State<TaskScreen> {
                                                     right: 24.0),
                                                 child: Row(
                                                   children: [
-                                                    Icon(
-                                                      Icons.wb_sunny_outlined,
-                                                      color: Color(0xFFFF9500),
+                                                    CustomIcon(
+                                                      type: 'highlight',
                                                     ),
                                                     SizedBox(
                                                       width: 12.0,
@@ -256,7 +252,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                                     Expanded(
                                                         child: TextDescription(
                                                             text:
-                                                                "Set Highlight Today")),
+                                                                "Set Today’s Highlight")),
                                                   ],
                                                 )),
                                           ),
@@ -269,7 +265,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneHighlight = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 1), () {
+                                  Timer(Duration(seconds: 3), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -283,10 +279,9 @@ class _TaskScreenState extends State<TaskScreen> {
                                         left: 24.0, right: 24.0),
                                     child: Row(
                                       children: <Widget>[
-                                        Icon(
-                                          Icons.wb_sunny_outlined,
-                                          color: Colors.grey,
-                                          size: 16.0,
+                                        CustomIcon(
+                                          type: "highlight",
+                                          color: Color(0xFF888888),
                                         ),
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
@@ -308,7 +303,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                         "id": snapshot.data.docs.last.id,
                                         "description": snapshot
                                             .data.docs.last['description'],
-                                        "type": "others",
+                                        "type": "highlight",
                                         "time": snapshot
                                             .data.docs.last['timestamp'],
                                         "timeReminder": snapshot
@@ -341,15 +336,13 @@ class _TaskScreenState extends State<TaskScreen> {
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text("loading"),
-                                );
+                                return Container();
                               }
                               if (snapshot.data.docs.length == 0) {
                                 sharedPrefs.doneOthers = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 1), () {
+                                  Timer(Duration(seconds: 3), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -357,7 +350,6 @@ class _TaskScreenState extends State<TaskScreen> {
                               }
                               sharedPrefs.doneOthers = false;
                               var counter = 0;
-                              print(sharedPrefs.doneHighlight);
                               return Column(
                                 children: snapshot.data.docs.map((data) {
                                   if (data['type'] != 'highlight') {
@@ -455,7 +447,12 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
             Positioned(
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MenuScreen()),
+                    );
+                  },
                   child: Container(
                     color: Colors.transparent,
                     padding: EdgeInsets.all(24),

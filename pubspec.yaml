@@ -101,6 +101,8 @@ flutter:
     - assets/icons/checklist.svg
     - assets/icons/checkDone.svg
     - assets/icons/highlight.svg
+    - assets/icons/emptyChecklist.svg
+    - assets/icons/fillChecklist.svg
     
   fonts:
     - family: Inter

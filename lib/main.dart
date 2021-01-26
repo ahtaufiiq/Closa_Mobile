@@ -84,13 +84,16 @@ class MyApp extends StatelessWidget {
                           sharedPrefs.dateNow == FormatTime.getToday()
                       ? TaskScreenCopy()
                       : TaskScreen(),
-              // child: SignUpUsername(),
+              // child: ProfileScreen(),
             ),
           );
         }
         return MaterialApp(
-          home: Center(
-            child: Text("Loading"),
+          home: Scaffold(
+            backgroundColor: Color(0xFFFAFAFB),
+            body: SafeArea(
+              child: Container(),
+            ),
           ),
         );
       },

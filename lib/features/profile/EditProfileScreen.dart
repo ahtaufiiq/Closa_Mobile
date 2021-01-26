@@ -7,6 +7,7 @@ import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -76,6 +77,7 @@ class _EditProfileState extends State<EditProfile> {
         usernameLength <= 16 &&
         nameLength <= 20 &&
         aboutLength <= 180 &&
+        !isUsernameTaken &&
         !isLoading;
   }
 
@@ -244,6 +246,11 @@ class _EditProfileState extends State<EditProfile> {
                       child: TextField(
                           controller: usernameController,
                           onChanged: _onChangeHandler,
+                          inputFormatters: [
+                            LowerCaseTextFormatter(),
+                            FilteringTextInputFormatter.allow(
+                                RegExp("[a-z0-9]")),
+                          ],
                           style: TextStyle(
                               fontFamily: "Inter",
                               fontSize: 16.0,
@@ -463,6 +470,17 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class LowerCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text?.toLowerCase(),
+      selection: newValue.selection,
     );
   }
 }

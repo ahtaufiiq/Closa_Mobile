@@ -1,4 +1,5 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
+import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -24,6 +25,7 @@ class OptionsTodo extends StatefulWidget {
     this.timeReminder,
     this.type,
   }) : super(key: key);
+
   @override
   _OptionsTodoState createState() => _OptionsTodoState(description, time);
 }
@@ -42,6 +44,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.notifId);
     return SingleChildScrollView(
         child: Container(
       padding:
@@ -132,6 +135,10 @@ class _OptionsTodoState extends State<OptionsTodo> {
                           child: new Text("Yes"),
                           onPressed: () {
                             Navigator.pop(dialogContext);
+                            firestoreInstance
+                                .collection("todos")
+                                .doc(widget.id)
+                                .delete();
                             bool isDelete = true;
                             Flushbar flushbar;
                             flushbar = Flushbar(
@@ -150,7 +157,17 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                   ),
                                 ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
                                 message: "Delete Todo");
-
+                            var notifId = widget.notifId;
+                            var id = widget.id;
+                            var todo = {
+                              "description": widget.description,
+                              "status": false,
+                              "timestamp": widget.time,
+                              "notificationId": widget.notifId,
+                              "timeReminder": widget.timeReminder,
+                              "type": widget.type,
+                              "userId": sharedPrefs.idUser
+                            };
                             flushbar
                               ..onStatusChanged =
                                   (FlushbarStatus status) async {
@@ -165,21 +182,20 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                     }
                                   case FlushbarStatus.IS_HIDING:
                                     {
-                                      
+                                      if (isDelete) {
+                                        await LocalNotification()
+                                            .cancelNotification(notifId);
+                                      }
                                       break;
                                     }
                                   case FlushbarStatus.DISMISSED:
                                     {
                                       if (!isDelete) {
-                                        firestoreInstance
+                                        await firestoreInstance
                                             .collection("todos")
-                                            .doc(widget.id)
-                                            .delete();
-                                        FlutterLocalNotificationsPlugin()
-                                            .cancel(widget.time);
+                                            .add(todo);
                                       }
-                                      await LocalNotification()
-                                          .cancelNotification(widget.notifId);
+
                                       break;
                                     }
                                 }
