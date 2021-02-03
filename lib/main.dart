@@ -11,6 +11,7 @@ import 'package:get/route_manager.dart';
 import './helpers/CustomScrolling.dart';
 import 'package:firebase_core/firebase_core.dart';
 import './helpers/FormatTime.dart';
+import 'features/backlog/BacklogScreen.dart';
 import 'features/home/TaskScreen.dart';
 import 'helpers/sharedPref.dart';
 
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
                           sharedPrefs.dateNow == FormatTime.getToday()
                       ? TaskScreenCopy()
                       : TaskScreen(),
-              // child: ProfileScreen(),
+              // child: BacklogScreen(),
             ),
           );
         }

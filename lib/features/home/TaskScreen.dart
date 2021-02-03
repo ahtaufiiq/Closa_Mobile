@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import '../../widgets/Text.dart';
 import '../../widgets/CardTodo.dart';
@@ -176,7 +176,7 @@ class _TaskScreenState extends State<TaskScreen> {
               top: 0,
               left: 0,
               right: 0,
-              bottom: 60.0,
+              bottom: 0,
               child: SingleChildScrollView(
                 child: Container(
                   child: Column(
@@ -350,93 +350,100 @@ class _TaskScreenState extends State<TaskScreen> {
                               }
                               sharedPrefs.doneOthers = false;
                               var counter = 0;
-                              return Column(
-                                children: snapshot.data.docs.map((data) {
-                                  if (data['type'] != 'highlight') {
-                                    counter++;
-                                    if (counter == 1) {
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          !sharedPrefs.doneHighlight
-                                              ? Divider(
-                                                  color: CustomColor.Divider,
-                                                  thickness: 1,
-                                                  height: 56.0,
-                                                )
-                                              : Container(),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 24.0, right: 24.0),
-                                            child: TextDescription(
-                                              text: "Others",
-                                              color: CustomColor.Grey,
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 24.0, right: 24.0),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                showBottomEdit(context, data);
-                                              },
-                                              onLongPress: () {
-                                                var dataTodo = {
-                                                  "id": data.id,
-                                                  "description":
-                                                      data['description'],
-                                                  "type": "others",
-                                                  "time": data['timestamp'],
-                                                  "notifId":
-                                                      data['notificationId'],
-                                                  "timeReminder":
-                                                      data["timeReminder"],
-                                                };
-                                                optionsBottomSheet(
-                                                    context, dataTodo);
-                                              },
-                                              child: CardTodo(
-                                                id: data.id,
-                                                description:
-                                                    data['description'],
-                                                time: data['timestamp'],
-                                                notifId: data['notificationId'],
+                              return Container(
+                                margin: EdgeInsets.only(bottom: 100),
+                                child: Column(
+                                  children: snapshot.data.docs.map((data) {
+                                    if (data['type'] != 'highlight') {
+                                      counter++;
+                                      if (counter == 1) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            !sharedPrefs.doneHighlight
+                                                ? Divider(
+                                                    color: CustomColor.Divider,
+                                                    thickness: 1,
+                                                    height: 56.0,
+                                                  )
+                                                : Container(),
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 24.0, right: 24.0),
+                                              child: TextDescription(
+                                                text: "Others",
+                                                color: CustomColor.Grey,
                                               ),
                                             ),
-                                          )
-                                        ],
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 24.0, right: 24.0),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  showBottomEdit(context, data);
+                                                },
+                                                onLongPress: () {
+                                                  var dataTodo = {
+                                                    "id": data.id,
+                                                    "description":
+                                                        data['description'],
+                                                    "type": "others",
+                                                    "time": data['timestamp'],
+                                                    "notifId":
+                                                        data['notificationId'],
+                                                    "timeReminder":
+                                                        data["timeReminder"],
+                                                  };
+                                                  optionsBottomSheet(
+                                                      context, dataTodo);
+                                                },
+                                                child: CardTodo(
+                                                  id: data.id,
+                                                  description:
+                                                      data['description'],
+                                                  time: data['timestamp'],
+                                                  notifId:
+                                                      data['notificationId'],
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        );
+                                      }
+                                      return Container(
+                                        margin: EdgeInsets.only(
+                                            left: 24.0, right: 24.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showBottomEdit(context, data);
+                                          },
+                                          onLongPress: () {
+                                            var dataTodo = {
+                                              "id": data.id,
+                                              "description":
+                                                  data['description'],
+                                              "type": "others",
+                                              "time": data['timestamp'],
+                                              "notifId": data['notificationId'],
+                                              "timeReminder":
+                                                  data["timeReminder"]
+                                            };
+                                            optionsBottomSheet(
+                                                context, dataTodo);
+                                          },
+                                          child: CardTodo(
+                                              id: data.id,
+                                              description: data['description'],
+                                              time: data['timestamp'],
+                                              notifId: data['notificationId']),
+                                        ),
                                       );
+                                    } else {
+                                      return Container();
                                     }
-                                    return Container(
-                                      margin: EdgeInsets.only(
-                                          left: 24.0, right: 24.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          showBottomEdit(context, data);
-                                        },
-                                        onLongPress: () {
-                                          var dataTodo = {
-                                            "id": data.id,
-                                            "description": data['description'],
-                                            "type": "others",
-                                            "time": data['timestamp'],
-                                            "notifId": data['notificationId'],
-                                            "timeReminder": data["timeReminder"]
-                                          };
-                                          optionsBottomSheet(context, dataTodo);
-                                        },
-                                        child: CardTodo(
-                                            id: data.id,
-                                            description: data['description'],
-                                            time: data['timestamp'],
-                                            notifId: data['notificationId']),
-                                      ),
-                                    );
-                                  } else {
-                                    return Container();
-                                  }
-                                }).toList(),
+                                  }).toList(),
+                                ),
                               );
                             }),
                       )
@@ -446,39 +453,49 @@ class _TaskScreenState extends State<TaskScreen> {
               ),
             ),
             Positioned(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MenuScreen()),
-                    );
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: EdgeInsets.all(24),
-                    child: CustomIcon(
-                      type: "menu",
+              child: Container(
+                color: Color(0xFFFAFAFB),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BacklogScreen()),
+                        );
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        padding: EdgeInsets.all(24),
+                        child: CustomIcon(
+                          type: "menu",
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                left: 0,
-                bottom: 0),
-            Positioned(
-                child: GestureDetector(
-                  // onTap: () => openScreenProfile(context),
-                  onTap: () {
-                    openScreenProfile(context);
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: EdgeInsets.all(24),
-                    child: CustomIcon(
-                      type: "profile",
+                    Expanded(
+                      child: Container(),
                     ),
-                  ),
+                    GestureDetector(
+                      // onTap: () => openScreenProfile(context),
+                      onTap: () {
+                        openScreenProfile(context);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        padding: EdgeInsets.all(24),
+                        child: CustomIcon(
+                          type: "profile",
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-                right: 0,
-                bottom: 0),
+              ),
+              left: 0,
+              bottom: 0,
+              right: 0,
+            ),
             Positioned(
               child: GestureDetector(
                 onTap: () => showBottomAdd(context),

@@ -89,6 +89,14 @@ class FormatTime {
     return now.millisecondsSinceEpoch;
   }
 
+  static int getTimestampYesterday() {
+    DateTime date = DateTime.now();
+    DateTime tomorrow =
+        DateTime(date.year, date.month, date.day).subtract(Duration(days: 1));
+
+    return tomorrow.millisecondsSinceEpoch;
+  }
+
   static int getTimestampTomorrow() {
     DateTime date = DateTime.now();
     DateTime tomorrow =
@@ -119,7 +127,7 @@ class FormatTime {
 
   static String getInfoTime(hour, minute) {
     // print(minute);
-    
+
     if (hour < 12) {
       var hourAM = hour == 0 ? 12 : hour;
       if (minute == 0) {

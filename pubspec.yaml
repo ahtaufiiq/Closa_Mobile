@@ -103,6 +103,8 @@ flutter:
     - assets/icons/highlight.svg
     - assets/icons/emptyChecklist.svg
     - assets/icons/fillChecklist.svg
+    - assets/icons/selectedRadio.svg
+    - assets/icons/emptyRadio.svg
     
   fonts:
     - family: Inter
