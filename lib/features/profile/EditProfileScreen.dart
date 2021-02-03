@@ -125,6 +125,49 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  void updateProfile() {
+    if (validation()) {
+      final firestoreInstance = FirebaseFirestore.instance;
+      sharedPrefs.username = usernameController.text;
+      sharedPrefs.name = nameController.text;
+      sharedPrefs.about = aboutController.text;
+      sharedPrefs.photo = urlPhoto;
+      firestoreInstance.collection("users").doc(sharedPrefs.idUser).update({
+        "name": nameController.text,
+        "photo": urlPhoto,
+        "username": usernameController.text,
+        "about": aboutController.text
+      }).then((value) {
+        Get.back();
+      });
+    }
+  }
+
+  void uploadPhoto() {
+    if (_image != null) {
+      setState(() {
+        isLoading = true;
+      });
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String imgName =
+          DateTime.now().millisecondsSinceEpoch.toString() + ".png";
+      Reference reference = storage.ref().child("profileImages/$imgName");
+      UploadTask uploadTask = reference.putFile(_image);
+
+      uploadTask.whenComplete(() async {
+        try {
+          urlPhoto = await reference.getDownloadURL();
+          print("berhasil upload");
+        } catch (onError) {
+          print("Error");
+        }
+        setState(() {
+          isLoading = false;
+        });
+      });
+    }
+  }
+
   void _showPicker(context) {
     showModalBottomSheet(
         context: context,
@@ -182,26 +225,7 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      if (validation()) {
-                        final firestoreInstance = FirebaseFirestore.instance;
-                        sharedPrefs.username = usernameController.text;
-                        sharedPrefs.name = nameController.text;
-                        sharedPrefs.about = aboutController.text;
-                        sharedPrefs.photo = urlPhoto;
-                        firestoreInstance
-                            .collection("users")
-                            .doc(sharedPrefs.idUser)
-                            .update({
-                          "name": nameController.text,
-                          "photo": urlPhoto,
-                          "username": usernameController.text,
-                          "about": aboutController.text
-                        }).then((value) {
-                          Get.back();
-                        });
-                      }
-                    },
+                    onTap: () => updateProfile(),
                     child: Container(
                         padding: EdgeInsets.only(
                             left: 22, right: 22, top: 8, bottom: 8),
@@ -335,34 +359,7 @@ class _EditProfileState extends State<EditProfile> {
                           height: 12,
                         ),
                         GestureDetector(
-                          onTap: () {
-                            if (_image != null) {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              FirebaseStorage storage =
-                                  FirebaseStorage.instance;
-                              String imgName = DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString() +
-                                  ".png";
-                              Reference reference =
-                                  storage.ref().child("profileImages/$imgName");
-                              UploadTask uploadTask = reference.putFile(_image);
-
-                              uploadTask.whenComplete(() async {
-                                try {
-                                  urlPhoto = await reference.getDownloadURL();
-                                  print("berhasil upload");
-                                } catch (onError) {
-                                  print("Error");
-                                }
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              });
-                            }
-                          },
+                          onTap: () => uploadPhoto(),
                           child: isLoading
                               ? Container(
                                   child: CircularProgressIndicator(),

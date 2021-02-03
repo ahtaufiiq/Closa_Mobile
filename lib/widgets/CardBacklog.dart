@@ -96,7 +96,7 @@ class _CardBacklogState extends State<CardBacklog> {
                             setState(() {
                               status = true;
                             });
-                            widget.addTodo(widget.id);
+                            widget.addTodo(widget.id,widget.time);
                           },
                           child: CustomIcon(
                             type: 'emptyRadio',

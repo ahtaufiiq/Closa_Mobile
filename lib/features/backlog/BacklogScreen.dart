@@ -15,19 +15,23 @@ class BacklogScreen extends StatefulWidget {
 }
 
 class _BacklogScreenState extends State<BacklogScreen> {
-  void addTodo(id) {
+  void addTodo(id, timestamp) {
     setState(() {
-      todos.add(id);
+      todos[id] = timestamp;
     });
   }
 
   void setToday() {
+    setState(() {
+      clickedStart = true;
+    });
     final firestoreInstance = FirebaseFirestore.instance;
-    todos.forEach((element) {
-      firestoreInstance.collection("todos").doc(element).update({
-        "timestamp": DateTime.now().millisecondsSinceEpoch,
+    todos.forEach((key, value) {
+      firestoreInstance.collection("todos").doc(key).update({
+        "timestamp": FormatTime.setToday(value),
       });
     });
+
     Get.to(TaskScreen());
   }
 
@@ -37,7 +41,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
     });
   }
 
-  var todos = <String>{};
+  var todos = new Map();
   Stream<QuerySnapshot> getTodo() {
     return FirebaseFirestore.instance
         .collection('todos')
@@ -47,6 +51,8 @@ class _BacklogScreenState extends State<BacklogScreen> {
         .where('status', isEqualTo: false)
         .snapshots();
   }
+
+  bool clickedStart = false;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +217,9 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                         left: 20,
                                         right: 20),
                                     decoration: BoxDecoration(
-                                        color: Color(0xFF222222),
+                                        color: clickedStart
+                                            ? Color(0xFF4D4D4D)
+                                            : Color(0xFF222222),
                                         borderRadius:
                                             BorderRadius.circular(20)),
                                     child: TextDescription(

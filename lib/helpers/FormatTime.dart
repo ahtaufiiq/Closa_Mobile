@@ -89,6 +89,15 @@ class FormatTime {
     return now.millisecondsSinceEpoch;
   }
 
+  static int setToday(timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    DateTime now = DateTime.now();
+
+    DateTime format =
+        DateTime(now.year, now.month, now.day, date.hour, date.minute);
+    return format.millisecondsSinceEpoch;
+  }
+
   static int getTimestampYesterday() {
     DateTime date = DateTime.now();
     DateTime tomorrow =
