@@ -76,6 +76,11 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
     }
     todoLength = description.length;
     controller.addListener(_getTodoValue);
+    date = DateTime.now().day ==
+            DateTime.fromMillisecondsSinceEpoch(widget.time).day
+        ? 'Today'
+        : FormatTime.formatDate(
+            DateTime.fromMillisecondsSinceEpoch(widget.time));
   }
 
   _getTodoValue() {
@@ -109,7 +114,9 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
   }
 
   void isDateTomorrow() {
-    if ((timestamp + addTime) > FormatTime.getTimestampTomorrow()) {
+    if ((timestamp + addTime) > FormatTime.getTimestampTomorrow() &&
+        DateTime.now().day ==
+            DateTime.fromMillisecondsSinceEpoch(widget.time).day) {
       Flushbar flushbar;
       flushbar = Flushbar(
           margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),

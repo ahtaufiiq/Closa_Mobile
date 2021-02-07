@@ -4,9 +4,11 @@ import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CardBacklog.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
+import 'package:closa_flutter/widgets/OptionsBacklog.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class BacklogScreen extends StatefulWidget {
@@ -15,6 +17,26 @@ class BacklogScreen extends StatefulWidget {
 }
 
 class _BacklogScreenState extends State<BacklogScreen> {
+  void optionsBottomSheet(context, data) {
+    print(data);
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16.0),
+            topRight: const Radius.circular(16.0),
+          ),
+        ),
+        builder: (_) => OptionsBacklog(
+            id: data["id"],
+            description: data["description"],
+            type: data["type"],
+            time: data["time"],
+            timeReminder: data["timeReminder"],
+            notifId: data['notifId']));
+  }
+
   void addTodo(id, timestamp) {
     setState(() {
       todos[id] = timestamp;
@@ -31,6 +53,32 @@ class _BacklogScreenState extends State<BacklogScreen> {
         "timestamp": FormatTime.setToday(value),
       });
     });
+    FToast fToast = FToast();
+    fToast.init(context);
+    fToast.showToast(
+        child: Container(
+          decoration: BoxDecoration(
+              color: Color(0xFF888888),
+              borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8.0, bottom: 8, left: 22, right: 22),
+            child: TextSmall(
+              text:
+                  "Added ${todos.length} ${todos.length == 1 ? 'Task' : 'Tasks'}",
+              color: Colors.white,
+            ),
+          ),
+        ),
+        toastDuration: Duration(seconds: 3),
+        positionedToastBuilder: (context, child) {
+          return Positioned(
+            child: child,
+            bottom: 96.0,
+            left: 0,
+            right: 0,
+          );
+        });
 
     Get.offAll(TaskScreen());
   }
@@ -148,26 +196,58 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                       if (date ==
                                           FormatTime.getDate(
                                               data['timestamp'])) {
-                                        return CardBacklog(
-                                          deleteTodo: deleteTodo,
-                                          addTodo: addTodo,
-                                          id: data.id,
-                                          isFirst: false,
-                                          type: data['type'],
-                                          description: data['description'],
-                                          time: data['timestamp'],
+                                        return GestureDetector(
+                                          onLongPress: () {
+                                            var dataTodo = {
+                                              "id": data.id,
+                                              "description":
+                                                  data['description'],
+                                              "type": "others",
+                                              "time": data['timestamp'],
+                                              "notifId": data['notificationId'],
+                                              "timeReminder":
+                                                  data["timeReminder"],
+                                            };
+                                            optionsBottomSheet(
+                                                context, dataTodo);
+                                          },
+                                          child: CardBacklog(
+                                            deleteTodo: deleteTodo,
+                                            addTodo: addTodo,
+                                            id: data.id,
+                                            isFirst: false,
+                                            type: data['type'],
+                                            description: data['description'],
+                                            time: data['timestamp'],
+                                          ),
                                         );
                                       } else {
                                         date = FormatTime.getDate(
                                             data['timestamp']);
-                                        return CardBacklog(
-                                          deleteTodo: deleteTodo,
-                                          addTodo: addTodo,
-                                          id: data.id,
-                                          isFirst: true,
-                                          type: data['type'],
-                                          description: data['description'],
-                                          time: data['timestamp'],
+                                        return GestureDetector(
+                                          onLongPress: () {
+                                            var dataTodo = {
+                                              "id": data.id,
+                                              "description":
+                                                  data['description'],
+                                              "type": "others",
+                                              "time": data['timestamp'],
+                                              "notifId": data['notificationId'],
+                                              "timeReminder":
+                                                  data["timeReminder"],
+                                            };
+                                            optionsBottomSheet(
+                                                context, dataTodo);
+                                          },
+                                          child: CardBacklog(
+                                            deleteTodo: deleteTodo,
+                                            addTodo: addTodo,
+                                            id: data.id,
+                                            isFirst: true,
+                                            type: data['type'],
+                                            description: data['description'],
+                                            time: data['timestamp'],
+                                          ),
                                         );
                                       }
                                     }
