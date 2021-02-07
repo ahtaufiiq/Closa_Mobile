@@ -32,7 +32,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
       });
     });
 
-    Get.to(TaskScreen());
+    Get.offAll(TaskScreen());
   }
 
   void deleteTodo(id) {

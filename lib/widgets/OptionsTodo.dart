@@ -1,8 +1,11 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
+import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
+import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import './BottomSheetEdit.dart';
 import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
@@ -90,6 +93,75 @@ class _OptionsTodoState extends State<OptionsTodo> {
                         notifId: widget.notifId,
                         timeReminder: widget.timeReminder,
                       ));
+            },
+          ),
+          SizedBox(
+            height: 24.0,
+          ),
+          GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: Row(
+                children: [
+                  CustomIcon(
+                    type: "arrowUpRight",
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  TextDescription(
+                    text: "Tomorrow",
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              firestoreInstance.collection("todos").doc(widget.id).update({
+                "timestamp": FormatTime.setTomorrow(widget.time),
+              });
+
+              Flushbar flushbar;
+              flushbar = Flushbar(
+                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
+                  duration: Duration(seconds: 3),
+                  borderRadius: 4.0,
+                  icon: CustomIcon(
+                    type: "arrowUpRight",
+                  ),
+                  mainButton: FlatButton(
+                    onPressed: () {
+                      Get.to(BacklogScreen());
+                    },
+                    child: Text(
+                      "View",
+                      style: TextStyle(color: Colors.amber),
+                    ),
+                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                  message: "Moved to Backlog");
+
+              flushbar
+                ..onStatusChanged = (FlushbarStatus status) async {
+                  switch (status) {
+                    case FlushbarStatus.SHOWING:
+                      {
+                        break;
+                      }
+                    case FlushbarStatus.IS_APPEARING:
+                      {
+                        break;
+                      }
+                    case FlushbarStatus.IS_HIDING:
+                      {
+                        break;
+                      }
+                    case FlushbarStatus.DISMISSED:
+                      {
+                        break;
+                      }
+                  }
+                }
+                ..show(context);
             },
           ),
           SizedBox(

@@ -98,6 +98,12 @@ class FormatTime {
     return format.millisecondsSinceEpoch;
   }
 
+  static int setTomorrow(timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+
+    return date.add(Duration(days: 1)).millisecondsSinceEpoch;
+  }
+
   static int getTimestampYesterday() {
     DateTime date = DateTime.now();
     DateTime tomorrow =

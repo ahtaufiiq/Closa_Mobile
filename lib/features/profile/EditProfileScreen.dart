@@ -217,7 +217,7 @@ class _EditProfileState extends State<EditProfile> {
                       Navigator.pop(context);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 24.0),
+                    padding: const EdgeInsets.only(left: 24.0),
                       child: TextDescription(
                         text: "Cancel",
                         fontWeight: FontWeight.w600,
