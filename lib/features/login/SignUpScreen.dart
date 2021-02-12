@@ -209,6 +209,7 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
+                                          Navigator.pop(context);
                                           action
                                               .signInWithGoogle()
                                               .then((result) {
