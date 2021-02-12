@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
@@ -177,7 +178,8 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MenuScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => BacklogScreen()),
                       );
                     },
                     child: CustomIcon(type: "menu", color: Colors.white),

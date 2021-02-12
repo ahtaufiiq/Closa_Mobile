@@ -75,7 +75,7 @@ class _EditProfileState extends State<EditProfile> {
         nameLength != 0 &&
         aboutLength != 0 &&
         usernameLength <= 16 &&
-        nameLength <= 20 &&
+        nameLength <= 32 &&
         aboutLength <= 180 &&
         !isUsernameTaken &&
         !isLoading;
@@ -217,7 +217,7 @@ class _EditProfileState extends State<EditProfile> {
                       Navigator.pop(context);
                     },
                     child: Padding(
-                    padding: const EdgeInsets.only(left: 24.0),
+                      padding: const EdgeInsets.only(left: 24.0),
                       child: TextDescription(
                         text: "Cancel",
                         fontWeight: FontWeight.w600,
@@ -414,8 +414,8 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     )),
                     TextSmall(
-                      text: '${20 - nameLength}',
-                      color: nameLength <= 20 ? null : Color(0xFFFF2D55),
+                      text: '${32 - nameLength}',
+                      color: nameLength <= 32 ? null : Color(0xFFFF2D55),
                     )
                   ],
                 ),
