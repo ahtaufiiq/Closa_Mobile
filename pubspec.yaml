@@ -108,6 +108,8 @@ flutter:
     - assets/icons/emptyRadio.svg
     - assets/icons/iconDone.svg
     - assets/icons/arrowUpRight.svg
+    - assets/icons/emptyBacklog.svg
+
     
   fonts:
     - family: Inter

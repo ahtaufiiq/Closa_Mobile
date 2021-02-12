@@ -337,7 +337,9 @@ class _TaskScreenState extends State<TaskScreen> {
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (!snapshot.hasData) {
-                                return Container();
+                                return Container(
+                                  child: Text(''),
+                                );
                               }
                               if (snapshot.data.docs.length == 0) {
                                 sharedPrefs.doneOthers = true;

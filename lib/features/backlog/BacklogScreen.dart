@@ -105,7 +105,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFFFAFAFB),
+        backgroundColor: Color(0xFFF6F8FA),
         body: SafeArea(
           child: Stack(
             children: [
@@ -125,7 +125,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                               padding: EdgeInsets.only(
                                   left: 16, right: 16, top: 8, bottom: 8),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Color(0xFFF6F8FA),
                                 border: Border.all(
                                     width: 2, color: Color(0xFFDDDDDD)),
                                 borderRadius: BorderRadius.circular(20),
@@ -160,103 +160,144 @@ class _BacklogScreenState extends State<BacklogScreen> {
                 right: 0,
                 bottom: 0,
                 child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: StreamBuilder(
-                            stream: getTodo(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text("loading"),
-                                );
-                              }
-                              if (snapshot.data.docs.length == 0) {
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [Text("Backlog Kosong")],
-                                );
-                              }
-                              var date = "";
-
-                              return Container(
-                                margin: EdgeInsets.only(bottom: 120),
-                                child: Column(
-                                  children: snapshot.data.docs.map((data) {
-                                    if (FormatTime.getDate(
-                                            FormatTime.getTimestampToday()) ==
-                                        FormatTime.getDate(data['timestamp'])) {
-                                      return Container();
-                                    } else {
-                                      if (date ==
-                                          FormatTime.getDate(
-                                              data['timestamp'])) {
-                                        return GestureDetector(
-                                          onLongPress: () {
-                                            var dataTodo = {
-                                              "id": data.id,
-                                              "description":
-                                                  data['description'],
-                                              "type": "others",
-                                              "time": data['timestamp'],
-                                              "notifId": data['notificationId'],
-                                              "timeReminder":
-                                                  data["timeReminder"],
-                                            };
-                                            optionsBottomSheet(
-                                                context, dataTodo);
-                                          },
-                                          child: CardBacklog(
-                                            deleteTodo: deleteTodo,
-                                            addTodo: addTodo,
-                                            id: data.id,
-                                            isFirst: false,
-                                            type: data['type'],
-                                            description: data['description'],
-                                            time: data['timestamp'],
-                                          ),
-                                        );
-                                      } else {
-                                        date = FormatTime.getDate(
-                                            data['timestamp']);
-                                        return GestureDetector(
-                                          onLongPress: () {
-                                            var dataTodo = {
-                                              "id": data.id,
-                                              "description":
-                                                  data['description'],
-                                              "type": "others",
-                                              "time": data['timestamp'],
-                                              "notifId": data['notificationId'],
-                                              "timeReminder":
-                                                  data["timeReminder"],
-                                            };
-                                            optionsBottomSheet(
-                                                context, dataTodo);
-                                          },
-                                          child: CardBacklog(
-                                            deleteTodo: deleteTodo,
-                                            addTodo: addTodo,
-                                            id: data.id,
-                                            isFirst: true,
-                                            type: data['type'],
-                                            description: data['description'],
-                                            time: data['timestamp'],
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  }).toList(),
-                                ),
-                              );
-                            }),
-                      ),
-                    ],
+                  child: Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height - 220,
+                          child: StreamBuilder(
+                              stream: getTodo(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                      // child: Text("loading"),
+                                      );
+                                }
+                                if (snapshot.data.docs.length == 0) {
+                                  return Column(
+                                    children: [
+                                      Expanded(child: Container()),
+                                      CustomIcon(
+                                        type: "emptyBacklog",
+                                      ),
+                                      Expanded(child: Container()),
+                                      TextDescription(
+                                        text:
+                                            "No backlog leads to peace of mind",
+                                        color: Color(0xFF888888),
+                                      )
+                                    ],
+                                  );
+                                }
+                                var date = "";
+                                var total = 0;
+                                snapshot.data.docs.forEach((data) {
+                                  if (FormatTime.getDate(
+                                          FormatTime.getTimestampToday()) !=
+                                      FormatTime.getDate(data['timestamp'])) {
+                                    total++;
+                                  }
+                                });
+                                
+                                if (total == 0) {
+                                  return Column(
+                                    children: [
+                                      Expanded(child: Container()),
+                                      CustomIcon(
+                                        type: "emptyBacklog",
+                                      ),
+                                      Expanded(child: Container()),
+                                      TextDescription(
+                                        text:
+                                            "No backlog leads to peace of mind",
+                                        color: Color(0xFF888888),
+                                      )
+                                    ],
+                                  );
+                                } else {
+                                  return Container(
+                                    margin: EdgeInsets.only(bottom: 120),
+                                    child: Column(
+                                      children: snapshot.data.docs.map((data) {
+                                        if (FormatTime.getDate(FormatTime
+                                                .getTimestampToday()) ==
+                                            FormatTime.getDate(
+                                                data['timestamp'])) {
+                                          return Container();
+                                        } else {
+                                          if (date ==
+                                              FormatTime.getDate(
+                                                  data['timestamp'])) {
+                                            return GestureDetector(
+                                              onLongPress: () {
+                                                var dataTodo = {
+                                                  "id": data.id,
+                                                  "description":
+                                                      data['description'],
+                                                  "type": "others",
+                                                  "time": data['timestamp'],
+                                                  "notifId":
+                                                      data['notificationId'],
+                                                  "timeReminder":
+                                                      data["timeReminder"],
+                                                };
+                                                optionsBottomSheet(
+                                                    context, dataTodo);
+                                              },
+                                              child: CardBacklog(
+                                                deleteTodo: deleteTodo,
+                                                addTodo: addTodo,
+                                                id: data.id,
+                                                isFirst: false,
+                                                type: data['type'],
+                                                description:
+                                                    data['description'],
+                                                time: data['timestamp'],
+                                              ),
+                                            );
+                                          } else {
+                                            date = FormatTime.getDate(
+                                                data['timestamp']);
+                                            return GestureDetector(
+                                              onLongPress: () {
+                                                var dataTodo = {
+                                                  "id": data.id,
+                                                  "description":
+                                                      data['description'],
+                                                  "type": "others",
+                                                  "time": data['timestamp'],
+                                                  "notifId":
+                                                      data['notificationId'],
+                                                  "timeReminder":
+                                                      data["timeReminder"],
+                                                };
+                                                optionsBottomSheet(
+                                                    context, dataTodo);
+                                              },
+                                              child: CardBacklog(
+                                                deleteTodo: deleteTodo,
+                                                addTodo: addTodo,
+                                                id: data.id,
+                                                isFirst: true,
+                                                type: data['type'],
+                                                description:
+                                                    data['description'],
+                                                time: data['timestamp'],
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      }).toList(),
+                                    ),
+                                  );
+                                }
+                              }),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
