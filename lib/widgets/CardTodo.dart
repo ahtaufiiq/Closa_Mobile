@@ -1,7 +1,8 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
+import 'package:closa_flutter/helpers/CustomSnackbar.dart';
+import 'package:closa_flutter/helpers/Network.dart';
 import 'dart:convert';
 import 'package:closa_flutter/helpers/sharedPref.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
 import '../helpers/color.dart';
@@ -71,95 +72,15 @@ class _CardTodoState extends State<CardTodo> {
                       setState(() {
                         status = true;
                       });
-                      var description = widget.description;
-                      var notifId = widget.notifId;
-                      var timestamp = widget.time;
-                      var id = widget.id;
-                      var date = DateTime.now().millisecondsSinceEpoch;
-                      Flushbar flushbar;
+
                       Timer(Duration(milliseconds: 700), () {
-                        firestoreInstance
-                            .collection("todos")
-                            .doc(id)
-                            .update({"status": true, "timestamp": date});
+                        Network.checklistTodo(widget.id);
                         setState(() {
                           status = false;
                         });
                       });
 
-                      flushbar = Flushbar(
-                          margin:
-                              EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                          duration: Duration(seconds: 3),
-                          borderRadius: 4.0,
-                          icon: CustomIcon(type: "checkDone"),
-                          mainButton: FlatButton(
-                            onPressed: () {
-                              isDelete = false;
-                              flushbar.dismiss(true);
-                            },
-                            child: Text(
-                              "Undo",
-                              style: TextStyle(color: Colors.amber),
-                            ),
-                          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                          message: "Done");
-
-                      flushbar
-                        ..onStatusChanged = (FlushbarStatus flushbarStatus) {
-                          switch (flushbarStatus) {
-                            case FlushbarStatus.SHOWING:
-                              {
-                                break;
-                              }
-                            case FlushbarStatus.IS_APPEARING:
-                              {
-                                break;
-                              }
-                            case FlushbarStatus.IS_HIDING:
-                              {
-                                if (isDelete) {
-                                  http.post(
-                                    "https://api.closa.me/integrations/done",
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                      'accessToken':
-                                          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                                    },
-                                    body: jsonEncode(<String, String>{
-                                      'username': "${sharedPrefs.username}",
-                                      'name': "${sharedPrefs.name}",
-                                      'text': "$description",
-                                      'photo': "${sharedPrefs.photo}",
-                                      'type':
-                                          "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                                    }),
-                                  );
-                                  LocalNotification()
-                                      .cancelNotification(notifId);
-                                }
-                                break;
-                              }
-                            case FlushbarStatus.DISMISSED:
-                              {
-                                if (!isDelete) {
-                                  print(id);
-                                  print("---------");
-                                  print("Undo");
-                                  firestoreInstance
-                                      .collection("todos")
-                                      .doc(id)
-                                      .update({
-                                    "status": false,
-                                    'timestamp': timestamp
-                                  });
-                                }
-                                break;
-                              }
-                          }
-                        }
-                        ..show(context);
+                      CustomSnackbar.checklistTodo(context, widget);
                     },
                     child: CustomIcon(
                       type: 'emptyChecklist',

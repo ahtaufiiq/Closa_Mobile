@@ -17,12 +17,13 @@ import '../../widgets/OptionsTodo.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class TaskScreenCopy extends StatefulWidget {
+class TaskScreenSurprisingImage extends StatefulWidget {
   @override
-  _TaskScreenCopyState createState() => _TaskScreenCopyState();
+  _TaskScreenSurprisingImageState createState() =>
+      _TaskScreenSurprisingImageState();
 }
 
-class _TaskScreenCopyState extends State<TaskScreenCopy> {
+class _TaskScreenSurprisingImageState extends State<TaskScreenSurprisingImage> {
   Future<String> getValue(key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String

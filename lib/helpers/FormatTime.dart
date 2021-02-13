@@ -1,6 +1,17 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FormatTime {
+  static DateTime setDefaultTime(dateNow) {
+    if (dateNow.minute > 15) {
+      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
+      dateNow = dateNow.add(Duration(hours: 2));
+    } else {
+      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
+      dateNow = dateNow.add(Duration(hours: 1));
+    }
+    return dateNow;
+  }
+
   static String formatDate(selectedDate, {type = 'short'}) {
     String date = selectedDate.day.toString();
     int month = selectedDate.month;

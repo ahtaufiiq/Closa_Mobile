@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
               ),
               GetPage(
                 name: '/task2',
-                page: () => TaskScreenCopy(),
+                page: () => TaskScreenSurprisingImage(),
               ),
             ],
             theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
                   : sharedPrefs.doneHighlight &&
                           sharedPrefs.doneOthers &&
                           sharedPrefs.dateNow == FormatTime.getToday()
-                      ? TaskScreenCopy()
+                      ? TaskScreenSurprisingImage()
                       : TaskScreen(),
               // child: BacklogScreen(),
             ),

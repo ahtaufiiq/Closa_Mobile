@@ -1,7 +1,8 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
+import 'package:closa_flutter/helpers/CustomSnackbar.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
-import 'package:flushbar/flushbar.dart';
+import 'package:closa_flutter/widgets/OptionsBacklog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ class BottomSheetEdit extends StatefulWidget {
   final String type;
   final int notifId;
   final String timeReminder;
+  final bool isBacklog;
 
   const BottomSheetEdit(
       {Key key,
@@ -28,6 +30,7 @@ class BottomSheetEdit extends StatefulWidget {
       this.time,
       this.type,
       this.notifId,
+      this.isBacklog = false,
       this.timeReminder})
       : super(key: key);
   @override
@@ -104,60 +107,28 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
             topRight: const Radius.circular(16.0),
           ),
         ),
-        builder: (_) => OptionsTodo(
-            id: data["id"],
-            description: data["description"],
-            type: data["type"],
-            notifId: data["notifId"],
-            timeReminder: data["timeReminder"],
-            time: data["time"]));
+        builder: (_) => widget.isBacklog
+            ? OptionsBacklog(
+                id: data["id"],
+                description: data["description"],
+                type: data["type"],
+                notifId: data["notifId"],
+                timeReminder: data["timeReminder"],
+                time: data["time"])
+            : OptionsTodo(
+                id: data["id"],
+                description: data["description"],
+                type: data["type"],
+                notifId: data["notifId"],
+                timeReminder: data["timeReminder"],
+                time: data["time"]));
   }
 
   void isDateTomorrow() {
     if ((timestamp + addTime) > FormatTime.getTimestampTomorrow() &&
         DateTime.now().day ==
             DateTime.fromMillisecondsSinceEpoch(widget.time).day) {
-      Flushbar flushbar;
-      flushbar = Flushbar(
-          margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-          duration: Duration(seconds: 3),
-          borderRadius: 4.0,
-          icon: CustomIcon(
-            type: "arrowUpRight",
-          ),
-          mainButton: FlatButton(
-            onPressed: () {
-              Get.to(BacklogScreen());
-            },
-            child: Text(
-              "View",
-              style: TextStyle(color: Colors.amber),
-            ),
-          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-          message: "Moved to Backlog");
-
-      flushbar
-        ..onStatusChanged = (FlushbarStatus status) async {
-          switch (status) {
-            case FlushbarStatus.SHOWING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_APPEARING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_HIDING:
-              {
-                break;
-              }
-            case FlushbarStatus.DISMISSED:
-              {
-                break;
-              }
-          }
-        }
-        ..show(context);
+      CustomSnackbar.movedToBacklog(context);
     }
   }
 
@@ -552,6 +523,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
+
                     var data = {
                       "id": widget.id,
                       "description": controller.text,

@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
+import 'package:closa_flutter/helpers/Network.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -34,13 +34,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   @override
   void initState() {
     super.initState();
-    if (dateNow.minute > 15) {
-      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
-      dateNow = dateNow.add(Duration(hours: 2));
-    } else {
-      dateNow = dateNow.subtract(Duration(minutes: dateNow.minute));
-      dateNow = dateNow.add(Duration(hours: 1));
-    }
+    dateNow = FormatTime.setDefaultTime(dateNow);
     selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
     time = FormatTime.formatTime(dateNow);
     addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
@@ -54,49 +48,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   }
 
   void isDateTomorrow() {
-    if ((timestamp + addTime) > FormatTime.getTimestampTomorrow()) {
-      Flushbar flushbar;
-      flushbar = Flushbar(
-          margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-          duration: Duration(seconds: 3),
-          borderRadius: 4.0,
-          icon: CustomIcon(
-            type: "arrowUpRight",
-          ),
-          mainButton: FlatButton(
-            onPressed: () {
-              Get.to(BacklogScreen());
-            },
-            child: Text(
-              "View",
-              style: TextStyle(color: Colors.amber),
-            ),
-          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-          message: "Moved to Backlog");
-
-      flushbar
-        ..onStatusChanged = (FlushbarStatus status) async {
-          switch (status) {
-            case FlushbarStatus.SHOWING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_APPEARING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_HIDING:
-              {
-                break;
-              }
-            case FlushbarStatus.DISMISSED:
-              {
-                break;
-              }
-          }
-        }
-        ..show(context);
-    }
+    if ((timestamp + addTime) > FormatTime.getTimestampTomorrow()) {}
   }
 
   int timestamp =
@@ -307,13 +259,11 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                     child: TextField(
                       onChanged: (val) {
                         if (val == "0" || val == "") {
-                          print("Error");
                           setState(() {
                             isNotBlankCustomNotif = false;
                             _numberCustom = val;
                           });
                         } else {
-                          print("Masuk bisa");
                           setState(() {
                             isNotBlankCustomNotif = true;
                             _numberCustom = val;
@@ -514,21 +464,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                       }).then((value) {
                         print(value.id);
                         if (widget.type == "highlight") {
-                          http.post(
-                            "https://api.closa.me/integrations/highlight",
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                              'accessToken':
-                                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                            },
-                            body: jsonEncode(<String, String>{
-                              'username': "${sharedPrefs.username}",
-                              'name': "${sharedPrefs.name}",
-                              'text': "${todoController.text}",
-                              'photo': "${sharedPrefs.photo}",
-                              'type': "setHighlight"
-                            }),
-                          );
+                          Network.postSetHighlight(todoController.text);
                         }
                       });
                       Navigator.pop(context);

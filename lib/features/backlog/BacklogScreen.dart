@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/home/TaskScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/helpers/showBottomSheet.dart';
+import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CardBacklog.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/OptionsBacklog.dart';
@@ -17,29 +20,13 @@ class BacklogScreen extends StatefulWidget {
 }
 
 class _BacklogScreenState extends State<BacklogScreen> {
-  void optionsBottomSheet(context, data) {
-    print(data);
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsBacklog(
-            id: data["id"],
-            description: data["description"],
-            type: data["type"],
-            time: data["time"],
-            timeReminder: data["timeReminder"],
-            notifId: data['notifId']));
-  }
-
-  void addTodo(id, timestamp) {
+  void addTodo(id, timestamp, description, notifId) {
     setState(() {
-      todos[id] = timestamp;
+      todos[id] = {
+        "time": timestamp,
+        "description": description,
+        "notifId": notifId
+      };
     });
   }
 
@@ -47,10 +34,16 @@ class _BacklogScreenState extends State<BacklogScreen> {
     setState(() {
       clickedStart = true;
     });
+    var tenMinutes = 600000;
     final firestoreInstance = FirebaseFirestore.instance;
     todos.forEach((key, value) {
+      LocalNotification().changeTimeNotification(
+        value['notifId'],
+        value['description'],
+        FormatTime.setToday(value['time']) - tenMinutes,
+      );
       firestoreInstance.collection("todos").doc(key).update({
-        "timestamp": FormatTime.setToday(value),
+        "timestamp": FormatTime.setToday(value['time']),
       });
     });
     FToast fToast = FToast();
@@ -121,19 +114,19 @@ class _BacklogScreenState extends State<BacklogScreen> {
                             EdgeInsets.only(top: 24.0, left: 24.0, right: 24.0),
                         child: Row(
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: 16, right: 16, top: 8, bottom: 8),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFF6F8FA),
-                                border: Border.all(
-                                    width: 2, color: Color(0xFFDDDDDD)),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    left: 16, right: 16, top: 8, bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFF6F8FA),
+                                  border: Border.all(
+                                      width: 2, color: Color(0xFFDDDDDD)),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 child: CustomIcon(
                                   type: "close",
                                 ),
@@ -171,9 +164,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text("loading"),
-                                );
+                                return Container();
                               }
                               if (snapshot.data.docs.length == 0) {
                                 return Column(
@@ -241,10 +232,14 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                 "timeReminder":
                                                     data["timeReminder"],
                                               };
-                                              optionsBottomSheet(
+                                              ShowBottomSheet.optionsBacklog(
                                                   context, dataTodo);
                                             },
+                                            onTap: () => ShowBottomSheet
+                                                .showBottomEditBacklog(
+                                                    context, data),
                                             child: CardBacklog(
+                                              notifId: data['notificationId'],
                                               deleteTodo: deleteTodo,
                                               addTodo: addTodo,
                                               id: data.id,
@@ -270,10 +265,14 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                 "timeReminder":
                                                     data["timeReminder"],
                                               };
-                                              optionsBottomSheet(
+                                              ShowBottomSheet.optionsBacklog(
                                                   context, dataTodo);
                                             },
+                                            onTap: () => ShowBottomSheet
+                                                .showBottomEditBacklog(
+                                                    context, data),
                                             child: CardBacklog(
+                                              notifId: data['notificationId'],
                                               deleteTodo: deleteTodo,
                                               addTodo: addTodo,
                                               id: data.id,

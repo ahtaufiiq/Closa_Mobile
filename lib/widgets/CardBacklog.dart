@@ -11,6 +11,7 @@ class CardBacklog extends StatefulWidget {
   final int time;
   final String type;
   final String id;
+  final int notifId;
   final Function addTodo;
   final Function deleteTodo;
   final bool isFirst;
@@ -20,6 +21,7 @@ class CardBacklog extends StatefulWidget {
       this.description,
       this.time,
       this.isFirst,
+      this.notifId,
       this.type,
       this.deleteTodo,
       this.addTodo})
@@ -96,7 +98,7 @@ class _CardBacklogState extends State<CardBacklog> {
                             setState(() {
                               status = true;
                             });
-                            widget.addTodo(widget.id,widget.time);
+                            widget.addTodo(widget.id,widget.time,widget.description,widget.notifId);
                           },
                           child: CustomIcon(
                             type: 'emptyRadio',

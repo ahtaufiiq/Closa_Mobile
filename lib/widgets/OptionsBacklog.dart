@@ -2,14 +2,15 @@ import 'dart:convert';
 
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
+import 'package:closa_flutter/helpers/CustomSnackbar.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
+import 'package:closa_flutter/helpers/Network.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'BottomSheetEdit.dart';
-import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
 import '../helpers/color.dart';
 import 'Text.dart';
@@ -83,79 +84,9 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
               Navigator.pop(context);
               LocalNotification().cancelNotification(widget.notifId);
 
-              var description = widget.description;
-              var notifId = widget.notifId;
-              var timestamp = widget.time;
-              var id = widget.id;
-              var date = DateTime.now().millisecondsSinceEpoch;
-              Flushbar flushbar;
+              Network.checklistTodo(widget.id);
 
-              bool isDelete = true;
-              flushbar = Flushbar(
-                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                  duration: Duration(seconds: 3),
-                  borderRadius: 4.0,
-                  icon: CustomIcon(type: "checkDone"),
-                  mainButton: FlatButton(
-                    onPressed: () {
-                      isDelete = false;
-                      flushbar.dismiss(true);
-                    },
-                    child: Text(
-                      "Undo",
-                      style: TextStyle(color: Colors.amber),
-                    ),
-                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                  message: "Done");
-
-              flushbar
-                ..onStatusChanged = (FlushbarStatus flushbarStatus) {
-                  switch (flushbarStatus) {
-                    case FlushbarStatus.SHOWING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_APPEARING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_HIDING:
-                      {
-                        if (isDelete) {
-                          http.post(
-                            "https://api.closa.me/integrations/done",
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                              'accessToken':
-                                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                            },
-                            body: jsonEncode(<String, String>{
-                              'username': "${sharedPrefs.username}",
-                              'name': "${sharedPrefs.name}",
-                              'text': "$description",
-                              'photo': "${sharedPrefs.photo}",
-                              'type':
-                                  "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                            }),
-                          );
-                          LocalNotification().cancelNotification(notifId);
-                        }
-                        break;
-                      }
-                    case FlushbarStatus.DISMISSED:
-                      {
-                        if (!isDelete) {
-                          print(id);
-                          print("---------");
-                          print("Undo");
-                          firestoreInstance.collection("todos").doc(id).update(
-                              {"status": false, 'timestamp': timestamp});
-                        }
-                        break;
-                      }
-                  }
-                }
-                ..show(context);
+              CustomSnackbar.checklistTodo(context, widget);
             },
           ),
           SizedBox(
@@ -192,6 +123,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                         description: widget.description,
                         type: widget.type,
                         time: widget.time,
+                        isBacklog: true,
                         notifId: widget.notifId,
                         timeReminder: widget.timeReminder,
                       ));
@@ -240,72 +172,8 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                           child: new Text("Yes"),
                           onPressed: () {
                             Navigator.pop(dialogContext);
-                            firestoreInstance
-                                .collection("todos")
-                                .doc(widget.id)
-                                .delete();
-                            bool isDelete = true;
-                            Flushbar flushbar;
-                            flushbar = Flushbar(
-                                margin: EdgeInsets.only(
-                                    bottom: 107, left: 24, right: 24),
-                                duration: Duration(seconds: 3),
-                                borderRadius: 4.0,
-                                mainButton: FlatButton(
-                                  onPressed: () {
-                                    isDelete = false;
-                                    flushbar.dismiss(true);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(color: Colors.amber),
-                                  ),
-                                ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                                message: "Delete Todo");
-                            var notifId = widget.notifId;
-                            var id = widget.id;
-                            var todo = {
-                              "description": widget.description,
-                              "status": false,
-                              "timestamp": widget.time,
-                              "notificationId": widget.notifId,
-                              "timeReminder": widget.timeReminder,
-                              "type": widget.type,
-                              "userId": sharedPrefs.idUser
-                            };
-                            flushbar
-                              ..onStatusChanged =
-                                  (FlushbarStatus status) async {
-                                switch (status) {
-                                  case FlushbarStatus.SHOWING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_APPEARING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_HIDING:
-                                    {
-                                      if (isDelete) {
-                                        await LocalNotification()
-                                            .cancelNotification(notifId);
-                                      }
-                                      break;
-                                    }
-                                  case FlushbarStatus.DISMISSED:
-                                    {
-                                      if (!isDelete) {
-                                        await firestoreInstance
-                                            .collection("todos")
-                                            .add(todo);
-                                      }
-
-                                      break;
-                                    }
-                                }
-                              }
-                              ..show(dialogContext);
+                            Network.deleteTodo(widget.id);
+                            CustomSnackbar.deleteTodo(widget, dialogContext);
                           },
                         ),
                       ],
