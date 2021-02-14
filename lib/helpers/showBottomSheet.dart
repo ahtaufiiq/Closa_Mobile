@@ -92,7 +92,7 @@ class ShowBottomSheet {
           ),
         ),
         builder: (_) => OptionsBacklog(
-            id: data.id,
+            id: data['id'],
             description: data["description"],
             type: data["type"],
             time: data["timestamp"],

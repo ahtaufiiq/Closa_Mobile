@@ -48,10 +48,9 @@ class _TaskScreenState extends State<TaskScreen> {
     }
     super.initState();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   print("Masuk sini");
     //   if (sharedPrefs.doneHighlight && sharedPrefs.doneOthers) {
-    //     Timer(Duration(seconds: 3), () {
-    //       Get.offAllNamed("/task2");
-    //     });
+    //     print("Testing");
     //   }
     // });
   }
@@ -198,7 +197,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneHighlight = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 3), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -278,7 +277,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneOthers = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 3), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }

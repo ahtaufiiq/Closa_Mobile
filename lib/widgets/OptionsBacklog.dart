@@ -86,6 +86,8 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
 
               Network.checklistTodo(widget.id);
 
+              Network.postDone(widget.description, widget.type);
+
               CustomSnackbar.checklistTodo(context, widget);
             },
           ),
