@@ -120,6 +120,8 @@ class _OptionsTodoState extends State<OptionsTodo> {
               firestoreInstance.collection("todos").doc(widget.id).update({
                 "timestamp": FormatTime.setTomorrow(widget.time),
               });
+              LocalNotification().changeTimeNotification(widget.notifId,
+                  widget.description, FormatTime.setTomorrow(widget.time));
 
               Flushbar flushbar;
               flushbar = Flushbar(

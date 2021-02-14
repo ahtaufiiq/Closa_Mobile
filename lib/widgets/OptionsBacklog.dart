@@ -90,6 +90,29 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
               var date = DateTime.now().millisecondsSinceEpoch;
               Flushbar flushbar;
 
+              http.post(
+                "https://api.closa.me/integrations/done",
+                headers: <String, String>{
+                  'Content-Type': 'application/json; charset=UTF-8',
+                  'accessToken':
+                      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                },
+                body: jsonEncode(<String, String>{
+                  'username': "${sharedPrefs.username}",
+                  'id':widget.id,
+                  'name': "${sharedPrefs.name}",
+                  'text': "$description",
+                  'photo': "${sharedPrefs.photo}",
+                  'type':
+                      "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                }),
+              );
+
+              firestoreInstance
+                  .collection("todos")
+                  .doc(id)
+                  .update({"status": true, 'timestamp': date});
+
               bool isDelete = true;
               flushbar = Flushbar(
                   margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
@@ -122,22 +145,6 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                     case FlushbarStatus.IS_HIDING:
                       {
                         if (isDelete) {
-                          http.post(
-                            "https://api.closa.me/integrations/done",
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                              'accessToken':
-                                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                            },
-                            body: jsonEncode(<String, String>{
-                              'username': "${sharedPrefs.username}",
-                              'name': "${sharedPrefs.name}",
-                              'text': "$description",
-                              'photo': "${sharedPrefs.photo}",
-                              'type':
-                                  "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                            }),
-                          );
                           LocalNotification().cancelNotification(notifId);
                         }
                         break;
@@ -188,6 +195,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                     ),
                   ),
                   builder: (_) => BottomSheetEdit(
+                        isBacklog: true,
                         id: widget.id,
                         description: widget.description,
                         type: widget.type,

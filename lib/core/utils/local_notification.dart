@@ -1,4 +1,5 @@
 import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -131,5 +132,15 @@ class LocalNotification {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
     await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future changeTimeNotification(
+      int idNotif, String description, int timestamp) async {
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String message =
+        '${description} at ${FormatTime.getInfoTime(time.hour, time.minute)}';
+
+    await LocalNotification().cancelNotification(idNotif);
+    await LocalNotification().setNotification(message, time, idNotif);
   }
 }

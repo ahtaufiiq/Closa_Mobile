@@ -1,6 +1,7 @@
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/widgets/OptionsBacklog.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -19,6 +20,7 @@ class BottomSheetEdit extends StatefulWidget {
   final String id;
   final String type;
   final int notifId;
+  final bool isBacklog;
   final String timeReminder;
 
   const BottomSheetEdit(
@@ -28,6 +30,7 @@ class BottomSheetEdit extends StatefulWidget {
       this.time,
       this.type,
       this.notifId,
+      this.isBacklog = false,
       this.timeReminder})
       : super(key: key);
   @override
@@ -104,13 +107,21 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
             topRight: const Radius.circular(16.0),
           ),
         ),
-        builder: (_) => OptionsTodo(
-            id: data["id"],
-            description: data["description"],
-            type: data["type"],
-            notifId: data["notifId"],
-            timeReminder: data["timeReminder"],
-            time: data["time"]));
+        builder: (_) => widget.isBacklog
+            ? OptionsBacklog(
+                id: data["id"],
+                description: data["description"],
+                type: data["type"],
+                notifId: data["notifId"],
+                timeReminder: data["timeReminder"],
+                time: data["time"])
+            : OptionsTodo(
+                id: data["id"],
+                description: data["description"],
+                type: data["type"],
+                notifId: data["notifId"],
+                timeReminder: data["timeReminder"],
+                time: data["time"]));
   }
 
   void isDateTomorrow() {

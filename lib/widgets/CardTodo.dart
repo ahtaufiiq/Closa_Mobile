@@ -86,6 +86,23 @@ class _CardTodoState extends State<CardTodo> {
                           status = false;
                         });
                       });
+                      http.post(
+                        "https://api.closa.me/integrations/done",
+                        headers: <String, String>{
+                          'Content-Type': 'application/json; charset=UTF-8',
+                          'accessToken':
+                              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                        },
+                        body: jsonEncode(<String, String>{
+                          'username': "${sharedPrefs.username}",
+                          'id': widget.id,
+                          'name': "${sharedPrefs.name}",
+                          'text': "$description",
+                          'photo': "${sharedPrefs.photo}",
+                          'type':
+                              "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                        }),
+                      );
 
                       flushbar = Flushbar(
                           margin:
@@ -118,35 +135,11 @@ class _CardTodoState extends State<CardTodo> {
                               }
                             case FlushbarStatus.IS_HIDING:
                               {
-                                if (isDelete) {
-                                  http.post(
-                                    "https://api.closa.me/integrations/done",
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                      'accessToken':
-                                          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                                    },
-                                    body: jsonEncode(<String, String>{
-                                      'username': "${sharedPrefs.username}",
-                                      'name': "${sharedPrefs.name}",
-                                      'text': "$description",
-                                      'photo': "${sharedPrefs.photo}",
-                                      'type':
-                                          "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                                    }),
-                                  );
-                                  LocalNotification()
-                                      .cancelNotification(notifId);
-                                }
                                 break;
                               }
                             case FlushbarStatus.DISMISSED:
                               {
                                 if (!isDelete) {
-                                  print(id);
-                                  print("---------");
-                                  print("Undo");
                                   firestoreInstance
                                       .collection("todos")
                                       .doc(id)
@@ -154,6 +147,9 @@ class _CardTodoState extends State<CardTodo> {
                                     "status": false,
                                     'timestamp': timestamp
                                   });
+                                } else {
+                                  LocalNotification()
+                                      .cancelNotification(notifId);
                                 }
                                 break;
                               }

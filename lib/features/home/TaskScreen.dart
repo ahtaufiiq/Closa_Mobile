@@ -6,6 +6,7 @@ import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import '../../widgets/Text.dart';
@@ -46,13 +47,6 @@ class _TaskScreenState extends State<TaskScreen> {
       sharedPrefs.surprisingImage = "$random.jpg";
     }
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (sharedPrefs.doneHighlight && sharedPrefs.doneOthers) {
-    //     Timer(Duration(seconds: 3), () {
-    //       Get.offAllNamed("/task2");
-    //     });
-    //   }
-    // });
   }
 
   void saveValue(key, value) async {
@@ -266,7 +260,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneHighlight = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 3), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }
@@ -343,7 +337,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 sharedPrefs.doneOthers = true;
                                 if (sharedPrefs.doneHighlight &&
                                     sharedPrefs.doneOthers) {
-                                  Timer(Duration(seconds: 3), () {
+                                  Timer(Duration(seconds: 1), () {
                                     Get.offAllNamed("/task2");
                                   });
                                 }

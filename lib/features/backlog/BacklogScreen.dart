@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/home/TaskScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CardBacklog.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:closa_flutter/widgets/OptionsBacklog.dart';
@@ -17,8 +19,28 @@ class BacklogScreen extends StatefulWidget {
 }
 
 class _BacklogScreenState extends State<BacklogScreen> {
+  void showBottomEdit(context, data) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16.0),
+            topRight: const Radius.circular(16.0),
+          ),
+        ),
+        builder: (_) => BottomSheetEdit(
+              isBacklog: true,
+              id: data.id,
+              type: data["type"],
+              description: data['description'],
+              time: data['timestamp'],
+              timeReminder: data["timeReminder"],
+              notifId: data['notificationId'],
+            ));
+  }
+
   void optionsBottomSheet(context, data) {
-    print(data);
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -37,9 +59,13 @@ class _BacklogScreenState extends State<BacklogScreen> {
             notifId: data['notifId']));
   }
 
-  void addTodo(id, timestamp) {
+  void addTodo(id, timestamp, description, notifId) {
     setState(() {
-      todos[id] = timestamp;
+      todos[id] = {
+        "time": timestamp,
+        "description": description,
+        "notifId": notifId
+      };
     });
   }
 
@@ -47,10 +73,16 @@ class _BacklogScreenState extends State<BacklogScreen> {
     setState(() {
       clickedStart = true;
     });
+    var tenMinutes = 600000;
     final firestoreInstance = FirebaseFirestore.instance;
     todos.forEach((key, value) {
+      LocalNotification().changeTimeNotification(
+        value['notifId'],
+        value['description'],
+        FormatTime.setToday(value['time']) - tenMinutes,
+      );
       firestoreInstance.collection("todos").doc(key).update({
-        "timestamp": FormatTime.setToday(value),
+        "timestamp": FormatTime.setToday(value['time']),
       });
     });
     FToast fToast = FToast();
@@ -121,19 +153,19 @@ class _BacklogScreenState extends State<BacklogScreen> {
                             EdgeInsets.only(top: 24.0, left: 24.0, right: 24.0),
                         child: Row(
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: 16, right: 16, top: 8, bottom: 8),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFF6F8FA),
-                                border: Border.all(
-                                    width: 2, color: Color(0xFFDDDDDD)),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    left: 16, right: 16, top: 8, bottom: 8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFF6F8FA),
+                                  border: Border.all(
+                                      width: 2, color: Color(0xFFDDDDDD)),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 child: CustomIcon(
                                   type: "close",
                                 ),
@@ -229,6 +261,8 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                             FormatTime.getDate(
                                                 data['timestamp'])) {
                                           return GestureDetector(
+                                            onTap: () =>
+                                                showBottomEdit(context, data),
                                             onLongPress: () {
                                               var dataTodo = {
                                                 "id": data.id,
@@ -245,6 +279,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                   context, dataTodo);
                                             },
                                             child: CardBacklog(
+                                              notifId: data['notificationId'],
                                               deleteTodo: deleteTodo,
                                               addTodo: addTodo,
                                               id: data.id,
@@ -258,6 +293,8 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                           date = FormatTime.getDate(
                                               data['timestamp']);
                                           return GestureDetector(
+                                            onTap: () =>
+                                                showBottomEdit(context, data),
                                             onLongPress: () {
                                               var dataTodo = {
                                                 "id": data.id,
@@ -274,6 +311,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                   context, dataTodo);
                                             },
                                             child: CardBacklog(
+                                              notifId: data['notificationId'],
                                               deleteTodo: deleteTodo,
                                               addTodo: addTodo,
                                               id: data.id,
