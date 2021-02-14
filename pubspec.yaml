@@ -41,6 +41,7 @@ dependencies:
   image_picker: ^0.6.7+15
   flutter_local_notifications: ^3.0.2
   flutter_native_timezone: ^1.0.4
+  fluttertoast: ^7.1.6
   http: ^0.12.2
   
   #widgets
@@ -101,6 +102,13 @@ flutter:
     - assets/icons/checklist.svg
     - assets/icons/checkDone.svg
     - assets/icons/highlight.svg
+    - assets/icons/emptyChecklist.svg
+    - assets/icons/fillChecklist.svg
+    - assets/icons/selectedRadio.svg
+    - assets/icons/emptyRadio.svg
+    - assets/icons/iconDone.svg
+    - assets/icons/arrowUpRight.svg
+    - assets/icons/emptyBacklog.svg
     
   fonts:
     - family: Inter

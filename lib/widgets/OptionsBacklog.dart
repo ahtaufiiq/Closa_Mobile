@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
@@ -6,20 +8,21 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import './BottomSheetEdit.dart';
+import 'BottomSheetEdit.dart';
 import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
 import '../helpers/color.dart';
 import 'Text.dart';
+import 'package:http/http.dart' as http;
 
-class OptionsTodo extends StatefulWidget {
+class OptionsBacklog extends StatefulWidget {
   final String description;
   final int time;
   final String type;
   final String id;
   final int notifId;
   final String timeReminder;
-  const OptionsTodo({
+  const OptionsBacklog({
     Key key,
     this.notifId,
     this.id,
@@ -30,13 +33,13 @@ class OptionsTodo extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _OptionsTodoState createState() => _OptionsTodoState(description, time);
+  _OptionsBacklogState createState() => _OptionsBacklogState(description, time);
 }
 
-class _OptionsTodoState extends State<OptionsTodo> {
+class _OptionsBacklogState extends State<OptionsBacklog> {
   String description = "";
   int time;
-  _OptionsTodoState(this.description, this.time);
+  _OptionsBacklogState(this.description, this.time);
 
   @override
   void initState() {
@@ -57,11 +60,117 @@ class _OptionsTodoState extends State<OptionsTodo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 12.0,
+            height: 24.0,
           ),
           GestureDetector(
             child: Padding(
-              padding: const EdgeInsets.only(top: 12.0, left: 24.0),
+              padding: const EdgeInsets.only(left: 24.0),
+              child: Row(
+                children: [
+                  CustomIcon(
+                    type: "iconDone",
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  TextDescription(
+                    text: "Done",
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              LocalNotification().cancelNotification(widget.notifId);
+
+              var description = widget.description;
+              var notifId = widget.notifId;
+              var timestamp = widget.time;
+              var id = widget.id;
+              var date = DateTime.now().millisecondsSinceEpoch;
+              Flushbar flushbar;
+
+              http.post(
+                "https://api.closa.me/integrations/done",
+                headers: <String, String>{
+                  'Content-Type': 'application/json; charset=UTF-8',
+                  'accessToken':
+                      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                },
+                body: jsonEncode(<String, String>{
+                  'username': "${sharedPrefs.username}",
+                  'id':widget.id,
+                  'name': "${sharedPrefs.name}",
+                  'text': "$description",
+                  'photo': "${sharedPrefs.photo}",
+                  'type':
+                      "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                }),
+              );
+
+              firestoreInstance
+                  .collection("todos")
+                  .doc(id)
+                  .update({"status": true, 'timestamp': date});
+
+              bool isDelete = true;
+              flushbar = Flushbar(
+                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
+                  duration: Duration(seconds: 3),
+                  borderRadius: 4.0,
+                  icon: CustomIcon(type: "checkDone"),
+                  mainButton: FlatButton(
+                    onPressed: () {
+                      isDelete = false;
+                      flushbar.dismiss(true);
+                    },
+                    child: Text(
+                      "Undo",
+                      style: TextStyle(color: Colors.amber),
+                    ),
+                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                  message: "Done");
+
+              flushbar
+                ..onStatusChanged = (FlushbarStatus flushbarStatus) {
+                  switch (flushbarStatus) {
+                    case FlushbarStatus.SHOWING:
+                      {
+                        break;
+                      }
+                    case FlushbarStatus.IS_APPEARING:
+                      {
+                        break;
+                      }
+                    case FlushbarStatus.IS_HIDING:
+                      {
+                        if (isDelete) {
+                          LocalNotification().cancelNotification(notifId);
+                        }
+                        break;
+                      }
+                    case FlushbarStatus.DISMISSED:
+                      {
+                        if (!isDelete) {
+                          print(id);
+                          print("---------");
+                          print("Undo");
+                          firestoreInstance.collection("todos").doc(id).update(
+                              {"status": false, 'timestamp': timestamp});
+                        }
+                        break;
+                      }
+                  }
+                }
+                ..show(context);
+            },
+          ),
+          SizedBox(
+            height: 24,
+          ),
+          GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 24.0),
               child: Row(
                 children: [
                   CustomIcon(
@@ -86,6 +195,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
                     ),
                   ),
                   builder: (_) => BottomSheetEdit(
+                        isBacklog: true,
                         id: widget.id,
                         description: widget.description,
                         type: widget.type,
@@ -93,77 +203,6 @@ class _OptionsTodoState extends State<OptionsTodo> {
                         notifId: widget.notifId,
                         timeReminder: widget.timeReminder,
                       ));
-            },
-          ),
-          SizedBox(
-            height: 24.0,
-          ),
-          GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0),
-              child: Row(
-                children: [
-                  CustomIcon(
-                    type: "arrowUpRight",
-                  ),
-                  SizedBox(
-                    width: 20.0,
-                  ),
-                  TextDescription(
-                    text: "Tomorrow",
-                  ),
-                ],
-              ),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              firestoreInstance.collection("todos").doc(widget.id).update({
-                "timestamp": FormatTime.setTomorrow(widget.time),
-              });
-              LocalNotification().changeTimeNotification(widget.notifId,
-                  widget.description, FormatTime.setTomorrow(widget.time));
-
-              Flushbar flushbar;
-              flushbar = Flushbar(
-                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                  duration: Duration(seconds: 3),
-                  borderRadius: 4.0,
-                  icon: CustomIcon(
-                    type: "arrowUpRight",
-                  ),
-                  mainButton: FlatButton(
-                    onPressed: () {
-                      Get.to(BacklogScreen());
-                    },
-                    child: Text(
-                      "View",
-                      style: TextStyle(color: Colors.amber),
-                    ),
-                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                  message: "Moved to Backlog");
-
-              flushbar
-                ..onStatusChanged = (FlushbarStatus status) async {
-                  switch (status) {
-                    case FlushbarStatus.SHOWING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_APPEARING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_HIDING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.DISMISSED:
-                      {
-                        break;
-                      }
-                  }
-                }
-                ..show(context);
             },
           ),
           SizedBox(

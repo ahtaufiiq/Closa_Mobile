@@ -5,6 +5,7 @@ import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,6 +131,10 @@ class _SignUpUsernameState extends State<SignUpUsername> {
                           child: TextField(
                         controller: usernameController,
                         onChanged: _onChangeHandler,
+                        inputFormatters: [
+                          LowerCaseTextFormatter(),
+                          FilteringTextInputFormatter.allow(RegExp("[a-z0-9]")),
+                        ],
                       )),
                       TextSmall(
                         text: '${16 - usernameLength}',
@@ -185,6 +190,17 @@ class _SignUpUsernameState extends State<SignUpUsername> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class LowerCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text?.toLowerCase(),
+      selection: newValue.selection,
     );
   }
 }

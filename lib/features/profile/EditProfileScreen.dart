@@ -7,6 +7,7 @@ import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -74,8 +75,9 @@ class _EditProfileState extends State<EditProfile> {
         nameLength != 0 &&
         aboutLength != 0 &&
         usernameLength <= 16 &&
-        nameLength <= 20 &&
+        nameLength <= 32 &&
         aboutLength <= 180 &&
+        !isUsernameTaken &&
         !isLoading;
   }
 
@@ -121,6 +123,49 @@ class _EditProfileState extends State<EditProfile> {
         print('No image selected.');
       }
     });
+  }
+
+  void updateProfile() {
+    if (validation()) {
+      final firestoreInstance = FirebaseFirestore.instance;
+      sharedPrefs.username = usernameController.text;
+      sharedPrefs.name = nameController.text;
+      sharedPrefs.about = aboutController.text;
+      sharedPrefs.photo = urlPhoto;
+      firestoreInstance.collection("users").doc(sharedPrefs.idUser).update({
+        "name": nameController.text,
+        "photo": urlPhoto,
+        "username": usernameController.text,
+        "about": aboutController.text
+      }).then((value) {
+        Get.back();
+      });
+    }
+  }
+
+  void uploadPhoto() {
+    if (_image != null) {
+      setState(() {
+        isLoading = true;
+      });
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String imgName =
+          DateTime.now().millisecondsSinceEpoch.toString() + ".png";
+      Reference reference = storage.ref().child("profileImages/$imgName");
+      UploadTask uploadTask = reference.putFile(_image);
+
+      uploadTask.whenComplete(() async {
+        try {
+          urlPhoto = await reference.getDownloadURL();
+          print("berhasil upload");
+        } catch (onError) {
+          print("Error");
+        }
+        setState(() {
+          isLoading = false;
+        });
+      });
+    }
   }
 
   void _showPicker(context) {
@@ -180,26 +225,7 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      if (validation()) {
-                        final firestoreInstance = FirebaseFirestore.instance;
-                        sharedPrefs.username = usernameController.text;
-                        sharedPrefs.name = nameController.text;
-                        sharedPrefs.about = aboutController.text;
-                        sharedPrefs.photo = urlPhoto;
-                        firestoreInstance
-                            .collection("users")
-                            .doc(sharedPrefs.idUser)
-                            .update({
-                          "name": nameController.text,
-                          "photo": urlPhoto,
-                          "username": usernameController.text,
-                          "about": aboutController.text
-                        }).then((value) {
-                          Get.back();
-                        });
-                      }
-                    },
+                    onTap: () => updateProfile(),
                     child: Container(
                         padding: EdgeInsets.only(
                             left: 22, right: 22, top: 8, bottom: 8),
@@ -244,6 +270,11 @@ class _EditProfileState extends State<EditProfile> {
                       child: TextField(
                           controller: usernameController,
                           onChanged: _onChangeHandler,
+                          inputFormatters: [
+                            LowerCaseTextFormatter(),
+                            FilteringTextInputFormatter.allow(
+                                RegExp("[a-z0-9]")),
+                          ],
                           style: TextStyle(
                               fontFamily: "Inter",
                               fontSize: 16.0,
@@ -328,34 +359,7 @@ class _EditProfileState extends State<EditProfile> {
                           height: 12,
                         ),
                         GestureDetector(
-                          onTap: () {
-                            if (_image != null) {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              FirebaseStorage storage =
-                                  FirebaseStorage.instance;
-                              String imgName = DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString() +
-                                  ".png";
-                              Reference reference =
-                                  storage.ref().child("profileImages/$imgName");
-                              UploadTask uploadTask = reference.putFile(_image);
-
-                              uploadTask.whenComplete(() async {
-                                try {
-                                  urlPhoto = await reference.getDownloadURL();
-                                  print("berhasil upload");
-                                } catch (onError) {
-                                  print("Error");
-                                }
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              });
-                            }
-                          },
+                          onTap: () => uploadPhoto(),
                           child: isLoading
                               ? Container(
                                   child: CircularProgressIndicator(),
@@ -410,8 +414,8 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     )),
                     TextSmall(
-                      text: '${20 - nameLength}',
-                      color: nameLength <= 20 ? null : Color(0xFFFF2D55),
+                      text: '${32 - nameLength}',
+                      color: nameLength <= 32 ? null : Color(0xFFFF2D55),
                     )
                   ],
                 ),
@@ -463,6 +467,17 @@ class _EditProfileState extends State<EditProfile> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class LowerCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text?.toLowerCase(),
+      selection: newValue.selection,
     );
   }
 }

@@ -54,7 +54,6 @@ class FormatTime {
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
 
-    print(hour);
     if (hour < 12) {
       var hourAM = hour == 0 ? 12 : hour;
       if (minute == 0) {
@@ -90,6 +89,29 @@ class FormatTime {
     return now.millisecondsSinceEpoch;
   }
 
+  static int setToday(timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    DateTime now = DateTime.now();
+
+    DateTime format =
+        DateTime(now.year, now.month, now.day, date.hour, date.minute);
+    return format.millisecondsSinceEpoch;
+  }
+
+  static int setTomorrow(timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+
+    return date.add(Duration(days: 1)).millisecondsSinceEpoch;
+  }
+
+  static int getTimestampYesterday() {
+    DateTime date = DateTime.now();
+    DateTime tomorrow =
+        DateTime(date.year, date.month, date.day).subtract(Duration(days: 1));
+
+    return tomorrow.millisecondsSinceEpoch;
+  }
+
   static int getTimestampTomorrow() {
     DateTime date = DateTime.now();
     DateTime tomorrow =
@@ -98,30 +120,46 @@ class FormatTime {
     return tomorrow.millisecondsSinceEpoch;
   }
 
-  static String getTime(timestamp) {
+  static String getTime(timestamp, {history = false}) {
     var selectedTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    var dateNow = DateTime.now();
     int hour = selectedTime.hour;
     int minute = selectedTime.minute;
-    return getInfoTime(hour, minute);
+    if (selectedTime.day == dateNow.day && history) {
+      if (selectedTime.hour == dateNow.hour) {
+        if (dateNow.minute == minute) {
+          return "just now";
+        } else {
+          return "${dateNow.minute - minute} min";
+        }
+      } else {
+        return "${dateNow.hour - hour}h";
+      }
+    } else {
+      return getInfoTime(hour, minute);
+    }
   }
 
   static String getInfoTime(hour, minute) {
     // print(minute);
+
     if (hour < 12) {
+      var hourAM = hour == 0 ? 12 : hour;
       if (minute == 0) {
-        return '$hour AM';
+        return '$hourAM AM';
       } else if (minute < 10) {
-        return '$hour:0$minute AM';
+        return '$hourAM.0$minute AM';
       } else {
-        return '$hour:$minute AM';
+        return '$hourAM.$minute AM';
       }
     } else {
+      var hourPM = hour == 12 ? hour : hour - 12;
       if (minute == 0) {
-        return '${hour - 12} PM';
+        return '$hourPM PM';
       } else if (minute < 10) {
-        return '${hour - 12}:0$minute PM';
+        return '$hourPM.0$minute PM';
       } else {
-        return '${hour - 12}:$minute PM';
+        return '$hourPM.$minute PM';
       }
     }
   }
@@ -164,6 +202,47 @@ class FormatTime {
       return '${listMonthShort[month]}\n$date';
     } else {
       return '${listMonthLong[month]}\n$date';
+    }
+  }
+
+  static List getDate2(timestamp, {type = 'short'}) {
+    var selectedDate = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String date = selectedDate.day.toString();
+    int month = selectedDate.month;
+    var listMonthShort = [
+      '',
+      'Jan',
+      "Feb",
+      'Mar',
+      'Apr',
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      'Sep',
+      'Oct',
+      "Nov",
+      "Dec"
+    ];
+    var listMonthLong = [
+      '',
+      'January',
+      "February",
+      'March',
+      'April',
+      "May",
+      "June",
+      "July",
+      "August",
+      'September',
+      'October',
+      "November",
+      "December"
+    ];
+    if (type == 'short') {
+      return [listMonthShort[month], date];
+    } else {
+      return [listMonthLong[month], date];
     }
   }
 }

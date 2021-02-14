@@ -2,8 +2,10 @@ import 'dart:math';
 import 'dart:convert';
 
 import 'package:closa_flutter/core/utils/local_notification.dart';
+import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -28,7 +30,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   TimeOfDay selectedTime = TimeOfDay(hour: 8, minute: 00);
   DateTime dateNow = DateTime.now();
   String time;
-  String timeReminder="10 min";
+  String timeReminder = "10 min";
   @override
   void initState() {
     super.initState();
@@ -40,7 +42,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
       dateNow = dateNow.add(Duration(hours: 1));
     }
     selectedTime = TimeOfDay(hour: dateNow.hour, minute: 00);
-    time = FormatTime.getTime(dateNow.millisecondsSinceEpoch);
+    time = FormatTime.formatTime(dateNow);
     addTime = FormatTime.addTime(selectedTime.hour, selectedTime.minute);
     todoController.addListener(_getTodoValue);
   }
@@ -49,6 +51,52 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
     setState(() {
       todoLength = todoController.text.length;
     });
+  }
+
+  void isDateTomorrow() {
+    if ((timestamp + addTime) > FormatTime.getTimestampTomorrow()) {
+      Flushbar flushbar;
+      flushbar = Flushbar(
+          margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
+          duration: Duration(seconds: 3),
+          borderRadius: 4.0,
+          icon: CustomIcon(
+            type: "arrowUpRight",
+          ),
+          mainButton: FlatButton(
+            onPressed: () {
+              Get.to(BacklogScreen());
+            },
+            child: Text(
+              "View",
+              style: TextStyle(color: Colors.amber),
+            ),
+          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+          message: "Moved to Backlog");
+
+      flushbar
+        ..onStatusChanged = (FlushbarStatus status) async {
+          switch (status) {
+            case FlushbarStatus.SHOWING:
+              {
+                break;
+              }
+            case FlushbarStatus.IS_APPEARING:
+              {
+                break;
+              }
+            case FlushbarStatus.IS_HIDING:
+              {
+                break;
+              }
+            case FlushbarStatus.DISMISSED:
+              {
+                break;
+              }
+          }
+        }
+        ..show(context);
+    }
   }
 
   int timestamp =
@@ -98,34 +146,34 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
 
   void setNotificationTime(int id) async {
     int minute, hour, days, weeks;
-    DateTime time = DateTime.now();
+    DateTime timeAlarm = DateTime.now();
 
     if (_groupTimes == 0) {
       minute = 30;
-      time = new DateTime(selectedDate.year, selectedDate.month,
+      timeAlarm = new DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute - minute);
     } else if (_groupTimes == 1) {
       minute = 10;
-      time = new DateTime(selectedDate.year, selectedDate.month,
+      timeAlarm = new DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour, selectedTime.minute - minute);
     } else if (_groupTimes == 2) {
       hour = 1;
-      time = new DateTime(selectedDate.year, selectedDate.month,
+      timeAlarm = new DateTime(selectedDate.year, selectedDate.month,
           selectedDate.day, selectedTime.hour - hour, selectedTime.minute);
     } else if (_groupTimes == 3)
       minute = 0;
     else if (_groupTimes == 4) {
       if (_groupCustomTimes == 0) {
         hour = int.parse(_numberCustom);
-        time = new DateTime(selectedDate.year, selectedDate.month,
+        timeAlarm = new DateTime(selectedDate.year, selectedDate.month,
             selectedDate.day, selectedTime.hour - hour, selectedTime.minute);
       } else if (_groupCustomTimes == 1) {
         days = int.parse(_numberCustom);
-        time = new DateTime(selectedDate.year, selectedDate.month,
+        timeAlarm = new DateTime(selectedDate.year, selectedDate.month,
             selectedDate.day - days, selectedTime.hour, selectedTime.minute);
       } else if (_groupCustomTimes == 2) {
         weeks = int.parse(_numberCustom);
-        time = new DateTime(
+        timeAlarm = new DateTime(
             selectedDate.year,
             selectedDate.month,
             selectedDate.day - (weeks * 7),
@@ -136,13 +184,7 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
 
     String message =
         '${todoController.text} at ${FormatTime.getInfoTime(selectedTime.hour, selectedTime.minute)}';
-    await LocalNotification().setNotification(message, time, id);
-
-    List<PendingNotificationRequest> lists =
-        await LocalNotification().getAllNotification();
-    for (var item in lists) {
-      print(item.id);
-    }
+    await LocalNotification().setNotification(message, timeAlarm, id);
   }
 
   Future<void> _showTimeDialog() async {
@@ -250,100 +292,105 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
   Future<void> _showCustomTimeDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Custom Notification'),
-          contentPadding: EdgeInsets.all(4),
-          content: StatefulBuilder(
+        bool isNotBlankCustomNotif = false;
+        return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                      child: TextField(
-                        onChanged: (val) {
-                          _numberCustom = val;
-                          print(val);
-                          print(_numberCustom);
+          return AlertDialog(
+            title: Text("Custom Notification"),
+            contentPadding: EdgeInsets.all(4),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: TextField(
+                      onChanged: (val) {
+                        if (val == "0" || val == "") {
+                          print("Error");
                           setState(() {
+                            isNotBlankCustomNotif = false;
                             _numberCustom = val;
                           });
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                            border: new UnderlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.red)),
-                            hintText: 'Enter a number'),
-                      ),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(5),
-                      title: const Text('Hours'),
-                      leading: Radio(
-                        activeColor: Colors.black,
-                        value: 0,
-                        groupValue: _groupCustomTimes,
-                        onChanged: (int value) {
+                        } else {
+                          print("Masuk bisa");
                           setState(() {
-                            _groupCustomTimes = value;
+                            isNotBlankCustomNotif = true;
+                            _numberCustom = val;
                           });
-                        },
-                      ),
+                        }
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          border: new UnderlineInputBorder(
+                              borderSide: new BorderSide(color: Colors.red)),
+                          hintText: 'Enter a number'),
                     ),
-                    ListTile(
-                      title: const Text('Days'),
-                      contentPadding: EdgeInsets.all(5),
-                      leading: Radio(
-                        activeColor: Colors.black,
-                        value: 1,
-                        groupValue: _groupCustomTimes,
-                        onChanged: (int value) {
-                          setState(() {
-                            _groupCustomTimes = value;
-                          });
-                        },
-                      ),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.all(5),
+                    title: const Text('Hours'),
+                    leading: Radio(
+                      activeColor: Colors.black,
+                      value: 0,
+                      groupValue: _groupCustomTimes,
+                      onChanged: (int value) {
+                        setState(() {
+                          _groupCustomTimes = value;
+                        });
+                      },
                     ),
-                    ListTile(
-                      title: const Text('Week'),
-                      contentPadding: EdgeInsets.all(5),
-                      leading: Radio(
-                        activeColor: Colors.black,
-                        value: 2,
-                        groupValue: _groupCustomTimes,
-                        onChanged: (int value) {
-                          setState(() {
-                            _groupCustomTimes = value;
-                          });
-                        },
-                      ),
+                  ),
+                  ListTile(
+                    title: const Text('Days'),
+                    contentPadding: EdgeInsets.all(5),
+                    leading: Radio(
+                      activeColor: Colors.black,
+                      value: 1,
+                      groupValue: _groupCustomTimes,
+                      onChanged: (int value) {
+                        setState(() {
+                          _groupCustomTimes = value;
+                        });
+                      },
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Done',
-                style: TextStyle(color: Colors.black),
+                  ),
+                  ListTile(
+                    title: const Text('Week'),
+                    contentPadding: EdgeInsets.all(5),
+                    leading: Radio(
+                      activeColor: Colors.black,
+                      value: 2,
+                      groupValue: _groupCustomTimes,
+                      onChanged: (int value) {
+                        setState(() {
+                          _groupCustomTimes = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
-              onPressed: () {
-                setState(() {
-                  if (_numberCustom.isBlank) {
-                    print(_numberCustom);
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                  print(_numberCustom);
-                });
-              },
             ),
-          ],
-        );
+            actions: <Widget>[
+              TextButton(
+                child: isNotBlankCustomNotif
+                    ? Text('Done', style: TextStyle(color: Colors.black))
+                    : Text('Done', style: TextStyle(color: Colors.grey)),
+                onPressed: () {
+                  setState(() {
+                    if (_numberCustom.isBlank || !isNotBlankCustomNotif) {
+                      print(_numberCustom);
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                    print(_numberCustom);
+                  });
+                },
+              )
+            ],
+          );
+        });
       },
     );
   }
@@ -436,8 +483,12 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                             } else if (_groupCustomTimes == 2) {
                               a = "weeks";
                             }
-                            timeReminder = "$_numberCustom $a";
-                            return "$_numberCustom $a";
+                            if (_numberCustom != null) {
+                              timeReminder = "$_numberCustom $a";
+                              return "$_numberCustom $a";
+                            } else {
+                              return timeReminder;
+                            }
                         }
                       }())),
                     ],
@@ -448,15 +499,15 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 Expanded(child: Container()),
                 GestureDetector(
                   onTap: () async {
-                    int id = Random().nextInt(10000);
+                    int id = DateTime.now().millisecondsSinceEpoch % 100000000;
 
                     if (todoLength != 0) {
                       await firestoreInstance.collection("todos").add({
                         "description": todoController.text,
                         "status": false,
                         "timestamp": timestamp + addTime,
-                        "notificationId": DateTime.now().millisecondsSinceEpoch,
-                        "timeReminder":timeReminder,
+                        "notificationId": id,
+                        "timeReminder": timeReminder,
                         "type":
                             widget.type == "highlight" ? 'highlight' : 'others',
                         "userId": sharedPrefs.idUser
@@ -480,8 +531,9 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                           );
                         }
                       });
-                      setNotificationTime(id);
                       Navigator.pop(context);
+                      isDateTomorrow();
+                      setNotificationTime(id);
                     }
                   },
                   child: Container(

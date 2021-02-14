@@ -17,7 +17,7 @@ class CardTodo extends StatefulWidget {
   final String id;
   final String type;
   final bool status;
-  final void check;
+  final VoidCallback check;
   final int notifId;
 
   const CardTodo(
@@ -39,6 +39,7 @@ class _CardTodoState extends State<CardTodo> {
   final firestoreInstance = FirebaseFirestore.instance;
   bool status = false;
   bool isDelete = true;
+
   _CardTodoState();
   @override
   Widget build(BuildContext context) {
@@ -61,33 +62,48 @@ class _CardTodoState extends State<CardTodo> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             status
-                ? Container(
-                    padding: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                        color: Color(0xFFC9FFD7),
-                        borderRadius: BorderRadius.circular(9.0),
-                        border:
-                            Border.all(color: Color(0xFF40B063), width: 2.0)),
-                    child: CustomIcon(
-                      type: 'check',
-                      color: Color(0xFF40B063),
-                    ),
+                ? CustomIcon(
+                    type: 'fillChecklist',
                   )
                 : GestureDetector(
                     onTap: () {
+                      LocalNotification().cancelNotification(widget.notifId);
                       setState(() {
                         status = true;
                       });
+                      var description = widget.description;
+                      var notifId = widget.notifId;
+                      var timestamp = widget.time;
+                      var id = widget.id;
+                      var date = DateTime.now().millisecondsSinceEpoch;
                       Flushbar flushbar;
                       Timer(Duration(milliseconds: 700), () {
                         firestoreInstance
                             .collection("todos")
-                            .doc(widget.id)
-                            .update({"status": true});
+                            .doc(id)
+                            .update({"status": true, "timestamp": date});
                         setState(() {
                           status = false;
                         });
                       });
+                      http.post(
+                        "https://api.closa.me/integrations/done",
+                        headers: <String, String>{
+                          'Content-Type': 'application/json; charset=UTF-8',
+                          'accessToken':
+                              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                        },
+                        body: jsonEncode(<String, String>{
+                          'username': "${sharedPrefs.username}",
+                          'id': widget.id,
+                          'name': "${sharedPrefs.name}",
+                          'text': "$description",
+                          'photo': "${sharedPrefs.photo}",
+                          'type':
+                              "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                        }),
+                      );
+
                       flushbar = Flushbar(
                           margin:
                               EdgeInsets.only(bottom: 107, left: 24, right: 24),
@@ -105,7 +121,7 @@ class _CardTodoState extends State<CardTodo> {
                             ),
                           ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
                           message: "Done");
-                      var description = widget.description;
+
                       flushbar
                         ..onStatusChanged = (FlushbarStatus flushbarStatus) {
                           switch (flushbarStatus) {
@@ -119,38 +135,21 @@ class _CardTodoState extends State<CardTodo> {
                               }
                             case FlushbarStatus.IS_HIDING:
                               {
-                                if (isDelete) {
-                                  http.post(
-                                    "https://api.closa.me/integrations/done",
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                      'accessToken':
-                                          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                                    },
-                                    body: jsonEncode(<String, String>{
-                                      'username': "${sharedPrefs.username}",
-                                      'name': "${sharedPrefs.name}",
-                                      'text': "$description",
-                                      'photo': "${sharedPrefs.photo}",
-                                      'type':
-                                          "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                                    }),
-                                  );
-                                  LocalNotification()
-                                      .cancelNotification(widget.notifId);
-                                }
                                 break;
                               }
                             case FlushbarStatus.DISMISSED:
                               {
                                 if (!isDelete) {
-                                  print("---------");
-                                  print("Undo");
                                   firestoreInstance
                                       .collection("todos")
-                                      .doc(widget.id)
-                                      .update({"status": false});
+                                      .doc(id)
+                                      .update({
+                                    "status": false,
+                                    'timestamp': timestamp
+                                  });
+                                } else {
+                                  LocalNotification()
+                                      .cancelNotification(notifId);
                                 }
                                 break;
                               }
@@ -158,14 +157,8 @@ class _CardTodoState extends State<CardTodo> {
                         }
                         ..show(context);
                     },
-                    child: Container(
-                      width: 24.0,
-                      height: 24.0,
-                      margin: EdgeInsets.only(right: 4.0),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(9.0),
-                          border:
-                              Border.all(color: Color(0xFFDDDDDD), width: 2.0)),
+                    child: CustomIcon(
+                      type: 'emptyChecklist',
                     ),
                   ),
             SizedBox(

@@ -24,7 +24,25 @@ class CardHistoryTodo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           isFirst
-              ? TextDescription(text: FormatTime.getDate(time))
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextDescription(
+                      text: "${FormatTime.getDate2(time)[0]}",
+                      color: Color(0xFF888888),
+                      align: TextAlign.left,
+                    ),
+                    SizedBox(
+                      height: 1,
+                    ),
+                    TextDescription(
+                      text: "${FormatTime.getDate2(time)[1]}",
+                      color: Color(0xFF888888),
+                      fontWeight: FontWeight.w600,
+                      align: TextAlign.left,
+                    ),
+                  ],
+                )
               : TextDescription(
                   text: FormatTime.getDate(time),
                   color: Colors.transparent,
@@ -59,7 +77,7 @@ class CardHistoryTodo extends StatelessWidget {
                             ),
                           )
                         : Container(
-                            margin: EdgeInsets.only(top: 1),
+                            margin: EdgeInsets.only(top: 2),
                             child: CustomIcon(
                               type: "checklist",
                             ),
@@ -78,7 +96,7 @@ class CardHistoryTodo extends StatelessWidget {
                             height: 8,
                           ),
                           TextSmall(
-                            text: FormatTime.getTime(time),
+                            text: FormatTime.getTime(time, history: true),
                             color: Color(0xFF888888),
                           )
                         ],

@@ -51,282 +51,352 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Color(0xFFFAFAFB),
         body: SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 24.0, left: 24.0, right: 24.0),
-              child: Row(
-                children: [
-                  CustomIcon(
-                    type: "streak",
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 24.0, left: 24.0, right: 24.0),
+                  child: Row(
+                    children: [
+                      // CustomIcon(
+                      //   type: "streak",
+                      // ),
+                      // SizedBox(
+                      //   width: 6.0,
+                      // ),
+                      // TextDescription(
+                      //   text: "37",
+                      //   fontWeight: FontWeight.w600,
+                      // ),
+                      Expanded(child: Container()),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: 14, right: 14, top: 4, bottom: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border:
+                              Border.all(width: 2, color: Color(0xFFDDDDDD)),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      context: context,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: const Radius.circular(16.0),
+                                          topRight: const Radius.circular(16.0),
+                                        ),
+                                      ),
+                                      builder: (_) => SingleChildScrollView(
+                                            child: Container(
+                                                padding:
+                                                    EdgeInsets.only(top: 43),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pop(context);
+                                                        navigateSecondPage();
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 24.0,
+                                                                bottom: 28.0),
+                                                        child: Row(
+                                                          children: [
+                                                            CustomIcon(
+                                                              type: "edit",
+                                                            ),
+                                                            SizedBox(
+                                                              width: 20.0,
+                                                            ),
+                                                            TextDescription(
+                                                              text:
+                                                                  "Edit Profile",
+                                                              color: Color(
+                                                                  0xFF222222),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pop(context);
+                                                        navigateToSetting();
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 24.0,
+                                                                bottom: 28.0),
+                                                        child: Row(
+                                                          children: [
+                                                            CustomIcon(
+                                                              type: "settings",
+                                                            ),
+                                                            SizedBox(
+                                                              width: 20.0,
+                                                            ),
+                                                            TextDescription(
+                                                              text: "Settings",
+                                                              color: Color(
+                                                                  0xFF222222),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                          ));
+                                },
+                                child: CustomIcon(
+                                  type: "more",
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              VerticalDivider(
+                                color: Color(0xFFDDDDDD),
+                                thickness: 1,
+                                width: 1,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: CustomIcon(
+                                  type: "close",
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 6.0,
-                  ),
-                  TextDescription(
-                    text: "37",
-                    fontWeight: FontWeight.w600,
-                  ),
-                  Expanded(child: Container()),
-                  Container(
-                    padding:
-                        EdgeInsets.only(left: 14, right: 14, top: 2, bottom: 2),
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                Center(
+                  child: Container(
+                    width: 64.0,
+                    height: 64.0,
                     decoration: BoxDecoration(
-                      border: Border.all(width: 1.5, color: Color(0xFFDDDDDD)),
-                      borderRadius: BorderRadius.circular(14),
+                        border:
+                            Border.all(width: 5.0, color: Color(0xFFEFEFEF)),
+                        image: DecorationImage(
+                            image: NetworkImage(sharedPrefs.photo),
+                            fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(21.0)),
+                  ),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                Center(
+                  child: TextDescription(
+                      text: "${sharedPrefs.name}", fontWeight: FontWeight.w600),
+                ),
+                SizedBox(
+                  height: 6.0,
+                ),
+                Center(
+                    child: TextDescription(
+                  text: "@${sharedPrefs.username}",
+                  color: Color(0xFF888888),
+                )),
+                SizedBox(
+                  height: 16.0,
+                ),
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(left: 24.0, right: 24.0),
+                    child: TextDescription(
+                      text: "${sharedPrefs.about}",
+                      align: TextAlign.center,
                     ),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              showModalBottomSheet(
-                                  isScrollControlled: true,
-                                  context: context,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: const Radius.circular(16.0),
-                                      topRight: const Radius.circular(16.0),
+                  ),
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                Divider(
+                  thickness: 1.0,
+                  color: Color(0xFFE5E5E5),
+                ),
+                SizedBox(
+                  height: 24.0,
+                ),
+                Container(
+                  child: StreamBuilder(
+                      stream: getTodo(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: Text("loading"),
+                          );
+                        }
+                        if (snapshot.data.docs.length == 0) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Container(
+                                child: Row(
+                                  children: [
+                                    TextDescription(
+                                      text: "0",
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    TextDescription(text: " Completed Task"),
+                                  ],
+                                ),
+                                margin: EdgeInsets.only(left: 24.0),
+                              ),
+                              SizedBox(
+                                height: 24.0,
+                              ),
+                              Divider(
+                                thickness: 8.0,
+                                color: Color(0xFFEFEFEF),
+                              ),
+                              SizedBox(
+                                height: 48.0,
+                              ),
+                              Center(
+                                child: TextDescription(
+                                  text:
+                                      "Do what matters today\nGet something done",
+                                  color: Color(0xFF888888),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 32.0,
+                              ),
+                              Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Get.offAllNamed('/task');
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        top: 8, bottom: 8, left: 16, right: 16),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFF222222),
+                                        borderRadius:
+                                            BorderRadius.circular(22)),
+                                    child: TextSmall(
+                                      text: "Go to Task",
+                                      color: Colors.white,
                                     ),
                                   ),
-                                  builder: (_) => SingleChildScrollView(
-                                        child: Container(
-                                            padding: EdgeInsets.only(top: 43),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                    navigateSecondPage();
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 24.0,
-                                                            bottom: 28.0),
-                                                    child: Row(
-                                                      children: [
-                                                        CustomIcon(
-                                                          type: "edit",
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20.0,
-                                                        ),
-                                                        TextDescription(
-                                                          text: "Edit Profile",
-                                                          color:
-                                                              Color(0xFF222222),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                    navigateToSetting();
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 24.0,
-                                                            bottom: 28.0),
-                                                    child: Row(
-                                                      children: [
-                                                        CustomIcon(
-                                                          type: "settings",
-                                                        ),
-                                                        SizedBox(
-                                                          width: 20.0,
-                                                        ),
-                                                        TextDescription(
-                                                          text: "Settings",
-                                                          color:
-                                                              Color(0xFF222222),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )),
-                                      ));
-                            },
-                            child: CustomIcon(
-                              type: "more",
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          VerticalDivider(
-                            color: Color(0xFFDDDDDD),
-                            thickness: 1,
-                            width: 1,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: CustomIcon(
-                              type: "close",
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            Center(
-              child: Container(
-                width: 64.0,
-                height: 64.0,
-                decoration: BoxDecoration(
-                    border: Border.all(width: 5.0, color: Color(0xFFEFEFEF)),
-                    image: DecorationImage(
-                        image: NetworkImage(sharedPrefs.photo),
-                        fit: BoxFit.cover),
-                    borderRadius: BorderRadius.circular(21.0)),
-              ),
-            ),
-            SizedBox(
-              height: 12.0,
-            ),
-            Center(
-              child: TextDescription(
-                  text: "${sharedPrefs.name}", fontWeight: FontWeight.w600),
-            ),
-            SizedBox(
-              height: 6.0,
-            ),
-            Center(child: TextDescription(text: "${sharedPrefs.username}")),
-            SizedBox(
-              height: 16.0,
-            ),
-            Center(
-              child: Container(
-                margin: EdgeInsets.only(left: 24.0, right: 24.0),
-                child: TextDescription(
-                  text: "${sharedPrefs.about}",
-                  align: TextAlign.justify,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            Divider(
-              thickness: 1.0,
-              color: Color(0xFFE5E5E5),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            Container(
-              child: StreamBuilder(
-                  stream: getTodo(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: Text("loading"),
-                      );
-                    }
-                    if (snapshot.data.docs.length == 0) {
-                      return Center(
-                        child: Text("Kosong"),
-                      );
-                    }
-                    var date = "";
-                    var index = 0;
+                                ),
+                              )
+                            ],
+                          );
+                        }
+                        var date = "";
+                        var index = 0;
 
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 24),
-                      child: Column(
-                        children: snapshot.data.docs.map((data) {
-                          index++;
-                          if (date == FormatTime.getDate(data['timestamp'])) {
-                            return CardHistoryTodo(
-                              id: data.id,
-                              isFirst: false,
-                              type: data['type'],
-                              description: data['description'],
-                              time: data['timestamp'],
-                            );
-                          } else {
-                            date = FormatTime.getDate(data['timestamp']);
-                            return Column(
-                              children: [
-                                index == 1
-                                    ? Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            child: Row(
-                                              children: [
-                                                TextDescription(
-                                                  text:
-                                                      "${snapshot.data.docs.length}",
-                                                  fontWeight: FontWeight.w600,
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 24),
+                          child: Column(
+                            children: snapshot.data.docs.map((data) {
+                              index++;
+                              if (date ==
+                                  FormatTime.getDate(data['timestamp'])) {
+                                return CardHistoryTodo(
+                                  id: data.id,
+                                  isFirst: false,
+                                  type: data['type'],
+                                  description: data['description'],
+                                  time: data['timestamp'],
+                                );
+                              } else {
+                                date = FormatTime.getDate(data['timestamp']);
+                                return Column(
+                                  children: [
+                                    index == 1
+                                        ? Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                child: Row(
+                                                  children: [
+                                                    TextDescription(
+                                                      text:
+                                                          "${snapshot.data.docs.length}",
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                    TextDescription(
+                                                        text:
+                                                            " Completed Task"),
+                                                  ],
                                                 ),
-                                                TextDescription(
-                                                    text: " Completed Task"),
-                                              ],
-                                            ),
-                                            margin: EdgeInsets.only(left: 24.0),
-                                          ),
-                                          SizedBox(
-                                            height: 24.0,
-                                          ),
-                                          Divider(
-                                            thickness: 8.0,
-                                            color: Color(0xFFEFEFEF),
-                                          ),
-                                          Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 24.0),
+                                              ),
+                                              SizedBox(
+                                                height: 24.0,
+                                              ),
+                                              Divider(
+                                                thickness: 8.0,
+                                                color: Color(0xFFEFEFEF),
+                                              )
+                                            ],
+                                          )
+                                        : Container(
                                             margin: EdgeInsets.only(top: 12),
                                             child: Divider(
                                               thickness: 1,
                                               color: Color(0xFFE5E5E5),
                                             ),
                                           ),
-                                        ],
-                                      )
-                                    : Container(),
-                                CardHistoryTodo(
-                                  id: data.id,
-                                  isFirst: true,
-                                  type: data['type'],
-                                  description: data['description'],
-                                  time: data['timestamp'],
-                                ),
-                              ],
-                            );
-                          }
-                        }).toList(),
-                      ),
-                    );
-                  }),
+                                    CardHistoryTodo(
+                                      id: data.id,
+                                      isFirst: true,
+                                      type: data['type'],
+                                      description: data['description'],
+                                      time: data['timestamp'],
+                                    ),
+                                  ],
+                                );
+                              }
+                            }).toList(),
+                          ),
+                        );
+                      }),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

@@ -1,9 +1,14 @@
+import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+import '../../main.dart';
 
 class LocalNotification {
   const LocalNotification();
@@ -78,7 +83,8 @@ class LocalNotification {
     if (payload != null) {
       print('notification payload: $payload');
     }
-    await Get.offAllNamed("/task");
+    // runApp(MyApp());
+    // Get.to(TaskScreen());
   }
 
   Future onDidReceiveLocalNotification(
@@ -92,8 +98,11 @@ class LocalNotification {
           CupertinoDialogAction(
             isDefaultAction: true,
             child: Text('Ok'),
-            onPressed: () async {
-              await Get.offAllNamed("/task");
+            onPressed: () {
+              // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+              //   return TaskScreen(
+              //   );
+              // }));
             },
           )
         ],
@@ -123,5 +132,15 @@ class LocalNotification {
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         notifConfig;
     await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future changeTimeNotification(
+      int idNotif, String description, int timestamp) async {
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String message =
+        '${description} at ${FormatTime.getInfoTime(time.hour, time.minute)}';
+
+    await LocalNotification().cancelNotification(idNotif);
+    await LocalNotification().setNotification(message, time, idNotif);
   }
 }
