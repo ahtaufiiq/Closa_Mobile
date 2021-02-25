@@ -73,7 +73,6 @@ class _EditProfileState extends State<EditProfile> {
   bool validation() {
     return usernameLength != 0 &&
         nameLength != 0 &&
-        aboutLength != 0 &&
         usernameLength <= 16 &&
         nameLength <= 32 &&
         aboutLength <= 180 &&

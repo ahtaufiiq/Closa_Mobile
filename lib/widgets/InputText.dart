@@ -14,15 +14,13 @@ class UpperCaseTextFormatter extends TextInputFormatter {
 }
 
 class InputText extends StatelessWidget {
-  InputText(
-      {Key key, this.controller, this.hint, this.focus = false, this.update})
+  InputText({Key key, this.controller, this.hint, this.focus = false})
       : super(
           key: key,
         );
 
   final TextEditingController controller;
   final String hint;
-  final update;
   final bool focus;
   @override
   Widget build(BuildContext context) {
@@ -31,10 +29,10 @@ class InputText extends StatelessWidget {
       child: TextField(
           // inputFormatters: [UpperCaseTextFormatter()],
           textCapitalization: TextCapitalization.sentences,
-          onChanged: (value) {
-            update(value);
-          },
           controller: controller,
+          onSubmitted: (value) {
+            
+          },
           autofocus: true,
           style: TextStyle(
               fontSize: 16.0, fontWeight: FontWeight.w600, fontFamily: "Inter"),

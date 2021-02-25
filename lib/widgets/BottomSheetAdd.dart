@@ -406,10 +406,58 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
           SizedBox(
             height: 12.0,
           ),
-          InputText(
-            controller: todoController,
-            hint: 'e.g. Read 10 page of Atomic Habits',
-            focus: true,
+          Container(
+            margin: EdgeInsets.only(left: 24.0, right: 24.0),
+            child: TextField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: todoController,
+                onSubmitted: (value) {
+                  int id = DateTime.now().millisecondsSinceEpoch % 100000000;
+
+                  if (todoLength != 0) {
+                    firestoreInstance.collection("todos").add({
+                      "description": todoController.text,
+                      "status": false,
+                      "timestamp": timestamp + addTime,
+                      "notificationId": id,
+                      "timeReminder": timeReminder,
+                      "type":
+                          widget.type == "highlight" ? 'highlight' : 'others',
+                      "userId": sharedPrefs.idUser
+                    }).then((value) {
+                      print(value.id);
+                      if (widget.type == "highlight") {
+                        http.post(
+                          "https://api.closa.me/integrations/highlight",
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'accessToken':
+                                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                          },
+                          body: jsonEncode(<String, String>{
+                            'username': "${sharedPrefs.username}",
+                            'name': "${sharedPrefs.name}",
+                            'text': "${todoController.text}",
+                            'photo': "${sharedPrefs.photo}",
+                            'type': "setHighlight"
+                          }),
+                        );
+                      }
+                    });
+                    setNotificationTime(id);
+                    todoLength = 0;
+                    todoController.text = "";
+                  }
+                },
+                autofocus: true,
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Inter"),
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'e.g. Read 10 page of Atomic Habits',
+                    hintStyle: TextStyle(color: Color(0xFFCCCCCC)))),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 4.0),
@@ -498,11 +546,11 @@ class _BottomSheetAddState extends State<BottomSheetAdd> {
                 ),
                 Expanded(child: Container()),
                 GestureDetector(
-                  onTap: () async {
+                  onTap: () {
                     int id = DateTime.now().millisecondsSinceEpoch % 100000000;
 
                     if (todoLength != 0) {
-                      await firestoreInstance.collection("todos").add({
+                      firestoreInstance.collection("todos").add({
                         "description": todoController.text,
                         "status": false,
                         "timestamp": timestamp + addTime,
