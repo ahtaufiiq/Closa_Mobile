@@ -60,8 +60,10 @@ class _OptionsTodoState extends State<OptionsTodo> {
             height: 12.0,
           ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0, left: 24.0),
+            child: Container(
+              padding: const EdgeInsets.only(top: 12.0, left: 24.0, bottom: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(
@@ -95,12 +97,11 @@ class _OptionsTodoState extends State<OptionsTodo> {
                       ));
             },
           ),
-          SizedBox(
-            height: 24.0,
-          ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0),
+            child: Container(
+              padding: const EdgeInsets.only(left: 24.0, top: 12, bottom: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(
@@ -166,12 +167,11 @@ class _OptionsTodoState extends State<OptionsTodo> {
                 ..show(context);
             },
           ),
-          SizedBox(
-            height: 24.0,
-          ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0, bottom: 28.0),
+            child: Container(
+              padding: const EdgeInsets.only(left: 24.0, top: 12, bottom: 28.0),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(

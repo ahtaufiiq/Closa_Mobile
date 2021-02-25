@@ -56,115 +56,118 @@ class _CardTodoState extends State<CardTodo> {
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            status
-                ? CustomIcon(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          status
+              ? Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: CustomIcon(
                     type: 'fillChecklist',
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      LocalNotification().cancelNotification(widget.notifId);
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    LocalNotification().cancelNotification(widget.notifId);
+                    setState(() {
+                      status = true;
+                    });
+                    var description = widget.description;
+                    var notifId = widget.notifId;
+                    var timestamp = widget.time;
+                    var id = widget.id;
+                    var date = DateTime.now().millisecondsSinceEpoch;
+                    Flushbar flushbar;
+                    Timer(Duration(milliseconds: 300), () {
+                      firestoreInstance
+                          .collection("todos")
+                          .doc(id)
+                          .update({"status": true, "timestamp": date});
                       setState(() {
-                        status = true;
+                        status = false;
                       });
-                      var description = widget.description;
-                      var notifId = widget.notifId;
-                      var timestamp = widget.time;
-                      var id = widget.id;
-                      var date = DateTime.now().millisecondsSinceEpoch;
-                      Flushbar flushbar;
-                      Timer(Duration(milliseconds: 700), () {
-                        firestoreInstance
-                            .collection("todos")
-                            .doc(id)
-                            .update({"status": true, "timestamp": date});
-                        setState(() {
-                          status = false;
-                        });
-                      });
-                      http.post(
-                        "https://api.closa.me/integrations/done",
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                          'accessToken':
-                              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
-                        },
-                        body: jsonEncode(<String, String>{
-                          'username': "${sharedPrefs.username}",
-                          'id': widget.id,
-                          'name': "${sharedPrefs.name}",
-                          'text': "$description",
-                          'photo': "${sharedPrefs.photo}",
-                          'type':
-                              "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
-                        }),
-                      );
+                    });
+                    http.post(
+                      "https://api.closa.me/integrations/done",
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'accessToken':
+                            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJjbG9zYSIsImlhdCI6MTYwMjE5MDQ3NH0.1d6Z6e4r7QpzRZtGtQ_iDFsg1uPto1N8wgKJ27StAVQ"
+                      },
+                      body: jsonEncode(<String, String>{
+                        'username': "${sharedPrefs.username}",
+                        'id': widget.id,
+                        'name': "${sharedPrefs.name}",
+                        'text': "$description",
+                        'photo': "${sharedPrefs.photo}",
+                        'type':
+                            "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                      }),
+                    );
 
-                      flushbar = Flushbar(
-                          margin:
-                              EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                          duration: Duration(seconds: 3),
-                          borderRadius: 4.0,
-                          icon: CustomIcon(type: "checkDone"),
-                          mainButton: FlatButton(
-                            onPressed: () {
-                              isDelete = false;
-                              flushbar.dismiss(true);
-                            },
-                            child: Text(
-                              "Undo",
-                              style: TextStyle(color: Colors.amber),
-                            ),
-                          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                          message: "Done");
+                    flushbar = Flushbar(
+                        margin:
+                            EdgeInsets.only(bottom: 107, left: 24, right: 24),
+                        duration: Duration(seconds: 3),
+                        borderRadius: 4.0,
+                        icon: CustomIcon(type: "checkDone"),
+                        mainButton: FlatButton(
+                          onPressed: () {
+                            isDelete = false;
+                            flushbar.dismiss(true);
+                          },
+                          child: Text(
+                            "Undo",
+                            style: TextStyle(color: Colors.amber),
+                          ),
+                        ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
+                        message: "Done");
 
-                      flushbar
-                        ..onStatusChanged = (FlushbarStatus flushbarStatus) {
-                          switch (flushbarStatus) {
-                            case FlushbarStatus.SHOWING:
-                              {
-                                break;
+                    flushbar
+                      ..onStatusChanged = (FlushbarStatus flushbarStatus) {
+                        switch (flushbarStatus) {
+                          case FlushbarStatus.SHOWING:
+                            {
+                              break;
+                            }
+                          case FlushbarStatus.IS_APPEARING:
+                            {
+                              break;
+                            }
+                          case FlushbarStatus.IS_HIDING:
+                            {
+                              break;
+                            }
+                          case FlushbarStatus.DISMISSED:
+                            {
+                              if (!isDelete) {
+                                firestoreInstance
+                                    .collection("todos")
+                                    .doc(id)
+                                    .update({
+                                  "status": false,
+                                  'timestamp': timestamp
+                                });
+                              } else {
+                                LocalNotification().cancelNotification(notifId);
                               }
-                            case FlushbarStatus.IS_APPEARING:
-                              {
-                                break;
-                              }
-                            case FlushbarStatus.IS_HIDING:
-                              {
-                                break;
-                              }
-                            case FlushbarStatus.DISMISSED:
-                              {
-                                if (!isDelete) {
-                                  firestoreInstance
-                                      .collection("todos")
-                                      .doc(id)
-                                      .update({
-                                    "status": false,
-                                    'timestamp': timestamp
-                                  });
-                                } else {
-                                  LocalNotification()
-                                      .cancelNotification(notifId);
-                                }
-                                break;
-                              }
-                          }
+                              break;
+                            }
                         }
-                        ..show(context);
-                    },
+                      }
+                      ..show(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.transparent),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 22),
                     child: CustomIcon(
                       type: 'emptyChecklist',
                     ),
                   ),
-            SizedBox(
-              width: 12.0,
-            ),
-            Expanded(
+                ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -189,9 +192,9 @@ class _CardTodoState extends State<CardTodo> {
                         )
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

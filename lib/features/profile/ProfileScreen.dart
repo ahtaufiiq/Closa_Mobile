@@ -74,8 +74,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // ),
                       Expanded(child: Container()),
                       Container(
-                        padding: EdgeInsets.only(
-                            left: 14, right: 14, top: 4, bottom: 4),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border:
@@ -165,27 +163,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 )),
                                           ));
                                 },
-                                child: CustomIcon(
-                                  type: "more",
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: 14, top: 4, bottom: 4, right: 10),
+                                  decoration: BoxDecoration(color: Colors.transparent),
+                                  child: CustomIcon(
+                                    type: "more",
+                                  ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10,
                               ),
                               VerticalDivider(
                                 color: Color(0xFFDDDDDD),
                                 thickness: 1,
                                 width: 1,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: CustomIcon(
-                                  type: "close",
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: 10, top: 7, bottom: 7, right: 14),
+                                  decoration: BoxDecoration(color: Colors.transparent),
+                                  child: CustomIcon(
+                                    type: "close",
+                                  ),
                                 ),
                               )
                             ],

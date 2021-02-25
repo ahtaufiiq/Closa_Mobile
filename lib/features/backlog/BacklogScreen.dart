@@ -340,7 +340,17 @@ class _BacklogScreenState extends State<BacklogScreen> {
                   child: todos.length == 0
                       ? Container()
                       : Container(
-                          color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xFF000000).withOpacity(0.12),
+                                blurRadius: 8,
+                                offset:
+                                    Offset(1, 2), // changes position of shadow
+                              ),
+                            ],
+                          ),
                           padding: const EdgeInsets.all(24.0),
                           child: Row(
                             children: [
@@ -370,6 +380,15 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                         left: 20,
                                         right: 20),
                                     decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Color(0xFF000000)
+                                                .withOpacity(0.25),
+                                            blurRadius: 8,
+                                            offset: Offset(1,
+                                                2), // changes position of shadow
+                                          ),
+                                        ],
                                         color: clickedStart
                                             ? Color(0xFF4D4D4D)
                                             : Color(0xFF222222),

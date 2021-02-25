@@ -76,39 +76,47 @@ class _CardBacklogState extends State<CardBacklog> {
                 ),
               ],
             ),
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  status
-                      ? GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              status = false;
-                            });
-                            widget.deleteTodo(widget.id);
-                          },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                status
+                    ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            status = false;
+                          });
+                          widget.deleteTodo(widget.id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 22),
+                          decoration: BoxDecoration(color: Colors.transparent),
                           child: CustomIcon(
                             type: 'selectedRadio',
                           ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              status = true;
-                            });
-                            widget.addTodo(widget.id, widget.time,
-                                widget.description, widget.notifId);
-                          },
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            status = true;
+                          });
+                          widget.addTodo(widget.id, widget.time,
+                              widget.description, widget.notifId);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 22),
+                          decoration: BoxDecoration(color: Colors.transparent),
                           child: CustomIcon(
                             type: 'emptyRadio',
                           ),
                         ),
-                  SizedBox(
-                    width: 12.0,
-                  ),
-                  Expanded(
+                      ),
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 12.0, right: 12, bottom: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -122,9 +130,9 @@ class _CardBacklogState extends State<CardBacklog> {
                         )
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           )
         ],

@@ -59,12 +59,11 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 24.0,
-          ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0),
+            child: Container(
+              padding: const EdgeInsets.only(top: 24, left: 24.0, bottom: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(
@@ -99,7 +98,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                 },
                 body: jsonEncode(<String, String>{
                   'username': "${sharedPrefs.username}",
-                  'id':widget.id,
+                  'id': widget.id,
                   'name': "${sharedPrefs.name}",
                   'text': "$description",
                   'photo': "${sharedPrefs.photo}",
@@ -165,12 +164,11 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                 ..show(context);
             },
           ),
-          SizedBox(
-            height: 24,
-          ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0),
+            child: Container(
+              padding: const EdgeInsets.only(left: 24.0, top: 12, bottom: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(
@@ -205,12 +203,11 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                       ));
             },
           ),
-          SizedBox(
-            height: 24.0,
-          ),
           GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24.0, bottom: 28.0),
+            child: Container(
+              padding: const EdgeInsets.only(left: 24.0, bottom: 28.0, top: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.transparent),
               child: Row(
                 children: [
                   CustomIcon(
