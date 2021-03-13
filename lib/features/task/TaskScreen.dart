@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:closa_flutter/components/CustomSnackbar.dart';
+import 'package:closa_flutter/components/CustomBottomSheet.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
@@ -142,7 +142,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                             left: 24.0, right: 24.0),
                                         child: GestureDetector(
                                           onTap: () {
-                                            CustomSnackbar.addTodo(context,
+                                            CustomBottomSheet.addTodo(context,
                                                 type: "highlight");
                                           },
                                           child: Container(
@@ -233,12 +233,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      CustomSnackbar.editTodo(context, todo,
+                                      CustomBottomSheet.editTodo(context, todo,
                                           snapshot.data.docs.last.id);
                                     },
                                     onLongPress: () {
-                                      CustomSnackbar.optionsTodo(context, todo,
-                                          snapshot.data.docs.last.id);
+                                      CustomBottomSheet.optionsTodo(context,
+                                          todo, snapshot.data.docs.last.id);
                                     },
                                     child: Container(
                                       margin: EdgeInsets.only(
@@ -323,11 +323,11 @@ class _TaskScreenState extends State<TaskScreen> {
                                                   left: 24.0, right: 24.0),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  CustomSnackbar.editTodo(
+                                                  CustomBottomSheet.editTodo(
                                                       context, todo, data.id);
                                                 },
                                                 onLongPress: () {
-                                                  CustomSnackbar.optionsTodo(
+                                                  CustomBottomSheet.optionsTodo(
                                                       context, todo, data.id);
                                                 },
                                                 child: CardTodo(
@@ -348,11 +348,11 @@ class _TaskScreenState extends State<TaskScreen> {
                                             left: 24.0, right: 24.0),
                                         child: GestureDetector(
                                           onTap: () {
-                                            CustomSnackbar.editTodo(
+                                            CustomBottomSheet.editTodo(
                                                 context, todo, data.id);
                                           },
                                           onLongPress: () {
-                                            CustomSnackbar.optionsTodo(
+                                            CustomBottomSheet.optionsTodo(
                                                 context, todo, data.id);
                                           },
                                           child: CardTodo(
@@ -421,7 +421,7 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
             Positioned(
               child: GestureDetector(
-                onTap: () => CustomSnackbar.addTodo(context),
+                onTap: () => CustomBottomSheet.addTodo(context),
                 child: Container(
                   padding: EdgeInsets.all(12.0),
                   decoration: BoxDecoration(

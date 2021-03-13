@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:closa_flutter/components/CustomSnackbar.dart';
+import 'package:closa_flutter/components/CustomBottomSheet.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
@@ -144,7 +144,7 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
               Positioned(
                 child: GestureDetector(
                   onTap: () {
-                    CustomSnackbar.addTodo(context);
+                    CustomBottomSheet.addTodo(context);
                   },
                   child: Container(
                     padding: EdgeInsets.all(12.0),

@@ -1,3 +1,4 @@
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
@@ -8,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import './BottomSheetEdit.dart';
-import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
 import '../helpers/color.dart';
 import 'Text.dart';
@@ -119,47 +119,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
                   widget.todo.description,
                   FormatTime.setTomorrow(widget.todo.timestamp));
 
-              Flushbar flushbar;
-              flushbar = Flushbar(
-                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                  duration: Duration(seconds: 3),
-                  borderRadius: 4.0,
-                  icon: CustomIcon(
-                    type: "arrowUpRight",
-                  ),
-                  mainButton: FlatButton(
-                    onPressed: () {
-                      Get.to(BacklogScreen());
-                    },
-                    child: Text(
-                      "View",
-                      style: TextStyle(color: Colors.amber),
-                    ),
-                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                  message: "Moved to Backlog");
-
-              flushbar
-                ..onStatusChanged = (FlushbarStatus status) async {
-                  switch (status) {
-                    case FlushbarStatus.SHOWING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_APPEARING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_HIDING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.DISMISSED:
-                      {
-                        break;
-                      }
-                  }
-                }
-                ..show(context);
+              CustomSnackbar.movedToBacklog(context);
             },
           ),
           GestureDetector(
@@ -209,23 +169,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                 .doc(widget.id)
                                 .delete();
                             bool isDelete = true;
-                            Flushbar flushbar;
-                            flushbar = Flushbar(
-                                margin: EdgeInsets.only(
-                                    bottom: 107, left: 24, right: 24),
-                                duration: Duration(seconds: 3),
-                                borderRadius: 4.0,
-                                mainButton: FlatButton(
-                                  onPressed: () {
-                                    isDelete = false;
-                                    flushbar.dismiss(true);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(color: Colors.amber),
-                                  ),
-                                ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                                message: "Delete Todo");
+
                             var notifId = widget.todo.notificationId;
                             var id = widget.id;
                             var todo = {
@@ -237,39 +181,10 @@ class _OptionsTodoState extends State<OptionsTodo> {
                               "type": widget.todo.type,
                               "userId": sharedPrefs.idUser
                             };
-                            flushbar
-                              ..onStatusChanged =
-                                  (FlushbarStatus status) async {
-                                switch (status) {
-                                  case FlushbarStatus.SHOWING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_APPEARING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_HIDING:
-                                    {
-                                      if (isDelete) {
-                                        await LocalNotification()
-                                            .cancelNotification(notifId);
-                                      }
-                                      break;
-                                    }
-                                  case FlushbarStatus.DISMISSED:
-                                    {
-                                      if (!isDelete) {
-                                        await firestoreInstance
-                                            .collection("todos")
-                                            .add(todo);
-                                      }
-
-                                      break;
-                                    }
-                                }
-                              }
-                              ..show(dialogContext);
+                            LocalNotification().cancelNotification(notifId);
+                            CustomSnackbar.deleteTodo(context, () {
+                              firestoreInstance.collection("todos").add(todo);
+                            });
                           },
                         ),
                       ],

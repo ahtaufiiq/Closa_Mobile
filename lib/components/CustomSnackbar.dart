@@ -1,72 +1,56 @@
-import 'package:closa_flutter/model/Todo.dart';
-import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
-import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
-import 'package:closa_flutter/widgets/OptionsBacklog.dart';
-import 'package:closa_flutter/widgets/OptionsTodo.dart';
+import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomSnackbar {
-  static addTodo(context, {type = "default"}) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetAdd(
-              type: type,
-            ));
+  static movedToBacklog(context) {
+    final snackBar = SnackBar(
+      content: Text("Moved to Backlog"),
+      action: SnackBarAction(
+        textColor: Colors.amber,
+        label: 'View',
+        onPressed: () {
+          Get.to(BacklogScreen());
+        },
+      ),
+    );
+
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  static deleteTodo() {}
+  static checkDone(context, clickUndo) {
+    final snackBar = SnackBar(
+      content: Text("Done"),
+      action: SnackBarAction(
+        textColor: Colors.amber,
+        label: 'Undo',
+        onPressed: () {
+          clickUndo();
+        },
+      ),
+    );
 
-  static optionsBacklog(context, Todo todo, id) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsBacklog(id: id, todo: todo));
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  static optionsTodo(context, Todo todo, id) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsTodo(id: id, todo: todo));
-  }
+  static deleteTodo(context, clickUndo) {
+    final snackBar = SnackBar(
+      content: Text("Delete Todo"),
+      action: SnackBarAction(
+        textColor: Colors.amber,
+        label: 'Cancel',
+        onPressed: () {
+          clickUndo();
+        },
+      ),
+    );
 
-  static editTodo(context, Todo todo, id, {isBacklog: false}) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetEdit(
-              isBacklog: isBacklog,
-              id: id,
-              type: todo.type,
-              description: todo.description,
-              time: todo.timestamp,
-              timeReminder: todo.timeReminder,
-              notifId: todo.notificationId,
-            ));
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

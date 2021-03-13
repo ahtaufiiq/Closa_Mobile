@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:closa_flutter/components/CustomBottomSheet.dart';
 import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
@@ -11,7 +12,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'BottomSheetEdit.dart';
-import 'package:flushbar/flushbar.dart';
 import 'CustomIcon.dart';
 import '../helpers/color.dart';
 import 'Text.dart';
@@ -74,7 +74,6 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                   .cancelNotification(widget.todo.notificationId);
 
               var date = DateTime.now().millisecondsSinceEpoch;
-              Flushbar flushbar;
 
               http.post(
                 "https://api.closa.me/integrations/done",
@@ -98,63 +97,13 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                   .collection("todos")
                   .doc(widget.id)
                   .update({"status": true, 'timestamp': date});
+              LocalNotification()
+                  .cancelNotification(widget.todo.notificationId);
 
-              bool isDelete = true;
-              flushbar = Flushbar(
-                  margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                  duration: Duration(seconds: 3),
-                  borderRadius: 4.0,
-                  icon: CustomIcon(type: "checkDone"),
-                  mainButton: FlatButton(
-                    onPressed: () {
-                      isDelete = false;
-                      flushbar.dismiss(true);
-                    },
-                    child: Text(
-                      "Undo",
-                      style: TextStyle(color: Colors.amber),
-                    ),
-                  ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                  message: "Done");
-
-              flushbar
-                ..onStatusChanged = (FlushbarStatus flushbarStatus) {
-                  switch (flushbarStatus) {
-                    case FlushbarStatus.SHOWING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_APPEARING:
-                      {
-                        break;
-                      }
-                    case FlushbarStatus.IS_HIDING:
-                      {
-                        if (isDelete) {
-                          LocalNotification()
-                              .cancelNotification(widget.todo.notificationId);
-                        }
-                        break;
-                      }
-                    case FlushbarStatus.DISMISSED:
-                      {
-                        if (!isDelete) {
-                          print(widget.id);
-                          print("---------");
-                          print("Undo");
-                          firestoreInstance
-                              .collection("todos")
-                              .doc(widget.id)
-                              .update({
-                            "status": false,
-                            'timestamp': widget.todo.timestamp
-                          });
-                        }
-                        break;
-                      }
-                  }
-                }
-                ..show(context);
+              CustomSnackbar.checkDone(context, () {
+                firestoreInstance.collection("todos").doc(widget.id).update(
+                    {"status": false, 'timestamp': widget.todo.timestamp});
+              });
             },
           ),
           GestureDetector(
@@ -176,7 +125,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
             ),
             onTap: () {
               Navigator.pop(context);
-              CustomSnackbar.editTodo(context, widget.todo, widget.id);
+              CustomBottomSheet.editTodo(context, widget.todo, widget.id);
             },
           ),
           GestureDetector(
@@ -226,23 +175,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                                 .doc(widget.id)
                                 .delete();
                             bool isDelete = true;
-                            Flushbar flushbar;
-                            flushbar = Flushbar(
-                                margin: EdgeInsets.only(
-                                    bottom: 107, left: 24, right: 24),
-                                duration: Duration(seconds: 3),
-                                borderRadius: 4.0,
-                                mainButton: FlatButton(
-                                  onPressed: () {
-                                    isDelete = false;
-                                    flushbar.dismiss(true);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(color: Colors.amber),
-                                  ),
-                                ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                                message: "Delete Todo");
+
                             var notifId = widget.todo.notificationId;
                             var id = widget.id;
                             var todo = {
@@ -254,39 +187,10 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                               "type": widget.todo.type,
                               "userId": sharedPrefs.idUser
                             };
-                            flushbar
-                              ..onStatusChanged =
-                                  (FlushbarStatus status) async {
-                                switch (status) {
-                                  case FlushbarStatus.SHOWING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_APPEARING:
-                                    {
-                                      break;
-                                    }
-                                  case FlushbarStatus.IS_HIDING:
-                                    {
-                                      if (isDelete) {
-                                        await LocalNotification()
-                                            .cancelNotification(notifId);
-                                      }
-                                      break;
-                                    }
-                                  case FlushbarStatus.DISMISSED:
-                                    {
-                                      if (!isDelete) {
-                                        await firestoreInstance
-                                            .collection("todos")
-                                            .add(todo);
-                                      }
-
-                                      break;
-                                    }
-                                }
-                              }
-                              ..show(dialogContext);
+                            LocalNotification().cancelNotification(notifId);
+                            CustomSnackbar.deleteTodo(context, () {
+                              firestoreInstance.collection("todos").add(todo);
+                            });
                           },
                         ),
                       ],

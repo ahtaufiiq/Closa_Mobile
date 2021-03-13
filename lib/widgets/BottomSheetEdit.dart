@@ -1,9 +1,9 @@
+import 'package:closa_flutter/components/CustomBottomSheet.dart';
 import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/model/Todo.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -103,47 +103,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
     if ((timestamp + addTime) > FormatTime.getTimestampTomorrow() &&
         DateTime.now().day ==
             DateTime.fromMillisecondsSinceEpoch(widget.time).day) {
-      Flushbar flushbar;
-      flushbar = Flushbar(
-          margin: EdgeInsets.only(bottom: 107, left: 24, right: 24),
-          duration: Duration(seconds: 3),
-          borderRadius: 4.0,
-          icon: CustomIcon(
-            type: "arrowUpRight",
-          ),
-          mainButton: FlatButton(
-            onPressed: () {
-              Get.to(BacklogScreen());
-            },
-            child: Text(
-              "View",
-              style: TextStyle(color: Colors.amber),
-            ),
-          ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-          message: "Moved to Backlog");
-
-      flushbar
-        ..onStatusChanged = (FlushbarStatus status) async {
-          switch (status) {
-            case FlushbarStatus.SHOWING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_APPEARING:
-              {
-                break;
-              }
-            case FlushbarStatus.IS_HIDING:
-              {
-                break;
-              }
-            case FlushbarStatus.DISMISSED:
-              {
-                break;
-              }
-          }
-        }
-        ..show(context);
+      CustomSnackbar.movedToBacklog(context);
     }
   }
 
@@ -547,7 +507,7 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                         sharedPrefs.idUser,
                         timeReminder);
 
-                    CustomSnackbar.optionsTodo(context, todo, widget.id);
+                    CustomBottomSheet.optionsTodo(context, todo, widget.id);
                   },
                   child: CustomIcon(
                     type: "more",

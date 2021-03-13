@@ -1,7 +1,7 @@
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'dart:convert';
 import 'package:closa_flutter/helpers/sharedPref.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'Text.dart';
 import '../helpers/color.dart';
@@ -77,7 +77,7 @@ class _CardTodoState extends State<CardTodo> {
                     var timestamp = widget.time;
                     var id = widget.id;
                     var date = DateTime.now().millisecondsSinceEpoch;
-                    Flushbar flushbar;
+                    LocalNotification().cancelNotification(notifId);
                     Timer(Duration(milliseconds: 300), () {
                       firestoreInstance
                           .collection("todos")
@@ -105,57 +105,12 @@ class _CardTodoState extends State<CardTodo> {
                       }),
                     );
 
-                    flushbar = Flushbar(
-                        margin:
-                            EdgeInsets.only(bottom: 107, left: 24, right: 24),
-                        duration: Duration(seconds: 3),
-                        borderRadius: 4.0,
-                        icon: CustomIcon(type: "checkDone"),
-                        mainButton: FlatButton(
-                          onPressed: () {
-                            isDelete = false;
-                            flushbar.dismiss(true);
-                          },
-                          child: Text(
-                            "Undo",
-                            style: TextStyle(color: Colors.amber),
-                          ),
-                        ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
-                        message: "Done");
-
-                    flushbar
-                      ..onStatusChanged = (FlushbarStatus flushbarStatus) {
-                        switch (flushbarStatus) {
-                          case FlushbarStatus.SHOWING:
-                            {
-                              break;
-                            }
-                          case FlushbarStatus.IS_APPEARING:
-                            {
-                              break;
-                            }
-                          case FlushbarStatus.IS_HIDING:
-                            {
-                              break;
-                            }
-                          case FlushbarStatus.DISMISSED:
-                            {
-                              if (!isDelete) {
-                                firestoreInstance
-                                    .collection("todos")
-                                    .doc(id)
-                                    .update({
-                                  "status": false,
-                                  'timestamp': timestamp
-                                });
-                              } else {
-                                LocalNotification().cancelNotification(notifId);
-                              }
-                              break;
-                            }
-                        }
-                      }
-                      ..show(context);
+                    CustomSnackbar.checkDone(context, () {
+                      firestoreInstance
+                          .collection("todos")
+                          .doc(id)
+                          .update({"status": false, 'timestamp': timestamp});
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(color: Colors.transparent),

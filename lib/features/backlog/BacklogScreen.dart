@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:closa_flutter/components/CustomSnackbar.dart';
+import 'package:closa_flutter/components/CustomBottomSheet.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/task/TaskScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
@@ -232,11 +232,11 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                 data['timestamp'])) {
                                           return GestureDetector(
                                             onTap: () =>
-                                                CustomSnackbar.editTodo(
+                                                CustomBottomSheet.editTodo(
                                                     context, todo, data.id,
                                                     isBacklog: true),
                                             onLongPress: () {
-                                              CustomSnackbar.optionsBacklog(
+                                              CustomBottomSheet.optionsBacklog(
                                                   context, todo, data.id);
                                             },
                                             child: CardBacklog(
@@ -255,11 +255,11 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                               data['timestamp']);
                                           return GestureDetector(
                                             onTap: () =>
-                                                CustomSnackbar.editTodo(
+                                                CustomBottomSheet.editTodo(
                                                     context, todo, data.id,
                                                     isBacklog: true),
                                             onLongPress: () {
-                                              CustomSnackbar.optionsBacklog(
+                                              CustomBottomSheet.optionsBacklog(
                                                   context, todo, data.id);
                                             },
                                             child: CardBacklog(
