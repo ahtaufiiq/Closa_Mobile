@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/features/task/TaskScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

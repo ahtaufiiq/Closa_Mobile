@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/model/Todo.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
 import 'package:flutter/material.dart';
@@ -61,39 +63,6 @@ class _TaskScreenState extends State<TaskScreen> {
     return stringValue;
   }
 
-  void showBottomAdd(context) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetAdd());
-  }
-
-  void showBottomEdit(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetEdit(
-              id: data.id,
-              type: data["type"],
-              description: data['description'],
-              time: data['timestamp'],
-              timeReminder: data["timeReminder"],
-              notifId: data['notificationId'],
-            ));
-  }
-
   Stream<QuerySnapshot> getHighlight() {
     return FirebaseFirestore.instance
         .collection('todos')
@@ -115,41 +84,6 @@ class _TaskScreenState extends State<TaskScreen> {
             isGreaterThanOrEqualTo: FormatTime.getTimestampToday())
         .where("timestamp", isLessThan: FormatTime.getTimestampTomorrow())
         .snapshots();
-  }
-
-  void optionsBottomSheet(context, data) {
-    print(data);
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsTodo(
-            id: data["id"],
-            description: data["description"],
-            type: data["type"],
-            time: data["time"],
-            timeReminder: data["timeReminder"],
-            notifId: data['notifId']));
-  }
-
-  void addTodoBottomSheet(context, {type = "default"}) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetAdd(
-              type: type,
-            ));
   }
 
   void openScreenProfile(context) {
@@ -208,7 +142,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                             left: 24.0, right: 24.0),
                                         child: GestureDetector(
                                           onTap: () {
-                                            addTodoBottomSheet(context,
+                                            CustomSnackbar.addTodo(context,
                                                 type: "highlight");
                                           },
                                           child: Container(
@@ -267,6 +201,15 @@ class _TaskScreenState extends State<TaskScreen> {
                                 return Container();
                               }
                               sharedPrefs.doneHighlight = false;
+                              var todo = Todo(
+                                snapshot.data.docs.last['description'],
+                                snapshot.data.docs.last['status'],
+                                snapshot.data.docs.last['timestamp'],
+                                snapshot.data.docs.last['notificationId'],
+                                snapshot.data.docs.last['type'],
+                                snapshot.data.docs.last['userId'],
+                                snapshot.data.docs.last['timeReminder'],
+                              );
                               return Column(
                                 children: [
                                   Container(
@@ -290,21 +233,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      showBottomEdit(
-                                          context, snapshot.data.docs.last);
+                                      CustomSnackbar.editTodo(context, todo,
+                                          snapshot.data.docs.last.id);
                                     },
                                     onLongPress: () {
-                                      var dataTodo = {
-                                        "id": snapshot.data.docs.last.id,
-                                        "description": snapshot
-                                            .data.docs.last['description'],
-                                        "type": "highlight",
-                                        "time": snapshot
-                                            .data.docs.last['timestamp'],
-                                        "timeReminder": snapshot
-                                            .data.docs.last["timeReminder"],
-                                      };
-                                      optionsBottomSheet(context, dataTodo);
+                                      CustomSnackbar.optionsTodo(context, todo,
+                                          snapshot.data.docs.last.id);
                                     },
                                     child: Container(
                                       margin: EdgeInsets.only(
@@ -349,6 +283,16 @@ class _TaskScreenState extends State<TaskScreen> {
                                 margin: EdgeInsets.only(bottom: 100),
                                 child: Column(
                                   children: snapshot.data.docs.map((data) {
+                                    var todo = Todo(
+                                        snapshot.data.docs.last['description'],
+                                        snapshot.data.docs.last['status'],
+                                        snapshot.data.docs.last['timestamp'],
+                                        snapshot
+                                            .data.docs.last['notificationId'],
+                                        snapshot.data.docs.last['type'],
+                                        snapshot.data.docs.last['userId'],
+                                        snapshot
+                                            .data.docs.last['timeReminder']);
                                     if (data['type'] != 'highlight') {
                                       counter++;
                                       if (counter == 1) {
@@ -376,22 +320,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                                   left: 24.0, right: 24.0),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  showBottomEdit(context, data);
+                                                  CustomSnackbar.editTodo(
+                                                      context, todo, data.id);
                                                 },
                                                 onLongPress: () {
-                                                  var dataTodo = {
-                                                    "id": data.id,
-                                                    "description":
-                                                        data['description'],
-                                                    "type": "others",
-                                                    "time": data['timestamp'],
-                                                    "notifId":
-                                                        data['notificationId'],
-                                                    "timeReminder":
-                                                        data["timeReminder"],
-                                                  };
-                                                  optionsBottomSheet(
-                                                      context, dataTodo);
+                                                  CustomSnackbar.optionsTodo(
+                                                      context, todo, data.id);
                                                 },
                                                 child: CardTodo(
                                                   id: data.id,
@@ -411,21 +345,12 @@ class _TaskScreenState extends State<TaskScreen> {
                                             left: 24.0, right: 24.0),
                                         child: GestureDetector(
                                           onTap: () {
-                                            showBottomEdit(context, data);
+                                            CustomSnackbar.editTodo(
+                                                context, todo, data.id);
                                           },
                                           onLongPress: () {
-                                            var dataTodo = {
-                                              "id": data.id,
-                                              "description":
-                                                  data['description'],
-                                              "type": "others",
-                                              "time": data['timestamp'],
-                                              "notifId": data['notificationId'],
-                                              "timeReminder":
-                                                  data["timeReminder"]
-                                            };
-                                            optionsBottomSheet(
-                                                context, dataTodo);
+                                            CustomSnackbar.optionsTodo(
+                                                context, todo, data.id);
                                           },
                                           child: CardTodo(
                                               id: data.id,
@@ -493,7 +418,7 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
             Positioned(
               child: GestureDetector(
-                onTap: () => showBottomAdd(context),
+                onTap: () => CustomSnackbar.addTodo(context),
                 child: Container(
                   padding: EdgeInsets.all(12.0),
                   decoration: BoxDecoration(

@@ -1,12 +1,13 @@
 import 'dart:async';
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
-import 'package:closa_flutter/features/home/TaskScreen.dart';
+import 'package:closa_flutter/features/task/TaskScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/model/Todo.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/CardBacklog.dart';
 import 'package:closa_flutter/widgets/CustomIcon.dart';
-import 'package:closa_flutter/widgets/OptionsBacklog.dart';
 import 'package:closa_flutter/widgets/Text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,46 +20,6 @@ class BacklogScreen extends StatefulWidget {
 }
 
 class _BacklogScreenState extends State<BacklogScreen> {
-  void showBottomEdit(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetEdit(
-              isBacklog: true,
-              id: data.id,
-              type: data["type"],
-              description: data['description'],
-              time: data['timestamp'],
-              timeReminder: data["timeReminder"],
-              notifId: data['notificationId'],
-            ));
-  }
-
-  void optionsBottomSheet(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsBacklog(
-            id: data["id"],
-            description: data["description"],
-            type: data["type"],
-            time: data["time"],
-            timeReminder: data["timeReminder"],
-            notifId: data['notifId']));
-  }
-
   void addTodo(id, timestamp, description, notifId) {
     setState(() {
       todos[id] = {
@@ -224,6 +185,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                               }
                               var date = "";
                               var total = 0;
+
                               snapshot.data.docs.forEach((data) {
                                 if (FormatTime.getDate(
                                         FormatTime.getTimestampToday()) !=
@@ -251,6 +213,14 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                   margin: EdgeInsets.only(bottom: 120),
                                   child: Column(
                                     children: snapshot.data.docs.map((data) {
+                                      var todo = Todo(
+                                          data['description'],
+                                          data['status'],
+                                          data['timestamp'],
+                                          data['notificationId'],
+                                          data['type'],
+                                          data['userId'],
+                                          data['timeReminder']);
                                       if (FormatTime.getDate(
                                               FormatTime.getTimestampToday()) ==
                                           FormatTime.getDate(
@@ -262,21 +232,12 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                 data['timestamp'])) {
                                           return GestureDetector(
                                             onTap: () =>
-                                                showBottomEdit(context, data),
+                                                CustomSnackbar.editTodo(
+                                                    context, todo, data.id,
+                                                    isBacklog: true),
                                             onLongPress: () {
-                                              var dataTodo = {
-                                                "id": data.id,
-                                                "description":
-                                                    data['description'],
-                                                "type": "others",
-                                                "time": data['timestamp'],
-                                                "notifId":
-                                                    data['notificationId'],
-                                                "timeReminder":
-                                                    data["timeReminder"],
-                                              };
-                                              optionsBottomSheet(
-                                                  context, dataTodo);
+                                              CustomSnackbar.optionsTodo(
+                                                  context, todo, data.id);
                                             },
                                             child: CardBacklog(
                                               notifId: data['notificationId'],
@@ -294,21 +255,12 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                               data['timestamp']);
                                           return GestureDetector(
                                             onTap: () =>
-                                                showBottomEdit(context, data),
+                                                CustomSnackbar.editTodo(
+                                                    context, todo, data.id,
+                                                    isBacklog: true),
                                             onLongPress: () {
-                                              var dataTodo = {
-                                                "id": data.id,
-                                                "description":
-                                                    data['description'],
-                                                "type": "others",
-                                                "time": data['timestamp'],
-                                                "notifId":
-                                                    data['notificationId'],
-                                                "timeReminder":
-                                                    data["timeReminder"],
-                                              };
-                                              optionsBottomSheet(
-                                                  context, dataTodo);
+                                              CustomSnackbar.optionsTodo(
+                                                  context, todo, data.id);
                                             },
                                             child: CardBacklog(
                                               notifId: data['notificationId'],

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/model/Todo.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -16,24 +18,13 @@ import 'Text.dart';
 import 'package:http/http.dart' as http;
 
 class OptionsBacklog extends StatefulWidget {
-  final String description;
-  final int time;
-  final String type;
+  final Todo todo;
   final String id;
-  final int notifId;
-  final String timeReminder;
-  const OptionsBacklog({
-    Key key,
-    this.notifId,
-    this.id,
-    this.description,
-    this.time,
-    this.timeReminder,
-    this.type,
-  }) : super(key: key);
+  const OptionsBacklog({Key key, this.todo, this.id}) : super(key: key);
 
   @override
-  _OptionsBacklogState createState() => _OptionsBacklogState(description, time);
+  _OptionsBacklogState createState() =>
+      _OptionsBacklogState(todo.description, todo.timestamp);
 }
 
 class _OptionsBacklogState extends State<OptionsBacklog> {
@@ -50,7 +41,6 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.notifId);
     return SingleChildScrollView(
         child: Container(
       padding:
@@ -80,12 +70,9 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
             ),
             onTap: () {
               Navigator.pop(context);
-              LocalNotification().cancelNotification(widget.notifId);
+              LocalNotification()
+                  .cancelNotification(widget.todo.notificationId);
 
-              var description = widget.description;
-              var notifId = widget.notifId;
-              var timestamp = widget.time;
-              var id = widget.id;
               var date = DateTime.now().millisecondsSinceEpoch;
               Flushbar flushbar;
 
@@ -103,13 +90,13 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                   'text': "$description",
                   'photo': "${sharedPrefs.photo}",
                   'type':
-                      "${widget.type == "highlight" ? 'doneHighlight' : 'done'}"
+                      "${widget.todo.type == "highlight" ? 'doneHighlight' : 'done'}"
                 }),
               );
 
               firestoreInstance
                   .collection("todos")
-                  .doc(id)
+                  .doc(widget.id)
                   .update({"status": true, 'timestamp': date});
 
               bool isDelete = true;
@@ -144,18 +131,24 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                     case FlushbarStatus.IS_HIDING:
                       {
                         if (isDelete) {
-                          LocalNotification().cancelNotification(notifId);
+                          LocalNotification()
+                              .cancelNotification(widget.todo.notificationId);
                         }
                         break;
                       }
                     case FlushbarStatus.DISMISSED:
                       {
                         if (!isDelete) {
-                          print(id);
+                          print(widget.id);
                           print("---------");
                           print("Undo");
-                          firestoreInstance.collection("todos").doc(id).update(
-                              {"status": false, 'timestamp': timestamp});
+                          firestoreInstance
+                              .collection("todos")
+                              .doc(widget.id)
+                              .update({
+                            "status": false,
+                            'timestamp': widget.todo.timestamp
+                          });
                         }
                         break;
                       }
@@ -183,24 +176,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
             ),
             onTap: () {
               Navigator.pop(context);
-              showModalBottomSheet(
-                  isScrollControlled: true,
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16.0),
-                      topRight: const Radius.circular(16.0),
-                    ),
-                  ),
-                  builder: (_) => BottomSheetEdit(
-                        isBacklog: true,
-                        id: widget.id,
-                        description: widget.description,
-                        type: widget.type,
-                        time: widget.time,
-                        notifId: widget.notifId,
-                        timeReminder: widget.timeReminder,
-                      ));
+              CustomSnackbar.editTodo(context, widget.todo, widget.id);
             },
           ),
           GestureDetector(
@@ -230,7 +206,7 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                   builder: (dialogContext) {
                     return AlertDialog(
                       content: TextDescription(
-                          text: 'Delete "${widget.description}" ?'),
+                          text: 'Delete "${widget.todo.description}" ?'),
                       actions: <Widget>[
                         // usually buttons at the bottom of the dialog
                         new FlatButton(
@@ -267,15 +243,15 @@ class _OptionsBacklogState extends State<OptionsBacklog> {
                                   ),
                                 ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
                                 message: "Delete Todo");
-                            var notifId = widget.notifId;
+                            var notifId = widget.todo.notificationId;
                             var id = widget.id;
                             var todo = {
-                              "description": widget.description,
+                              "description": widget.todo.description,
                               "status": false,
-                              "timestamp": widget.time,
-                              "notificationId": widget.notifId,
-                              "timeReminder": widget.timeReminder,
-                              "type": widget.type,
+                              "timestamp": widget.todo.timestamp,
+                              "notificationId": widget.todo.notificationId,
+                              "timeReminder": widget.todo.timeReminder,
+                              "type": widget.todo.type,
                               "userId": sharedPrefs.idUser
                             };
                             flushbar

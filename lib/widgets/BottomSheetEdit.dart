@@ -1,7 +1,8 @@
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
-import 'package:closa_flutter/widgets/OptionsBacklog.dart';
+import 'package:closa_flutter/model/Todo.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -97,32 +98,6 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
   String date = "Today";
 
   final firestoreInstance = FirebaseFirestore.instance;
-  void optionsBottomSheet(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => widget.isBacklog
-            ? OptionsBacklog(
-                id: data["id"],
-                description: data["description"],
-                type: data["type"],
-                notifId: data["notifId"],
-                timeReminder: data["timeReminder"],
-                time: data["time"])
-            : OptionsTodo(
-                id: data["id"],
-                description: data["description"],
-                type: data["type"],
-                notifId: data["notifId"],
-                timeReminder: data["timeReminder"],
-                time: data["time"]));
-  }
 
   void isDateTomorrow() {
     if ((timestamp + addTime) > FormatTime.getTimestampTomorrow() &&
@@ -563,15 +538,16 @@ class _BottomSheetEditState extends State<BottomSheetEdit> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
-                    var data = {
-                      "id": widget.id,
-                      "description": controller.text,
-                      "type": widget.type,
-                      "time": timestamp + addTime,
-                      "timeReminder": widget.timeReminder,
-                      "notifId": widget.notifId
-                    };
-                    optionsBottomSheet(context, data);
+                    var todo = Todo(
+                        controller.text,
+                        null,
+                        timestamp + addTime,
+                        widget.notifId,
+                        widget.type,
+                        sharedPrefs.idUser,
+                        timeReminder);
+
+                    CustomSnackbar.optionsTodo(context, todo, widget.id);
                   },
                   child: CustomIcon(
                     type: "more",

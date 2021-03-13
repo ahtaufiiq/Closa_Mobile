@@ -1,4 +1,5 @@
-import 'package:closa_flutter/features/home/TaskScreen2.dart';
+import 'package:closa_flutter/features/task/TaskScreen.dart';
+import 'package:closa_flutter/features/task/TaskScreen2.dart';
 import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
@@ -12,7 +13,6 @@ import './helpers/CustomScrolling.dart';
 import 'package:firebase_core/firebase_core.dart';
 import './helpers/FormatTime.dart';
 import 'features/backlog/BacklogScreen.dart';
-import 'features/home/TaskScreen.dart';
 import 'helpers/sharedPref.dart';
 
 void main(

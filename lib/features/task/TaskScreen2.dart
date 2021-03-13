@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:closa_flutter/components/CustomSnackbar.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/features/menu/MenuScreen.dart';
 import 'package:closa_flutter/features/profile/ProfileScreen.dart';
@@ -30,37 +31,6 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
     return stringValue;
   }
 
-  void showBottomAdd(context) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetAdd());
-  }
-
-  void showBottomEdit(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetEdit(
-              id: data.id,
-              type: data["type"],
-              description: data['description'],
-              time: data['timestamp'],
-            ));
-  }
-
   Stream<QuerySnapshot> getHighlight() {
     return FirebaseFirestore.instance
         .collection('todos')
@@ -84,42 +54,11 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
         .snapshots();
   }
 
-  void addTodoBottomSheet(context, {type = "default"}) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => BottomSheetAdd(
-              type: type,
-            ));
-  }
-
   void openScreenProfile(context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ProfileScreen()),
     );
-  }
-
-  void optionsBottomSheet(context, data) {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16.0),
-            topRight: const Radius.circular(16.0),
-          ),
-        ),
-        builder: (_) => OptionsTodo(
-            id: data.id,
-            description: data['description'],
-            time: data['timestamp']));
   }
 
   @override
@@ -205,7 +144,7 @@ class _TaskScreenCopyState extends State<TaskScreenCopy> {
               Positioned(
                 child: GestureDetector(
                   onTap: () {
-                    showBottomAdd(context);
+                    CustomSnackbar.addTodo(context);
                   },
                   child: Container(
                     padding: EdgeInsets.all(12.0),
