@@ -236,7 +236,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                     context, todo, data.id,
                                                     isBacklog: true),
                                             onLongPress: () {
-                                              CustomSnackbar.optionsTodo(
+                                              CustomSnackbar.optionsBacklog(
                                                   context, todo, data.id);
                                             },
                                             child: CardBacklog(
@@ -259,7 +259,7 @@ class _BacklogScreenState extends State<BacklogScreen> {
                                                     context, todo, data.id,
                                                     isBacklog: true),
                                             onLongPress: () {
-                                              CustomSnackbar.optionsTodo(
+                                              CustomSnackbar.optionsBacklog(
                                                   context, todo, data.id);
                                             },
                                             child: CardBacklog(

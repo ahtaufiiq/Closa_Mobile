@@ -2,6 +2,7 @@ import 'package:closa_flutter/model/Todo.dart';
 import 'package:closa_flutter/widgets/BottomSheetAdd.dart';
 import 'package:closa_flutter/widgets/BottomSheetEdit.dart';
 import 'package:closa_flutter/widgets/OptionsBacklog.dart';
+import 'package:closa_flutter/widgets/OptionsTodo.dart';
 import 'package:flutter/material.dart';
 
 class CustomSnackbar {
@@ -22,7 +23,7 @@ class CustomSnackbar {
 
   static deleteTodo() {}
 
-  static optionsTodo(context, Todo todo, id) {
+  static optionsBacklog(context, Todo todo, id) {
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -33,6 +34,19 @@ class CustomSnackbar {
           ),
         ),
         builder: (_) => OptionsBacklog(id: id, todo: todo));
+  }
+
+  static optionsTodo(context, Todo todo, id) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16.0),
+            topRight: const Radius.circular(16.0),
+          ),
+        ),
+        builder: (_) => OptionsTodo(id: id, todo: todo));
   }
 
   static editTodo(context, Todo todo, id, {isBacklog: false}) {

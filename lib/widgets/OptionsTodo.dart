@@ -2,6 +2,7 @@ import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/backlog/BacklogScreen.dart';
 import 'package:closa_flutter/helpers/FormatTime.dart';
 import 'package:closa_flutter/helpers/sharedPref.dart';
+import 'package:closa_flutter/model/Todo.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -13,24 +14,17 @@ import '../helpers/color.dart';
 import 'Text.dart';
 
 class OptionsTodo extends StatefulWidget {
-  final String description;
-  final int time;
-  final String type;
+  final Todo todo;
   final String id;
-  final int notifId;
-  final String timeReminder;
   const OptionsTodo({
     Key key,
-    this.notifId,
+    this.todo,
     this.id,
-    this.description,
-    this.time,
-    this.timeReminder,
-    this.type,
   }) : super(key: key);
 
   @override
-  _OptionsTodoState createState() => _OptionsTodoState(description, time);
+  _OptionsTodoState createState() =>
+      _OptionsTodoState(todo.description, todo.timestamp);
 }
 
 class _OptionsTodoState extends State<OptionsTodo> {
@@ -47,7 +41,6 @@ class _OptionsTodoState extends State<OptionsTodo> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.notifId);
     return SingleChildScrollView(
         child: Container(
       padding:
@@ -89,11 +82,11 @@ class _OptionsTodoState extends State<OptionsTodo> {
                   ),
                   builder: (_) => BottomSheetEdit(
                         id: widget.id,
-                        description: widget.description,
-                        type: widget.type,
-                        time: widget.time,
-                        notifId: widget.notifId,
-                        timeReminder: widget.timeReminder,
+                        description: widget.todo.description,
+                        type: widget.todo.type,
+                        time: widget.todo.timestamp,
+                        notifId: widget.todo.notificationId,
+                        timeReminder: widget.todo.timeReminder,
                       ));
             },
           ),
@@ -119,10 +112,12 @@ class _OptionsTodoState extends State<OptionsTodo> {
             onTap: () {
               Navigator.pop(context);
               firestoreInstance.collection("todos").doc(widget.id).update({
-                "timestamp": FormatTime.setTomorrow(widget.time),
+                "timestamp": FormatTime.setTomorrow(widget.todo.timestamp),
               });
-              LocalNotification().changeTimeNotification(widget.notifId,
-                  widget.description, FormatTime.setTomorrow(widget.time));
+              LocalNotification().changeTimeNotification(
+                  widget.todo.notificationId,
+                  widget.todo.description,
+                  FormatTime.setTomorrow(widget.todo.timestamp));
 
               Flushbar flushbar;
               flushbar = Flushbar(
@@ -194,7 +189,7 @@ class _OptionsTodoState extends State<OptionsTodo> {
                   builder: (dialogContext) {
                     return AlertDialog(
                       content: TextDescription(
-                          text: 'Delete "${widget.description}" ?'),
+                          text: 'Delete "${widget.todo.description}" ?'),
                       actions: <Widget>[
                         // usually buttons at the bottom of the dialog
                         new FlatButton(
@@ -231,15 +226,15 @@ class _OptionsTodoState extends State<OptionsTodo> {
                                   ),
                                 ), // <bool> is the type of the result passed to dismiss() and collected by show().then((result){})
                                 message: "Delete Todo");
-                            var notifId = widget.notifId;
+                            var notifId = widget.todo.notificationId;
                             var id = widget.id;
                             var todo = {
-                              "description": widget.description,
+                              "description": widget.todo.description,
                               "status": false,
-                              "timestamp": widget.time,
-                              "notificationId": widget.notifId,
-                              "timeReminder": widget.timeReminder,
-                              "type": widget.type,
+                              "timestamp": widget.todo.timestamp,
+                              "notificationId": widget.todo.notificationId,
+                              "timeReminder": widget.todo.timeReminder,
+                              "type": widget.todo.type,
                               "userId": sharedPrefs.idUser
                             };
                             flushbar
