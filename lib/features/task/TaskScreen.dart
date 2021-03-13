@@ -264,9 +264,11 @@ class _TaskScreenState extends State<TaskScreen> {
                             stream: getTodo(),
                             builder: (BuildContext context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
+                              print("Masuk todo");
                               if (!snapshot.hasData) {
                                 return Container();
                               }
+                              // print("Masuk Todo ${snapshot.data.docs.length}");
                               if (snapshot.data.docs.length == 0) {
                                 sharedPrefs.doneOthers = true;
                                 if (sharedPrefs.doneHighlight &&
@@ -293,6 +295,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                         snapshot.data.docs.last['userId'],
                                         snapshot
                                             .data.docs.last['timeReminder']);
+                                    print(todo);
                                     if (data['type'] != 'highlight') {
                                       counter++;
                                       if (counter == 1) {

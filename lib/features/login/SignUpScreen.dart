@@ -27,7 +27,7 @@ class SignUpAction extends BaseAction<SignUpScreen, SignUpAction, SignUpState> {
 
   Future<User> signInWithGoogle() async {
     await Firebase.initializeApp();
-    googleSignIn.disconnect();
+    // googleSignIn.disconnect();
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
@@ -107,6 +107,7 @@ class SignUpScreen extends BaseView<SignUpScreen, SignUpAction, SignUpState> {
             GestureDetector(
               onTap: () {
                 action.signInWithGoogle().then((result) {
+                  print(result);
                   if (result != null) {
                     sharedPrefs.idUser = result.uid;
                     sharedPrefs.email = result.email;

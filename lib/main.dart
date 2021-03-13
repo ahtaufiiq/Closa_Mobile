@@ -1,6 +1,5 @@
 import 'package:closa_flutter/features/task/TaskScreen.dart';
 import 'package:closa_flutter/features/task/TaskScreen2.dart';
-import 'package:closa_flutter/core/utils/fcm_util.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
 import 'package:closa_flutter/features/login/SignUpScreen.dart';
 import 'package:closa_flutter/features/login/SignUpUsername.dart';
@@ -14,19 +13,20 @@ import 'package:firebase_core/firebase_core.dart';
 import './helpers/FormatTime.dart';
 import 'features/backlog/BacklogScreen.dart';
 import 'helpers/sharedPref.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main(
-    {FCMConfigure fcmConfigure = const FCMConfigure(),
-    LocalNotification localNotification = const LocalNotification(),
+    {LocalNotification localNotification = const LocalNotification(),
     Widget root = const MyApp()}) async {
   WidgetsFlutterBinding.ensureInitialized();
   await sharedPrefs.init();
   // DI setup
   runApp(root);
-  await fcmConfigure.setupFCM();
-  localNotification.localNotifInit();
-  if (sharedPrefs.notificationStatus == true) {
-    await localNotification.setDailyNotification();
+  if (!kIsWeb) {
+    localNotification.localNotifInit();
+    if (sharedPrefs.notificationStatus == true) {
+      await localNotification.setDailyNotification();
+    }
   }
 }
 
