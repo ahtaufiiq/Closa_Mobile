@@ -1,5 +1,0 @@
-version: "Apple Swift version 5.3.2 (swiftlang-1200.0.45 clang-1200.0.32.28)"
-options: "40f8179a25cb5e48464a19911840c94a"
-build_time: [1615680935, 732781000]
-inputs:
-  "/Users/taufiq/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-3.0.2/macos/Classes/FlutterLocalNotificationsPlugin.swift": [1605928595, 0]
