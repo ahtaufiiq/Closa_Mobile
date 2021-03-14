@@ -81,9 +81,7 @@ class MyApp extends StatelessWidget {
             home: ScrollConfiguration(
               behavior: MyBehavior(),
               child: sharedPrefs.username == ""
-                  ? Platform.isMacOS
-                      ? SignUpProfile()
-                      : SignUpScreen()
+                  ? SignUpScreen()
                   : sharedPrefs.doneHighlight &&
                           sharedPrefs.doneOthers &&
                           sharedPrefs.dateNow == FormatTime.getToday()
