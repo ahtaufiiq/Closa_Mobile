@@ -1,3 +1,4 @@
+import 'package:closa_flutter/features/login/SignUpProfile.dart';
 import 'package:closa_flutter/features/task/TaskScreen.dart';
 import 'package:closa_flutter/features/task/TaskScreen2.dart';
 import 'package:closa_flutter/core/utils/local_notification.dart';
@@ -14,6 +15,7 @@ import './helpers/FormatTime.dart';
 import 'features/backlog/BacklogScreen.dart';
 import 'helpers/sharedPref.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 
 void main(
     {LocalNotification localNotification = const LocalNotification(),
@@ -79,7 +81,9 @@ class MyApp extends StatelessWidget {
             home: ScrollConfiguration(
               behavior: MyBehavior(),
               child: sharedPrefs.username == ""
-                  ? SignUpScreen()
+                  ? Platform.isMacOS
+                      ? SignUpProfile()
+                      : SignUpScreen()
                   : sharedPrefs.doneHighlight &&
                           sharedPrefs.doneOthers &&
                           sharedPrefs.dateNow == FormatTime.getToday()

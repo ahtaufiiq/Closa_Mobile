@@ -1,0 +1,19 @@
+dependencies: \
+  /Users/taufiq/Documents/Flutter/closa/macos/Pods/FirebaseFirestore/Firestore/Protos/nanopb/google/protobuf/wrappers.nanopb.cc \
+  /Users/taufiq/Documents/Flutter/closa/macos/Pods/FirebaseFirestore/Firestore/Protos/nanopb/google/protobuf/wrappers.nanopb.h \
+  /Users/taufiq/Documents/Flutter/closa/macos/Pods/nanopb/pb.h \
+  /Users/taufiq/Documents/Flutter/closa/macos/Pods/FirebaseFirestore/Firestore/core/src/nanopb/pretty_printing.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/strings/str_cat.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/port.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/attributes.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/config.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/options.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/policy_checks.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/optimization.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/strings/numbers.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/internal/bits.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/macros.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/numeric/int128.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/numeric/int128_have_intrinsic.inc \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/strings/string_view.h \
+  /Users/taufiq/Documents/Flutter/closa/build/macos/Build/Products/Debug/abseil/absl.framework/Headers/base/internal/throw_delegate.h
